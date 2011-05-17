@@ -14,5 +14,6 @@
 Dict::Add('FR FR', 'French', 'Français', array(
 	// Dictionary entries go here
 	// TODO: translation !
+	'Survey-Title' => 'iTop Enquête client',
 ));
 ?>

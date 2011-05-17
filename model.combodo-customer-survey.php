@@ -27,7 +27,7 @@ class Quiz extends cmdbAbstractObject
 			"name_attcode" => "name",
 			"state_attcode" => "",
 			"reconc_keys" => array("name"),
-			"db_table" => "quiz",
+			"db_table" => "qz_quiz",
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
 			"icon" => "",
@@ -46,10 +46,14 @@ class Quiz extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeString("max_label", array("allowed_values"=>null, "sql"=>"max_label", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeString("above_labels", array("allowed_values"=>null, "sql"=>"above_labels", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeEnum("comments", array("allowed_values"=>new ValueSetEnum('yes,no'), "sql"=>"comments", "default_value"=>"yes", "is_null_allowed"=>false, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_list", array("linked_class"=>"Survey", "ext_key_to_me"=>"quiz_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("question_list", array("linked_class"=>"Question", "ext_key_to_me"=>"quiz_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
 		MetaModel::Init_AddAttribute(new AttributeText("default_message", array("allowed_values"=>null, "sql"=>"default_message", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 
 		MetaModel::Init_SetZListItems('details', array(
+				'survey_list',
+				'question_list',
 				'col:0'=> array('fieldset:Quiz Definition' => array('name','description'),'comments','fieldset:Quiz Answers' => array('min_value','min_label','max_value','max_label','above_labels')),
 				'col:1'=> array('fieldset:User Description' => array('title','introduction'),'default_message')
 		));
@@ -73,7 +77,7 @@ class Question extends cmdbAbstractObject
 			"name_attcode" => array("quiz_id_friendlyname", "order"),
 			"state_attcode" => "",
 			"reconc_keys" => array("quiz_id_friendlyname", "order"),
-			"db_table" => "question",
+			"db_table" => "qz_question",
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
 			"icon" => "",
@@ -109,7 +113,7 @@ class Survey extends cmdbAbstractObject
 			"name_attcode" => array("quiz_id_friendlyname", "date_sent"),
 			"state_attcode" => "",
 			"reconc_keys" => array("quiz_id_friendlyname", "date_sent"),
-			"db_table" => "question",
+			"db_table" => "qz_survey",
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
 			"icon" => "",
@@ -120,8 +124,9 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("quiz_id", array("targetclass"=>"Quiz", "jointype"=>null, "allowed_values"=>null, "sql"=>"quiz_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeDateTime("date_sent", array("allowed_values"=>null, "sql"=>"date_sent", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("user_id", array("targetclass"=>"User", "jointype"=>null, "allowed_values"=>null, "sql"=>"user_id", "is_null_allowed"=>true, "on_target_delete"=>DEL_MANUAL, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_target_list", array("linked_class"=>"SurveyTarget", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
-		MetaModel::Init_SetZListItems('details', array('quiz_id', 'date_sent', 'user_id'));
+		MetaModel::Init_SetZListItems('details', array('quiz_id', 'date_sent', 'user_id', 'survey_target_list'));
 		MetaModel::Init_SetZListItems('standard_search', array('quiz_id', 'date_sent', 'user_id'));
 		MetaModel::Init_SetZListItems('list', array('quiz_id', 'date_sent', 'user_id'));
 	}
@@ -142,7 +147,7 @@ class SurveyTarget extends cmdbAbstractObject
 			"name_attcode" => array("survey_id_friendlyname", "token"),
 			"state_attcode" => "",
 			"reconc_keys" => array("survey_id_friendlyname", "token"),
-			"db_table" => "question",
+			"db_table" => "qz_survey_target",
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
 			"icon" => "",
@@ -154,8 +159,9 @@ class SurveyTarget extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeString("token", array("allowed_values"=>null, "sql"=>"token", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeDateTime("date_response", array("allowed_values"=>null, "sql"=>"date_response", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("comment", array("allowed_values"=>null, "sql"=>"comment", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_answer_list", array("linked_class"=>"SurveyAnswer", "ext_key_to_me"=>"survey_target_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
-		MetaModel::Init_SetZListItems('details', array('survey_id', 'token', 'date_response', 'comment'));
+		MetaModel::Init_SetZListItems('details', array('survey_id', 'token', 'date_response', 'comment', 'survey_answer_list'));
 		MetaModel::Init_SetZListItems('standard_search', array('survey_id', 'token', 'date_response', 'comment'));
 		MetaModel::Init_SetZListItems('list', array('survey_id', 'token', 'date_response'));
 	}
@@ -176,7 +182,7 @@ class SurveyAnswer extends cmdbAbstractObject
 			"name_attcode" =>  array("survey_target_id_friendlyname", "question_id"),
 			"state_attcode" => "",
 			"reconc_keys" => array("survey_target_id_friendlyname", "question_id"),
-			"db_table" => "question",
+			"db_table" => "qz_survey_answer",
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
 			"icon" => "",
