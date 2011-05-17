@@ -73,8 +73,8 @@ function ShowQuiz($oP, $sToken)
 
 	// Build the form
 	//
-	$oP->add("<h1>".$oQuiz->Get('title')."</h1\n");
-	$oP->add("<p>".$oQuiz->Get('introduction')."</p>\n");
+	$oP->add("<h1>".$oQuiz->GetAsHtml('title')."</h1>\n");
+	$oP->add("<p>".$oQuiz->GetAsHtml('introduction')."</p>\n");
 
 	$oP->add("<div class=\"wizContainer\" id=\"form_close_request\">\n");
 	$oP->add("<form action=\"\" id=\"quiz_form\" method=\"post\">\n");
@@ -86,8 +86,8 @@ function ShowQuiz($oP, $sToken)
 	while($oQuestion = $oQuestionSet->Fetch())
 	{
 		$iQuestionId = $oQuestion->GetKey();
-		$sTitle = htmlentities($oQuestion->Get('title'));
-		$sDescription = $oQuestion->Get('description');
+		$sTitle = $oQuestion->GetAsHtml('title');
+		$sDescription = $oQuestion->GetAsHtml('description');
 		$oP->add("<div class=\"quizzQuestion\">");
 		$oP->add("<h3>$sTitle</h3>");
 		$oP->add("<p>$sDescription</p>");
@@ -136,6 +136,7 @@ function SubmitAnswers($oP, $sToken)
 	list($oTarget, $oSurvey, $oQuiz, $oQuestionSet) = GetContext($sToken);
 
 	$aAnsers = ReadMandatoryParam('answer');
+	$sComment = ReadMandatoryParam('comment');
 
 	// Todo - check if there are already some answers (to update)
 
@@ -170,6 +171,12 @@ function SubmitAnswers($oP, $sToken)
 			}
 		}
 	}
+
+	// Update the target record
+	//
+	$oTarget->Set('date_response', time());
+	$oTarget->Set('comment', $sComment);
+	$oTarget->DBUpdateTracked($oMyChange);
 
 	$oP->add("<p>Your answers have been recorded.</p>\n");
 	$oP->add("<p>Thank you for your participation.</p>\n");

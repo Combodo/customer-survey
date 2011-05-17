@@ -211,6 +211,7 @@ class CombodoSurvey extends ModuleHandlerAPI
 			$oQuizMenu = new MenuGroup('CustomerSurvey', 72 /* fRank */);
 			$iIndex = 1;
 			new OQLMenuNode('Quizzes', 'SELECT Quiz', $oQuizMenu->GetIndex(), $iIndex++ /* fRank */);
+			new OQLMenuNode('Surveys', 'SELECT Survey', $oQuizMenu->GetIndex(), $iIndex++ /* fRank */);
 		}
 	}
 }
