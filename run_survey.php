@@ -227,8 +227,8 @@ textarea {
 </style>\n");
 
 
-	$sUrl = utils::GetAbsoluteUrlAppRoot('/modules/combodo-customer-survey/');
-	$oP->set_base($sUrl.'/modules-combodo-customer-survey/');
+	$sUrl = utils::GetAbsoluteUrlAppRoot();
+	$oP->set_base($sUrl.'modules-combodo-customer-survey/');
 
 	switch ($sOperation)
 	{
