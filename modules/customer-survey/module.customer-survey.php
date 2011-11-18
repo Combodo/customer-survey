@@ -5,7 +5,7 @@
 
 SetupWebPage::AddModule(
 	__FILE__, // Path to the current file, all other file names are relative to the directory containing this file
-	'combodo-customer-survey/1.0.0',
+	'customer-survey/1.0.0',
 	array(
 		// Identification
 		//
@@ -23,14 +23,14 @@ SetupWebPage::AddModule(
 		// Components
 		//
 		'datamodel' => array(
-			'model.combodo-customer-survey.php'
+			'model.customer-survey.php'
 		),
 		'webservice' => array(
 			
 		),
 		'dictionary' => array(
-			'en.dict.combodo-customer-survey.php',
-			'fr.dict.combodo-customer-survey.php',
+			'en.dict.customer-survey.php',
+			'fr.dict.customer-survey.php',
 		),
 		'data.struct' => array(
 			// add your 'structure' definition XML files here,

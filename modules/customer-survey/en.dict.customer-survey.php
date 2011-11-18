@@ -14,5 +14,9 @@
 Dict::Add('EN US', 'English', 'English', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Customer Survey',
+	'Survey-Title-Draft' => 'iTop Customer Survey (draft)',
+
+	'Class:SurveyAnswer/Attribute:value/Value:0' => 'pasglop',
+
 ));
 ?>

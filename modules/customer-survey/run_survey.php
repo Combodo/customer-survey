@@ -28,9 +28,9 @@ require_once(APPROOT.'/application/nicewebpage.class.inc.php');
 require_once(APPROOT.'/application/wizardhelper.class.inc.php');
 
 
-function ReadMandatoryParam($sParam)
+function ReadMandatoryParam($sParam, $sSanitizationFilter = 'parameter')
 {
-	$value = utils::ReadParam($sParam, null);
+	$value = utils::ReadParam($sParam, null, false /*allow CLI*/, $sSanitizationFilter);
 	if (is_null($value))
 	{
 		throw new Exception("Missing argument '$sParam'");
@@ -43,7 +43,7 @@ function GetContext($sToken)
 {
 	// Find the corresponding survey target -> survey -> quiz
 	//
-	$oTargetSearch = DBObjectSearch::FromOQL("SELECT SurveyTarget WHERE token = :token");
+	$oTargetSearch = DBObjectSearch::FromOQL("SELECT SurveyTargetAnswer WHERE token = :token");
 	$oTargetSet = new CMDBObjectSet($oTargetSearch, array(), array('token' => $sToken));
 	if ($oTargetSet->Count() == 0)
 	{
@@ -55,7 +55,7 @@ function GetContext($sToken)
 
   	// Find the questions
 	//
-	$oQuestionSearch = DBObjectSearch::FromOQL("SELECT Question WHERE quiz_id = :quiz");
+	$oQuestionSearch = DBObjectSearch::FromOQL("SELECT QuizQuestion WHERE quiz_id = :quiz");
 	$oQuestionSet = new CMDBObjectSet($oQuestionSearch, array('order' => true), array('quiz' => $oQuiz->GetKey()));
 	if ($oQuestionSet->Count() == 0)
 	{
@@ -66,77 +66,45 @@ function GetContext($sToken)
 }
 
 
+function ShowDraftQuiz($oP, $iQuiz)
+{
+	$oQuiz = MetaModel::GetObject('Quiz', $iQuiz, false);
+	if ($oQuiz)
+	{
+		$oP->set_title(Dict::S('Survey-Title-Draft'));
+		$oQuiz->ShowForm($oP);
+	}
+	else
+	{
+		$oP->p("Invalid value for quiz_id: '$iQuiz'");
+	}
+}
 
 function ShowQuiz($oP, $sToken)
 {
 	list($oTarget, $oSurvey, $oQuiz, $oQuestionSet) = GetContext($sToken);
 
-	// Build the form
-	//
-	$oP->add("<h1>".$oQuiz->GetAsHtml('title')."</h1>\n");
-	$oP->add("<p>".$oQuiz->GetAsHtml('introduction')."</p>\n");
 
-	$oP->add("<div class=\"wizContainer\" id=\"form_close_request\">\n");
-	$oP->add("<form action=\"\" id=\"quiz_form\" method=\"post\">\n");
-
-	$oP->add("<input type=\"hidden\" name=\"operation\" value=\"submit_answers\">");
-	$oP->add("<input type=\"hidden\" name=\"token\" value=\"$sToken\">");
-//	$oP->add("<input type=\"hidden\" name=\"transaction_id\" value=\"".utils::GetNewTransactionId()."\">\n");
-
-	while($oQuestion = $oQuestionSet->Fetch())
+	if (strlen($oTarget->Get('date_response')) > 0)
 	{
-		$iQuestionId = $oQuestion->GetKey();
-		$sTitle = $oQuestion->GetAsHtml('title');
-		$sDescription = $oQuestion->GetAsHtml('description');
-		$oP->add("<div class=\"quizzQuestion\">");
-		$oP->add("<h3>$sTitle</h3>");
-		$oP->add("<p>$sDescription</p>");
-
-      $aChoices = array(
-      	'0' => 'Very bad',
-      	'1' => 'Bad',
-      	'2' => 'Average',
-      	'3' => 'Good',
-      	'4' => 'Very good',
-		);
-		$sTDProps = "width=\"80px\" align=\"center\"";
-
-		$oP->add("<table>");
-
-		$oP->add("<tr>");
-		foreach($aChoices as $sValue => $sLabel)
-		{
-			$oP->add("<td $sTDProps>$sLabel</td>");
-		}
-		$oP->add("</tr>");
-		$oP->add("<tr>");
-		foreach($aChoices as $sValue => $sLabel)
-		{
-			$oP->add("<td $sTDProps><INPUT type=\"radio\" name=\"answer[$iQuestionId]\" value=\"$sValue\"></td>");
-		}
-		$oP->add("</tr>");
-		$oP->add("</table>");
-		$oP->add("</div>");
+		$oP->p(Dict::Format('***You have already answered (%1$s)', $oTarget->Get('date_response')));
 	}
-
-	$oP->add("<div class=\"quizzQuestion\">");
-	$oP->add("<h3>Free comments and suggestions</h3>");
-	$oP->add("<TEXTAREA style=\"width: 100%;\" name=\"comment\" value=\"\"></TEXTAREA>");
-	$oP->add("</div>");
-	
-
-	$oP->add("<INPUT type=\"submit\" name=\"foo\" value=\"Submit\">");
-
-	$oP->add("</form>");
-	$oP->add("</div>");
+	elseif($oSurvey->Get('status') != 'running')
+	{
+		$oP->p(Dict::S('***Sorry, the survey has been closed'));
+	}
+	else
+	{
+		$oQuiz->ShowForm($oP, $oSurvey, $oTarget);
+	}
 }
 
 function SubmitAnswers($oP, $sToken)
 {
 	list($oTarget, $oSurvey, $oQuiz, $oQuestionSet) = GetContext($sToken);
 
-	$aAnsers = ReadMandatoryParam('answer');
-	$sComment = ReadMandatoryParam('comment');
+	$aAnsers = ReadMandatoryParam('answer', 'raw_data');
+	$sComment = ReadMandatoryParam('comment', 'raw_data');
 
 	// Todo - check if there are already some answers (to update)
 
@@ -154,7 +122,8 @@ function SubmitAnswers($oP, $sToken)
 		
 		if (!isset($aAnsers[$iQuestion]))
 		{
-//			$oP->add("<p>Missing answer for quesion #$iQuestion</p>\n");
+// TODO: understand why ???
+//			$oP->add("<p>Missing answer for question #$iQuestion</p>\n");
 		}
 		else
 		{
@@ -164,6 +133,7 @@ function SubmitAnswers($oP, $sToken)
 			$oAnswer->Set('value', $aAnsers[$iQuestion]);
 			
 			list($bRes, $aIssues) = $oAnswer->CheckToWrite();
+// TODO: understand why ???
 			//if ($bRes)
 			if (true)
 	      {
@@ -178,8 +148,8 @@ function SubmitAnswers($oP, $sToken)
 	$oTarget->Set('comment', $sComment);
 	$oTarget->DBUpdateTracked($oMyChange);
 
-	$oP->add("<p>Your answers have been recorded.</p>\n");
-	$oP->add("<p>Thank you for your participation.</p>\n");
+	$oP->add("<p>***Your answers have been recorded.</p>\n");
+	$oP->add("<p>***Thank you for your participation.</p>\n");
 }
 
 /////////////////////////////
@@ -191,7 +161,7 @@ function SubmitAnswers($oP, $sToken)
 try
 {
 	require_once(APPROOT.'/application/startup.inc.php');
-	require_once(APPROOT.'/modules/combodo-customer-survey/quizzwebpage.class.inc.php');
+	require_once(APPROOT.'/modules/customer-survey/quizzwebpage.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
 	
@@ -199,7 +169,7 @@ try
 //	LoginWebPage::DoLogin(false /* bMustBeAdmin */, true /* IsAllowedToPortalUsers */); // Check user rights and prompt if needed
 
 //	$oUserOrg = GetUserOrg();
-	$sCSSFileSuffix = '/modules/combodo-customer-survey/run_survey.css';
+	$sCSSFileSuffix = '/modules/customer-survey/run_survey.css';
 	if (@file_exists(APPROOT.$sCSSFileSuffix))
 	{
 //		$oP = new QuizzWebPage(Dict::S('Survey-Title'), $sCSSFileSuffix);
@@ -212,33 +182,50 @@ try
 	$oP = new QuizzWebPage(Dict::S('Survey-Title'));
 // Ne fonctionne pas ????	$oP = new QuizzWebPage(Dict::S('Survey-Title'), $sCSSFileSuffix);
 
+	$sUrl = utils::GetAbsoluteUrlAppRoot();
+	$oP->set_base($sUrl.'pages/');
+
 	$oP->add("<style>
-.quizzQuestion {
+.quizQuestion {
 	border: #f1f1f6 3px solid;
 	padding: 10px;
 }
-.quizzQuestion h3 {
+
+
+.quizMandatory {
+	border: #f1f1f6 3px solid;
+	color: red;
+	padding: 10px;
+}
+
+.quizQuestion h3 {
 	font-size: larger;
 	font-weight: bolder;
 }
+
+.mandatory_asterisk{
+	color: #FF0000;
+}
+
 textarea {
 	width: 100%;
 }
 </style>\n");
 
-
-	$sUrl = utils::GetAbsoluteUrlAppRoot();
-	$oP->set_base($sUrl.'modules-combodo-customer-survey/');
-
 	switch ($sOperation)
 	{
 	case 'submit_answers':
-		$sToken = ReadMandatoryParam('token');
+		$sToken = ReadMandatoryParam('token', 'raw_data');
 		SubmitAnswers($oP, $sToken);
 		break;
 		
+	case 'test':
+		$iQuiz = ReadMandatoryParam('quiz_id');
+		ShowDraftQuiz($oP, $iQuiz);
+		break;
+
 	default:
-		$sToken = ReadMandatoryParam('token');
+		$sToken = ReadMandatoryParam('token', 'raw_data');
 		ShowQuiz($oP, $sToken);
 	}
 
