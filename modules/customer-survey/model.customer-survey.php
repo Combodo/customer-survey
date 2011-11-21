@@ -13,11 +13,10 @@
 
 // Add class definitions here
 /**
- * Defines a quiz used to generate a survey
+ * Defines a quizz used to generate a survey
  */
-class Quiz extends cmdbAbstractObject
+class Quizz extends cmdbAbstractObject
 {
-
 	public static function Init()
 	{
 		$aParams = array
@@ -27,7 +26,7 @@ class Quiz extends cmdbAbstractObject
 			"name_attcode" => "name",
 			"state_attcode" => "",
 			"reconc_keys" => array("name"),
-			"db_table" => "qz_quiz",
+			"db_table" => "qz_quizz",
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
 			"icon" => "",
@@ -35,8 +34,10 @@ class Quiz extends cmdbAbstractObject
 		MetaModel::Init_Params($aParams);
 		MetaModel::Init_InheritAttributes();
 
+
 		MetaModel::Init_AddAttribute(new AttributeString("name", array("allowed_values"=>null, "sql"=>"name", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("description", array("allowed_values"=>null, "sql"=>"description", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeApplicationLanguage("language", array("allowed_values"=>null, "sql"=>"language", "default_value"=>"EN US", "is_null_allowed"=>false, "depends_on"=>array())));
 		
 		MetaModel::Init_AddAttribute(new AttributeString("title", array("allowed_values"=>null, "sql"=>"title", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("introduction", array("allowed_values"=>null, "sql"=>"introduction", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
@@ -46,15 +47,15 @@ class Quiz extends cmdbAbstractObject
 //		MetaModel::Init_AddAttribute(new AttributeString("max_label", array("allowed_values"=>null, "sql"=>"max_label", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 //		MetaModel::Init_AddAttribute(new AttributeString("above_labels", array("allowed_values"=>null, "sql"=>"above_labels", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 //		MetaModel::Init_AddAttribute(new AttributeEnum("comments", array("allowed_values"=>new ValueSetEnum('yes,no'), "sql"=>"comments", "default_value"=>"yes", "is_null_allowed"=>false, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_list", array("linked_class"=>"Survey", "ext_key_to_me"=>"quiz_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeLinkedSet("question_list", array("linked_class"=>"QuizQuestion", "ext_key_to_me"=>"quiz_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_list", array("linked_class"=>"Survey", "ext_key_to_me"=>"quizz_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("question_list", array("linked_class"=>"QuizzQuestion", "ext_key_to_me"=>"quizz_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
 //		MetaModel::Init_AddAttribute(new AttributeText("default_message", array("allowed_values"=>null, "sql"=>"default_message", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 
 		MetaModel::Init_SetZListItems('details', array(
 				'survey_list',
 				'question_list',
-				'col:0'=> array('fieldset:***Quiz Definition' => array('name','description'), 'fieldset:***User Description' => array('title','introduction')),
+				'col:0'=> array('fieldset:Survey-quizz-frame-definition' => array('name','description', 'language'), 'fieldset:Survey-quizz-frame-description' => array('title','introduction')),
 		));
 		MetaModel::Init_SetZListItems('standard_search', array('name', 'description', 'title', 'introduction'));
 		MetaModel::Init_SetZListItems('list', array('name', 'description'));
@@ -66,15 +67,15 @@ class Quiz extends cmdbAbstractObject
 		parent::DisplayBareRelations($oPage, $bEditMode);
 		if (!$bEditMode)
 		{
-			$oPage->SetCurrentTab(Dict::S('***Overview'));
-			$oPage->p(Dict::S('***Click here to display the quiz').': <a href="'.$this->MakeDraftUrl().'">'.Dict::S('***the form').'</a>');
+			$oPage->SetCurrentTab(Dict::S('Survey-quizz-overview'));
+			$oPage->p(Dict::S('Survey-quizz-shortcuttoquizz').': <a href="'.$this->MakeDraftUrl().'">'.Dict::S('Survey-quizz-shortcutlabel').'</a>');
 		}
 	}
 
 	function MakeDraftUrl()
 	{
 		$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
-		return $sAbsoluteUrl.'modules/customer-survey/run_survey.php?operation=test&quiz_id='.$this->GetKey();
+		return $sAbsoluteUrl.'modules/customer-survey/run_survey.php?operation=test&quizz_id='.$this->GetKey();
 	}
 
 	function ShowForm($oP, $oSurvey = null, $oTarget = null)
@@ -92,7 +93,7 @@ class Quiz extends cmdbAbstractObject
 		$oP->add("<p>".$this->GetAsHtml('introduction')."</p>\n");
 	
 		$oP->add("<div class=\"wizContainer\" id=\"form_close_request\">\n");
-		$oP->add("<form action=\"\" id=\"quiz_form\" method=\"post\" onSubmit=\"return CheckQuizForm()\">\n");
+		$oP->add("<form action=\"\" id=\"quizz_form\" method=\"post\" onSubmit=\"return CheckQuizzForm()\">\n");
 	
 		$oP->add("<input type=\"hidden\" name=\"operation\" value=\"submit_answers\">");
 		if ($oTarget)
@@ -102,18 +103,18 @@ class Quiz extends cmdbAbstractObject
 		}
 
 		$bHasMandatoryQuestions = false;
-		$oQuestionSet = $this->Get('question_list');	
+		$oQuestionSet = $this->Get('question_list');
 		while($oQuestion = $oQuestionSet->Fetch())
 		{
 			$iQuestionId = $oQuestion->GetKey();
 			$sTitle = $oQuestion->GetAsHtml('title');
 			$sDescription = $oQuestion->GetAsHtml('description');
 
-			$oP->add("<div class=\"quizQuestion\" id=\"$iQuestionId\">");
+			$oP->add("<div class=\"quizzQuestion\" id=\"$iQuestionId\">");
 			if ($oQuestion->Get('mandatory') == 'yes')
 			{
 				$bHasMandatoryQuestions = true;
-				$oP->add("<h3>$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('***Survey-MandatoryQuestion')."\">*</span></h3>");
+				$oP->add("<h3>$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
 			}
 			else
 			{
@@ -141,33 +142,33 @@ class Quiz extends cmdbAbstractObject
 			$oP->add("</div>");
 		}
 	
-		$oP->add("<div class=\"quizQuestion\">");
-		$oP->add("<h3>Free comments and suggestions</h3>");
+		$oP->add("<div class=\"quizzQuestion\">");
+		$oP->add("<h3>".Dict::S('Survey-form-comments')."</h3>");
 		$oP->add("<TEXTAREA style=\"width: 100%;\" name=\"comment\" value=\"\"></TEXTAREA>");
 		$oP->add("</div>");
 
 		if ($oTarget)
 		{
-			$oP->add("<INPUT type=\"submit\" name=\"foo\" value=\"Submit\">");
+			$oP->add("<INPUT type=\"submit\" name=\"foo\" value=\"".Dict::S('Survey-form-submit')."\">");
 		}
 		else
 		{
-			$oP->add("<INPUT type=\"submit\" name=\"foo\" value=\"Submit\" DISABLED>");
+			$oP->add("<INPUT type=\"submit\" name=\"foo\" value=\"".Dict::S('Survey-form-submit')."\" DISABLED>");
 		}
 	
 		$oP->add("</form>");
 		$oP->add("</div>");
 		if ($bHasMandatoryQuestions)
 		{		
-			$oP->p("<span class=\"mandatory_asterisk\">*</span> ".Dict::S('***Survey-MandatoryQuestion'));
-			$sMissingMandatory = Dict::S('***Survey-missing-mandatory-answers');
+			$oP->p("<span class=\"mandatory_asterisk\">*</span> ".Dict::S('Survey-MandatoryQuestion'));
+			$sMissingMandatory = Dict::S('Survey-missing-answers');
 			$oP->add_script(
 <<<EOF
-function CheckQuizForm()
+function CheckQuizzForm()
 {
 	bOk = true;
 
-	$('div.quizQuestion').each( function() {
+	$('div.quizzQuestion').each( function() {
 		iQuestionId = this.id;
 		$(this).find('span.mandatory_asterisk').each(function() {
 			value = $("input[name=answer["+iQuestionId+"]]:checked").val();
@@ -186,26 +187,36 @@ EOF
 		}
 		else
 		{
-			$oP->add_script('function CheckQuizForm(){return true;}');
+			$oP->add_script('function CheckQuizzForm(){return true;}');
 		}
+	}
+
+	public function ChangeDictionnaryLanguage()
+	{
+		$this->m_sApplicationLanguage = Dict::GetUserLanguage();
+		Dict::SetUserLanguage($this->Get('language'));
+	}
+
+	public function RestoreDictionnaryLanguage()
+	{
+		Dict::SetUserLanguage($this->m_sApplicationLanguage);
 	}
 }
 
 /**
- * A simple question inside a quiz
+ * A simple question inside a quizz
  */
-class QuizQuestion extends cmdbAbstractObject
+class QuizzQuestion extends cmdbAbstractObject
 {
-
 	public static function Init()
 	{
 		$aParams = array
 		(
 			"category" => "searchable,survey",
 			"key_type" => "autoincrement",
-			"name_attcode" => array("title"),
+			"name_attcode" => array("order", "title"),
 			"state_attcode" => "",
-			"reconc_keys" => array("quiz_id_friendlyname", "order"),
+			"reconc_keys" => array("quizz_id_friendlyname", "order"),
 			"db_table" => "qz_question",
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
@@ -214,34 +225,33 @@ class QuizQuestion extends cmdbAbstractObject
 		MetaModel::Init_Params($aParams);
 		MetaModel::Init_InheritAttributes();
 
-		MetaModel::Init_AddAttribute(new AttributeExternalKey("quiz_id", array("targetclass"=>"Quiz", "jointype"=>null, "allowed_values"=>null, "sql"=>"quiz_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("quizz_id", array("targetclass"=>"Quizz", "jointype"=>null, "allowed_values"=>null, "sql"=>"quizz_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeInteger("order", array("allowed_values"=>null, "sql"=>"order", "default_value"=>0, "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeString("title", array("allowed_values"=>null, "sql"=>"title", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("description", array("allowed_values"=>null, "sql"=>"description", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeEnum("mandatory", array("allowed_values"=>new ValueSetEnum('yes,no'), "sql"=>"mandatory", "default_value"=>"yes", "is_null_allowed"=>false, "depends_on"=>array())));
 
-		MetaModel::Init_SetZListItems('details', array('quiz_id', 'order', 'title', 'description', 'mandatory'));
-		MetaModel::Init_SetZListItems('standard_search', array('quiz_id', 'order', 'title', 'description', 'mandatory'));
-		MetaModel::Init_SetZListItems('list', array('quiz_id', 'order', 'title', 'mandatory'));
+		MetaModel::Init_SetZListItems('details', array('quizz_id', 'order', 'title', 'description', 'mandatory'));
+		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'order', 'title', 'description', 'mandatory'));
+		MetaModel::Init_SetZListItems('list', array('quizz_id', 'order', 'title', 'mandatory'));
 	}
 }
 
 		
 /**
- * Survey: an instanciation of a quiz for a given set of persons
+ * Survey: an instanciation of a quizz for a given set of persons
  */
 class Survey extends cmdbAbstractObject
 {
-
 	public static function Init()
 	{
 		$aParams = array
 		(
 			"category" => "searchable,survey",
 			"key_type" => "autoincrement",
-			"name_attcode" => array("quiz_id_friendlyname", "date_sent"),
+			"name_attcode" => array("quizz_id_friendlyname", "date_sent"),
 			"state_attcode" => "status",
-			"reconc_keys" => array("quiz_id_friendlyname", "date_sent"),
+			"reconc_keys" => array("quizz_id_friendlyname", "date_sent"),
 			"db_table" => "qz_survey",
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
@@ -250,12 +260,14 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_Params($aParams);
 		MetaModel::Init_InheritAttributes();
 
-		MetaModel::Init_AddAttribute(new AttributeExternalKey("quiz_id", array("targetclass"=>"Quiz", "jointype"=>null, "allowed_values"=>null, "sql"=>"quiz_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("quizz_id", array("targetclass"=>"Quizz", "jointype"=>null, "allowed_values"=>null, "sql"=>"quizz_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalField("language", array("allowed_values"=>null, "extkey_attcode"=> 'quizz_id', "target_attcode"=>"language")));
 
 		MetaModel::Init_AddAttribute(new AttributeEnum("status", array("allowed_values"=>new ValueSetEnum('new,running,closed'), "sql"=>"status", "default_value"=>"new", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeDateTime("date_sent", array("allowed_values"=>null, "sql"=>"date_sent", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		// todo - unused ?
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("on_behalf_of", array("targetclass"=>"Contact", "jointype"=>null, "allowed_values"=>null, "sql"=>"on_behalf_of", "is_null_allowed"=>false, "on_target_delete"=>DEL_MANUAL, "depends_on"=>array())));
+
 
 		MetaModel::Init_AddAttribute(new AttributeString("email_subject", array("allowed_values"=>null, "sql"=>"email_subject", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("email_body", array("allowed_values"=>null, "sql"=>"email_body", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
@@ -263,9 +275,9 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeLinkedSetIndirect("survey_target_list", array("linked_class"=>"SurveyTarget", "ext_key_to_me"=>"survey_id", "ext_key_to_remote"=>"contact_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_target_answer_list", array("linked_class"=>"SurveyTargetAnswer", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
-		MetaModel::Init_SetZListItems('details', array('quiz_id', 'status', 'date_sent', 'on_behalf_of', 'email_subject', 'email_body', 'survey_target_list'));
-		MetaModel::Init_SetZListItems('standard_search', array('quiz_id', 'status', 'date_sent'));
-		MetaModel::Init_SetZListItems('list', array('quiz_id', 'status', 'date_sent'));
+		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_subject', 'email_body', 'survey_target_list'));
+		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'status', 'date_sent'));
+		MetaModel::Init_SetZListItems('list', array('quizz_id', 'status', 'date_sent'));
 
 		// Lifecycle
 		MetaModel::Init_DefineState(
@@ -274,7 +286,7 @@ class Survey extends cmdbAbstractObject
 				"attribute_inherit" => null,
 				"attribute_list" => array(
 					//'status' => OPT_ATT_HIDDEN,
-					'quiz_id' => OPT_ATT_NORMAL,
+					'quizz_id' => OPT_ATT_NORMAL,
 					'date_sent' => OPT_ATT_HIDDEN,
 					'on_behalf_of' => OPT_ATT_NORMAL,
 					'email_subject' => OPT_ATT_NORMAL,
@@ -287,7 +299,7 @@ class Survey extends cmdbAbstractObject
 			array(
 				"attribute_inherit" => 'new',
 				"attribute_list" => array(
-					'quiz_id' => OPT_ATT_READONLY,
+					'quizz_id' => OPT_ATT_READONLY,
 					'date_sent' => OPT_ATT_READONLY,
 					'on_behalf_of' => OPT_ATT_READONLY | OPT_ATT_MUSTPROMPT,
 					'email_subject' => OPT_ATT_READONLY,
@@ -307,26 +319,28 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_start", array()));
 		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_close", array()));
 
-		MetaModel::Init_DefineTransition("new", "ev_start", array("target_state"=>"running", "actions"=>array('SendQuiz'), "user_restriction"=>null));
+		MetaModel::Init_DefineTransition("new", "ev_start", array("target_state"=>"running", "actions"=>array('SendQuizz'), "user_restriction"=>null));
 		MetaModel::Init_DefineTransition("running", "ev_close", array("target_state"=>"closed", "actions"=>array(), "user_restriction"=>null));
 	}
 
+	protected $m_sApplicationLanguage;
+
 	// Lifecycle actions
 	//
-	public function SendQuiz($sStimulusCode)
+	public function SendQuizz($sStimulusCode)
 	{
 		$this->Set('date_sent', time());
 
 		$oTargetSet = $this->Get('survey_target_list');
 		while($oTarget = $oTargetSet->Fetch())
 		{
-			$this->SendQuizToTarget($oTarget);
+			$this->SendQuizzToTarget($oTarget);
 		}
 
 		return true;
 	}
 
-	protected function SendQuizToTarget($oTarget)
+	protected function SendQuizzToTarget($oTarget)
 	{
 		$oContact = MetaModel::GetObject('Contact', $oTarget->Get('contact_id'));
 
@@ -334,7 +348,18 @@ class Survey extends cmdbAbstractObject
 		$oTargetAnswer->Set('survey_id', $oTarget->Get('survey_id'));
 		$sToken = $oTargetAnswer->SetToken();
 
-		$this->SendQuizToContact($oContact, $sToken);
+		$oQuizz = MetaModel::GetObject('Quizz', $this->Get('quizz_id'));
+		$oQuizz->ChangeDictionnaryLanguage();		
+		try
+		{
+			$this->SendQuizzToContact($oContact, $sToken);
+		}
+		catch(Exception $e)
+		{
+			$oQuizz->RestoreDictionnaryLanguage();
+			throw $e;		
+		}
+		$oQuizz->RestoreDictionnaryLanguage();
 
 		// Create the anonymous answer
 		$oMyChange = MetaModel::NewObject("CMDBChange");
@@ -346,15 +371,15 @@ class Survey extends cmdbAbstractObject
 		$oTargetAnswer->DBInsertTracked($oMyChange);
 	}
 
-	protected function SendQuizToContact($oContact, $sToken)
+	protected function SendQuizzToContact($oContact, $sToken)
 	{
 		$oEmail = new EMail();
 
 		$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
-		$sQuizUrl = $sAbsoluteUrl.'modules/customer-survey/run_survey.php?token='.urlencode($sToken);
+		$sQuizzUrl = $sAbsoluteUrl.'modules/customer-survey/run_survey.php?token='.urlencode($sToken);
 
 		$sBody = $this->Get('email_body');
-		$sBody .= '<br/><a href="'.$sQuizUrl.'">Access the quiz</a>';
+		$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
 
 		$oEmail->SetSubject($this->Get('email_subject'));
 		$oEmail->SetBody($sBody);
@@ -415,7 +440,7 @@ class Survey extends cmdbAbstractObject
 			{
 				if (!array_key_exists($iId, $aOriginalSet))
 				{
-					$this->SendQuizToTarget($oTarget);
+					$this->SendQuizzToTarget($oTarget);
 				}
 			}			
 		}
@@ -449,15 +474,15 @@ class Survey extends cmdbAbstractObject
 				{
 					$iProgress = 100;
 				}
-				$oPage->SetCurrentTab(Dict::S('***Progress').' ('.$iProgress.' %)');
+				$oPage->SetCurrentTab(Dict::S('Survey-tab-progress').' ('.$iProgress.' %)');
 
-				$oPage->p(Dict::S('***Awaited answers:').' '.$iAwaited);
+				$oPage->p(Dict::S('Survey-awaited-answers').': '.$iAwaited);
 
-				$aQueries[Dict::S('***Survey-Query-Comments')] = array(
+				$aQueries[Dict::S('Survey-query-comments')] = array(
 					'oql' => 'SELECT SurveyTargetAnswer WHERE date_response AND survey_id = '.$this->GetKey(),
-					'fields' => 'contact_id,date_response,comment'
+					'fields' => 'date_response,comment'
 				);
-				$aQueries[Dict::S('***Survey-Query-Results')] = array(
+				$aQueries[Dict::S('Survey-query-results')] = array(
 					'oql' => 'SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey(),
 					'fields' => 'question_title,question_description,value'
 				);
@@ -469,14 +494,11 @@ class Survey extends cmdbAbstractObject
 					$sQuery = urlencode($aData['oql']);
 					$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
 
-					$sRunQueryUrl = $sAbsoluteUrl.'pages/run_query.php?expression='.$sQuery;
-					$oPage->add('<a href="'.$sRunQueryUrl.'">'.Dict::S('***For Developers').'</a>');
-
-					$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?format=HTML&expression='.$sQuery.'&fields='.$aData['fields'];
-					$oPage->add('<a href="'.$sRunQueryUrl.'">'.Dict::S('***For Excel').'</a>');
+					$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?login_mode=basic&format=HTML&expression='.$sQuery.'&fields='.$aData['fields'];
+					$oPage->add('<a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-excel').'</a>');
 
 					$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?format=CSV&expression='.$sQuery.'&fields='.$aData['fields'];
-					$oPage->add('<a href="'.$sRunQueryUrl.'">'.Dict::S('***As CSV').'</a>');
+					$oPage->add('<a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-csv').'</a>');
 
 					$oPage->add('</p>');
 				}
@@ -485,10 +507,10 @@ class Survey extends cmdbAbstractObject
 				$aChoices = $aValueAttDef->GetAllowedValues(); // Array of value => label
 
 				$oPage->add('<div class="survey-stats">');
-				$oPage->add('<h1>'.Dict::S('***Statistics').'</h1>');
+				$oPage->add('<h1>'.Dict::S('Survey-results-statistics').'</h1>');
 				if ($iAnswerCount > 0)
 				{
-					$oQuestionSearch = DBObjectSearch::FromOQL('SELECT QuizQuestion AS Q JOIN SurveyAnswer AS A ON A.question_id = Q.id JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey());
+					$oQuestionSearch = DBObjectSearch::FromOQL('SELECT QuizzQuestion AS Q JOIN SurveyAnswer AS A ON A.question_id = Q.id JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey());
 					$oQuestionSet = new DBObjectSet($oQuestionSearch);
 					while ($oQuestion = $oQuestionSet->Fetch())
 					{
@@ -511,7 +533,7 @@ class Survey extends cmdbAbstractObject
 						$oPage->add('<table>');
 						foreach($aChoices as $value => $sLabel)
 						{
-							$iPercent = 100 * $aResults[$value] / $iTargetCount;
+							$iPercent = round(100 * $aResults[$value] / $iTargetCount);
 							$iWidth = 200 * $iPercent / 100; // 200 px = 100 %
 							$oPage->add('<tr>');
 							$oPage->add('<td>'.$sLabel.'</td><td><div style="width:'.$iWidth.'px; display: inline-block; background: #1C94C4">&nbsp;</div>&nbsp;'.$iPercent.' %</td>');
@@ -524,26 +546,26 @@ class Survey extends cmdbAbstractObject
 					}
 					$oPage->add('</div>');
 					$oPage->add('<div class="survey-comments">');
-					$oPage->add('<h1>'.Dict::S('***Comments').'</h1>');
+					$oPage->add('<h1>'.Dict::S('Survey-results-comments').'</h1>');
 					$oCommentSearch = DBObjectSearch::FromOQL('SELECT SurveyTargetAnswer AS T WHERE T.comment != "" AND T.survey_id = '.$this->GetKey());
 					$oCommentSet = new DBObjectSet($oCommentSearch);
 					if ($oCommentSet->Count() > 0)
 					{
-						$oPage->add('<ul>');
+						$oPage->add('<div>');
 						while ($oComment = $oCommentSet->Fetch())
 						{
-							$oPage->add('<li>'.$oComment->GetAsHtml('comment').'</li>');
+							$oPage->add('<blockquote>'.trim($oComment->GetAsHtml('comment')).'</blockquote>');
 						}
-						$oPage->add('</ul>');
+						$oPage->add('</div>');
 					}
 					else
 					{
-						$oPage->p(Dict::S('***Survey-no-comment'));
+						$oPage->p(Dict::S('Survey-results-nocomment'));
 					}
 				}
 				else
 				{
-					$oPage->p(Dict::S('***Survey-no-result-available'));
+					$oPage->p(Dict::S('Survey-results-noanswer'));
 				}
 				$oPage->add('</div>');
 			}		
@@ -588,7 +610,6 @@ class SurveyTarget extends cmdbAbstractObject
  */
 class SurveyTargetAnswer extends cmdbAbstractObject
 {
-
 	public static function Init()
 	{
 		$aParams = array
@@ -631,7 +652,6 @@ class SurveyTargetAnswer extends cmdbAbstractObject
  */
 class SurveyAnswer extends cmdbAbstractObject
 {
-
 	public static function Init()
 	{
 		$aParams = array
@@ -650,7 +670,7 @@ class SurveyAnswer extends cmdbAbstractObject
 		MetaModel::Init_InheritAttributes();
 
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("survey_target_id", array("targetclass"=>"SurveyTargetAnswer", "jointype"=>null, "allowed_values"=>null, "sql"=>"survey_target_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeExternalKey("question_id", array("targetclass"=>"QuizQuestion", "jointype"=>null, "allowed_values"=>null, "sql"=>"question_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("question_id", array("targetclass"=>"QuizzQuestion", "jointype"=>null, "allowed_values"=>null, "sql"=>"question_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeExternalField("question_title", array("allowed_values"=>null, "extkey_attcode"=> 'question_id', "target_attcode"=>"title")));
 		MetaModel::Init_AddAttribute(new AttributeExternalField("question_description", array("allowed_values"=>null, "extkey_attcode"=> 'question_id', "target_attcode"=>"description")));
 		//MetaModel::Init_AddAttribute(new AttributeInteger("value", array("allowed_values"=>null, "sql"=>"value", "default_value"=>0, "is_null_allowed"=>false, "depends_on"=>array())));
@@ -670,10 +690,20 @@ class CustomerSurvey extends ModuleHandlerAPI
 		// Add the admin menus
 		if (UserRights::IsAdministrator()) // TODO: define who has the rights to view this menu and where it is positioned (Helpdesk ?)
 		{
-			$oQuizMenu = new MenuGroup('CustomerSurvey', 72 /* fRank */);
+			if (false)
+			{
+			$oQuizzMenu = new MenuGroup('CustomerSurvey', 72 /* fRank */);
+			}
+			else
+			{
+			// #@# Do we have to maintain the exact same declaration (see user rights) ?!?!?!
+			//$oMainMenu = new MenuGroup('DataAdministration', 70 /* fRank */, 'Organization', UR_ACTION_MODIFY, UR_ALLOWED_YES|UR_ALLOWED_DEPENDS);
+			$oMainMenu = new MenuGroup('RequestManagement', 30 /* fRank */);
+			$oQuizzMenu = new TemplateMenuNode('CustomerSurvey', '', $oMainMenu->GetIndex(), 50 /* fRank */);
+			}
 			$iIndex = 1;
-			new OQLMenuNode('Quizzes', 'SELECT Quiz', $oQuizMenu->GetIndex(), $iIndex++ /* fRank */);
-			new OQLMenuNode('Surveys', 'SELECT Survey', $oQuizMenu->GetIndex(), $iIndex++ /* fRank */);
+			new OQLMenuNode('Quizzes', 'SELECT Quizz', $oQuizzMenu->GetIndex(), $iIndex++ /* fRank */);
+			new OQLMenuNode('Surveys', 'SELECT Survey', $oQuizzMenu->GetIndex(), $iIndex++ /* fRank */);
 		}
 	}
 }
