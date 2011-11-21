@@ -27,6 +27,19 @@ require_once(APPROOT.'/application/application.inc.php');
 require_once(APPROOT.'/application/nicewebpage.class.inc.php');
 require_once(APPROOT.'/application/wizardhelper.class.inc.php');
 
+class UnknownTokenException extends Exception
+{
+	protected $m_sToken;
+	public function __construct($sToken)
+	{
+		parent::__construct('Unknown token or closed survey: '.$sToken);
+		$this->m_sToken = $sToken;
+	}
+	public function GetToken()
+	{
+		return $this->m_sToken;
+	}
+}
 
 function ReadMandatoryParam($sParam, $sSanitizationFilter = 'parameter')
 {
@@ -41,70 +54,84 @@ function ReadMandatoryParam($sParam, $sSanitizationFilter = 'parameter')
 
 function GetContext($sToken)
 {
-	// Find the corresponding survey target -> survey -> quiz
+	// Find the corresponding survey target -> survey -> Quizz
 	//
 	$oTargetSearch = DBObjectSearch::FromOQL("SELECT SurveyTargetAnswer WHERE token = :token");
 	$oTargetSet = new CMDBObjectSet($oTargetSearch, array(), array('token' => $sToken));
 	if ($oTargetSet->Count() == 0)
 	{
-		throw new Exception("Unkown token '$sToken'");
+		throw new UnknownTokenException($sToken);
 	}
 	$oTarget = $oTargetSet->Fetch();
 	$oSurvey = MetaModel::GetObject('Survey', $oTarget->Get('survey_id'));
-	$oQuiz = MetaModel::GetObject('Quiz', $oSurvey->Get('quiz_id'));
+	$oQuizz = MetaModel::GetObject('Quizz', $oSurvey->Get('quizz_id'));
 
   	// Find the questions
 	//
-	$oQuestionSearch = DBObjectSearch::FromOQL("SELECT QuizQuestion WHERE quiz_id = :quiz");
-	$oQuestionSet = new CMDBObjectSet($oQuestionSearch, array('order' => true), array('quiz' => $oQuiz->GetKey()));
+	$oQuestionSearch = DBObjectSearch::FromOQL("SELECT QuizzQuestion WHERE quizz_id = :Quizz");
+	$oQuestionSet = new CMDBObjectSet($oQuestionSearch, array('order' => true), array('Quizz' => $oQuizz->GetKey()));
 	if ($oQuestionSet->Count() == 0)
 	{
-		throw new Exception("Sorry, there is no question for this quiz (?!)");
+		throw new Exception("Sorry, there is no question for this Quizz (?!)");
 	}
 
-	return array($oTarget, $oSurvey, $oQuiz, $oQuestionSet);
+	// Set the current language to the language of the survey
+	$oQuizz->ChangeDictionnaryLanguage();
+
+	return array($oTarget, $oSurvey, $oQuizz, $oQuestionSet);
 }
 
 
-function ShowDraftQuiz($oP, $iQuiz)
+function ShowDraftQuizz($oP, $iQuizz)
 {
-	$oQuiz = MetaModel::GetObject('Quiz', $iQuiz, false);
-	if ($oQuiz)
+	$oQuizz = MetaModel::GetObject('Quizz', $iQuizz, false);
+	if ($oQuizz)
 	{
+		// Set the current language to the language of the survey
+		$oQuizz->ChangeDictionnaryLanguage();
+
 		$oP->set_title(Dict::S('Survey-Title-Draft'));
-		$oQuiz->ShowForm($oP);
+		$oQuizz->ShowForm($oP);
 	}
 	else
 	{
-		$oP->p("Invalid value for quiz_id: '$iQuiz'");
+		$oP->p("Invalid value for quizz_id: '$iQuizz'");
 	}
 }
 
-function ShowQuiz($oP, $sToken)
+function ShowQuizz($oP, $sToken)
 {
-	list($oTarget, $oSurvey, $oQuiz, $oQuestionSet) = GetContext($sToken);
+	try
+	{
+		list($oTarget, $oSurvey, $oQuizz, $oQuestionSet) = GetContext($sToken);
+		$oP->set_title(Dict::S('Survey-Title'));
 
-
-	if (strlen($oTarget->Get('date_response')) > 0)
-	{
-		$oP->p(Dict::Format('***You have already answered (%1$s)', $oTarget->Get('date_response')));
+		if (strlen($oTarget->Get('date_response')) > 0)
+		{
+			$oP->p(Dict::Format('Survey-form-alreadydone', $oTarget->Get('date_response')));
+		}
+		elseif($oSurvey->Get('status') != 'running')
+		{
+			$oP->p(Dict::S('Survey-form-closed'));
+		}
+		else
+		{
+			$oQuizz->ShowForm($oP, $oSurvey, $oTarget);
+		}
 	}
-	elseif($oSurvey->Get('status') != 'running')
+	catch (UnknownTokenException $e)
 	{
-		$oP->p(Dict::S('***Sorry, the survey has been closed'));
-	}
-	else
-	{
-		$oQuiz->ShowForm($oP, $oSurvey, $oTarget);
+		$oP->p(Dict::S('Survey-form-closed'));
 	}
 }
 
 function SubmitAnswers($oP, $sToken)
 {
-	list($oTarget, $oSurvey, $oQuiz, $oQuestionSet) = GetContext($sToken);
+	list($oTarget, $oSurvey, $oQuizz, $oQuestionSet) = GetContext($sToken);
+	$oP->set_title(Dict::S('Survey-Title'));
 
-	$aAnsers = ReadMandatoryParam('answer', 'raw_data');
-	$sComment = ReadMandatoryParam('comment', 'raw_data');
+	$aAnswers = ReadMandatoryParam('answer', 'raw_data');
+	$sComment = trim(ReadMandatoryParam('comment', 'raw_data'));
 
 	// Todo - check if there are already some answers (to update)
 
@@ -120,7 +147,7 @@ function SubmitAnswers($oP, $sToken)
 	{
 		$iQuestion = $oQuestion->GetKey();
 		
-		if (!isset($aAnsers[$iQuestion]))
+		if (!isset($aAnswers[$iQuestion]))
 		{
 // TODO: understand why ???
 //			$oP->add("<p>Missing answer for question #$iQuestion</p>\n");
@@ -130,7 +157,7 @@ function SubmitAnswers($oP, $sToken)
 			$oAnswer = new SurveyAnswer();
 			$oAnswer->Set('survey_target_id', $oTarget->GetKey());
 			$oAnswer->Set('question_id', $iQuestion);
-			$oAnswer->Set('value', $aAnsers[$iQuestion]);
+			$oAnswer->Set('value', $aAnswers[$iQuestion]);
 			
 			list($bRes, $aIssues) = $oAnswer->CheckToWrite();
 // TODO: understand why ???
@@ -148,8 +175,8 @@ function SubmitAnswers($oP, $sToken)
 	$oTarget->Set('comment', $sComment);
 	$oTarget->DBUpdateTracked($oMyChange);
 
-	$oP->add("<p>***Your answers have been recorded.</p>\n");
-	$oP->add("<p>***Thank you for your participation.</p>\n");
+	$oP->add("<p>".Dict::S('Survey-form-done')."</p>\n");
+	$oP->add("<p>".Dict::S('Survey-form-thankyou')."</p>\n");
 }
 
 /////////////////////////////
@@ -161,14 +188,12 @@ function SubmitAnswers($oP, $sToken)
 try
 {
 	require_once(APPROOT.'/application/startup.inc.php');
-	require_once(APPROOT.'/modules/customer-survey/quizzwebpage.class.inc.php');
+	require_once(APPROOT.'/modules/customer-survey/Quizzwebpage.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
 	
 	require_once(APPROOT.'/application/loginwebpage.class.inc.php');
-//	LoginWebPage::DoLogin(false /* bMustBeAdmin */, true /* IsAllowedToPortalUsers */); // Check user rights and prompt if needed
 
-//	$oUserOrg = GetUserOrg();
 	$sCSSFileSuffix = '/modules/customer-survey/run_survey.css';
 	if (@file_exists(APPROOT.$sCSSFileSuffix))
 	{
@@ -179,26 +204,25 @@ try
 	{
 //	$oP = new QuizzWebPage(Dict::S('Survey-Title'));
 	}
-	$oP = new QuizzWebPage(Dict::S('Survey-Title'));
-// Ne fonctionne pas ????	$oP = new QuizzWebPage(Dict::S('Survey-Title'), $sCSSFileSuffix);
+	$oP = new QuizzWebPage('survey'); // title set later...
 
 	$sUrl = utils::GetAbsoluteUrlAppRoot();
 	$oP->set_base($sUrl.'pages/');
 
 	$oP->add("<style>
-.quizQuestion {
+.QuizzQuestion {
 	border: #f1f1f6 3px solid;
 	padding: 10px;
 }
 
 
-.quizMandatory {
+.QuizzMandatory {
 	border: #f1f1f6 3px solid;
 	color: red;
 	padding: 10px;
 }
 
-.quizQuestion h3 {
+.QuizzQuestion h3 {
 	font-size: larger;
 	font-weight: bolder;
 }
@@ -220,13 +244,13 @@ textarea {
 		break;
 		
 	case 'test':
-		$iQuiz = ReadMandatoryParam('quiz_id');
-		ShowDraftQuiz($oP, $iQuiz);
+		$iQuizz = ReadMandatoryParam('quizz_id');
+		ShowDraftQuizz($oP, $iQuizz);
 		break;
 
 	default:
 		$sToken = ReadMandatoryParam('token', 'raw_data');
-		ShowQuiz($oP, $sToken);
+		ShowQuizz($oP, $sToken);
 	}
 
 	$oP->output();
