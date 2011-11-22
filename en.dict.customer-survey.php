@@ -58,6 +58,8 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:Quizz/Attribute:name+' => '',
 	'Class:Quizz/Attribute:description' => 'Description',
 	'Class:Quizz/Attribute:description+' => '',
+	'Class:Quizz/Attribute:language' => 'Language',
+	'Class:Quizz/Attribute:language+' => '',
 	'Class:Quizz/Attribute:title' => 'Title',
 	'Class:Quizz/Attribute:title+' => '',
 	'Class:Quizz/Attribute:introduction' => 'Introduction',
@@ -69,6 +71,7 @@ Dict::Add('EN US', 'English', 'English', array(
 
 	'Class:QuizzQuestion' => 'Quizz question',
 	'Class:QuizzQuestion+' => '',
+	'Class:QuizzQuestion/Name' => '%1$s - %2$s',
 	'Class:QuizzQuestion/Attribute:quizz_id' => 'Quizz',
 	'Class:QuizzQuestion/Attribute:quizz_id+' => '',
 	'Class:QuizzQuestion/Attribute:order' => 'Order',
