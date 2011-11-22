@@ -57,6 +57,8 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:Quizz/Attribute:name+' => '',
 	'Class:Quizz/Attribute:description' => 'Description',
 	'Class:Quizz/Attribute:description+' => '',
+	'Class:Quizz/Attribute:language' => 'Langage',
+	'Class:Quizz/Attribute:language+' => '',
 	'Class:Quizz/Attribute:title' => 'Titre',
 	'Class:Quizz/Attribute:title+' => '',
 	'Class:Quizz/Attribute:introduction' => 'Introduction',
@@ -68,6 +70,7 @@ Dict::Add('FR FR', 'French', 'Français', array(
 
 	'Class:QuizzQuestion' => 'Question',
 	'Class:QuizzQuestion+' => '',
+	'Class:QuizzQuestion/Name' => '%1$s - %2$s',
 	'Class:QuizzQuestion/Attribute:quizz_id' => 'Questionnaire',
 	'Class:QuizzQuestion/Attribute:quizz_id+' => '',
 	'Class:QuizzQuestion/Attribute:order' => 'Ordre',

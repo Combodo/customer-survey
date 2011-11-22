@@ -11,9 +11,10 @@
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
 
-// Add class definitions here
 /**
+ *
  * Defines a quizz used to generate a survey
+ *
  */
 class Quizz extends cmdbAbstractObject
 {
@@ -57,11 +58,17 @@ class Quizz extends cmdbAbstractObject
 				'question_list',
 				'col:0'=> array('fieldset:Survey-quizz-frame-definition' => array('name','description', 'language'), 'fieldset:Survey-quizz-frame-description' => array('title','introduction')),
 		));
-		MetaModel::Init_SetZListItems('standard_search', array('name', 'description', 'title', 'introduction'));
-		MetaModel::Init_SetZListItems('list', array('name', 'description'));
+		MetaModel::Init_SetZListItems('standard_search', array('name', 'description', 'language', 'title', 'introduction'));
+		MetaModel::Init_SetZListItems('list', array('description', 'language'));
 	}
 
 
+	/*
+	 * Add a tab to display a preview of the quizz
+	 * @param object $oPage Page
+	 * @param bool $bEditMode True if in edition, false in Read-only mode
+	 * @return void
+	 */
 	function DisplayBareRelations(WebPage $oPage, $bEditMode = false)
 	{
 		parent::DisplayBareRelations($oPage, $bEditMode);
@@ -72,12 +79,23 @@ class Quizz extends cmdbAbstractObject
 		}
 	}
 
+	/*
+	 * Helper to get a URL pointing to the quizz form in preview mode
+	 * @return string HTTP URL fo the form
+	 */
 	function MakeDraftUrl()
 	{
 		$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
 		return $sAbsoluteUrl.'modules/customer-survey/run_survey.php?operation=test&quizz_id='.$this->GetKey();
 	}
 
+	/*
+	 * Build the form
+	 * @param object $oP Target page
+	 * @param object $oSurvey Optional survey if running a survey
+	 * @param object $oTarget Optional anonymous record (given if the survey has been specified) 
+	 * @return void
+	 */
 	function ShowForm($oP, $oSurvey = null, $oTarget = null)
 	{
 		$aChoices = array(); // Array of value => label
@@ -191,12 +209,20 @@ EOF
 		}
 	}
 
+	/*
+	 * Change the current language to the language of the quizz
+	 * @return void
+	 */
 	public function ChangeDictionnaryLanguage()
 	{
 		$this->m_sApplicationLanguage = Dict::GetUserLanguage();
 		Dict::SetUserLanguage($this->Get('language'));
 	}
 
+	/*
+	 * Restore the current language the value it had when calling ChangeDictionnaryLanguage
+	 * @return void
+	 */
 	public function RestoreDictionnaryLanguage()
 	{
 		Dict::SetUserLanguage($this->m_sApplicationLanguage);
@@ -204,7 +230,9 @@ EOF
 }
 
 /**
+ *
  * A simple question inside a quizz
+ *
  */
 class QuizzQuestion extends cmdbAbstractObject
 {
@@ -232,14 +260,16 @@ class QuizzQuestion extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeEnum("mandatory", array("allowed_values"=>new ValueSetEnum('yes,no'), "sql"=>"mandatory", "default_value"=>"yes", "is_null_allowed"=>false, "depends_on"=>array())));
 
 		MetaModel::Init_SetZListItems('details', array('quizz_id', 'order', 'title', 'description', 'mandatory'));
-		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'order', 'title', 'description', 'mandatory'));
-		MetaModel::Init_SetZListItems('list', array('quizz_id', 'order', 'title', 'mandatory'));
+		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'title', 'description', 'mandatory'));
+		MetaModel::Init_SetZListItems('list', array('description', 'mandatory'));
 	}
 }
 
 		
 /**
+ *
  * Survey: an instanciation of a quizz for a given set of persons
+ *
  */
 class Survey extends cmdbAbstractObject
 {
@@ -276,8 +306,8 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_target_answer_list", array("linked_class"=>"SurveyTargetAnswer", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
 		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_subject', 'email_body', 'survey_target_list'));
-		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'status', 'date_sent'));
-		MetaModel::Init_SetZListItems('list', array('quizz_id', 'status', 'date_sent'));
+		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'status', 'date_sent', 'language'));
+		MetaModel::Init_SetZListItems('list', array('status', 'date_sent', 'language'));
 
 		// Lifecycle
 		MetaModel::Init_DefineState(
@@ -340,6 +370,11 @@ class Survey extends cmdbAbstractObject
 		return true;
 	}
 
+	/*
+	 * For a given target contact, prepare the anonymous answer and send an email 
+	 * @param object $oTarget Identifies the contact, then its email, etc.
+	 * @return void
+	 */
 	protected function SendQuizzToTarget($oTarget)
 	{
 		$oContact = MetaModel::GetObject('Contact', $oTarget->Get('contact_id'));
@@ -371,6 +406,12 @@ class Survey extends cmdbAbstractObject
 		$oTargetAnswer->DBInsertTracked($oMyChange);
 	}
 
+	/*
+	 * Prepare the email and send it
+	 * @param object $oContact The target contact
+	 * @param string $sToken The token identifying the recipient for the anonymous answer
+	 * @return void
+	 */
 	protected function SendQuizzToContact($oContact, $sToken)
 	{
 		$oEmail = new EMail();
@@ -411,19 +452,21 @@ class Survey extends cmdbAbstractObject
 		switch ($iRes)
 		{
 			case EMAIL_SEND_OK:
-				return true;
+				return;
 
 			case EMAIL_SEND_PENDING:
-				return true;
+				return;
 
 			case EMAIL_SEND_ERROR:
 				throw new Exception("Errors: ".implode(', ', $aErrors));
 		}
-
-		return true;
 	}
 
 
+	/*
+	 * In state running, detect new target contacts and align them to already existing contacts
+	 * @return void
+	 */
 	protected function OnUpdate()
 	{
 		if ($this->Get('status') == 'running')
@@ -447,6 +490,12 @@ class Survey extends cmdbAbstractObject
 	}
 
 
+	/*
+	 * Add a tab with progress information, statistics and links to usefull queries for reporting
+	 * @param object $oPage Page
+	 * @param bool	$bEditMode True in edition, false in read-only mode
+	 * @return void
+	 */
 	function DisplayBareRelations(WebPage $oPage, $bEditMode = false)
 	{
 		parent::DisplayBareRelations($oPage, $bEditMode);
@@ -487,21 +536,24 @@ class Survey extends cmdbAbstractObject
 					'fields' => 'question_title,question_description,value'
 				);
 
+				$oPage->add('<table>');
 				foreach($aQueries AS $sLabel => $aData)
 				{
-					$oPage->add('<p>'.$sLabel);
+					$oPage->add('<tr>');
+					$oPage->add('<td>'.$sLabel.'</td>');
 
 					$sQuery = urlencode($aData['oql']);
 					$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
 
 					$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?login_mode=basic&format=HTML&expression='.$sQuery.'&fields='.$aData['fields'];
-					$oPage->add('<a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-excel').'</a>');
+					$oPage->add('<td><a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-excel').'</a></td>');
 
 					$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?format=CSV&expression='.$sQuery.'&fields='.$aData['fields'];
-					$oPage->add('<a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-csv').'</a>');
+					$oPage->add('<td><a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-csv').'</a></td>');
 
-					$oPage->add('</p>');
+					$oPage->add('</tr>');
 				}
+				$oPage->add('</table>');
 
 				$aValueAttDef = MetaModel::GetAttributeDef('SurveyAnswer', 'value');
 				$aChoices = $aValueAttDef->GetAllowedValues(); // Array of value => label
@@ -551,10 +603,14 @@ class Survey extends cmdbAbstractObject
 					$oCommentSet = new DBObjectSet($oCommentSearch);
 					if ($oCommentSet->Count() > 0)
 					{
+						//$sOpenQuote = '<div class="quizzquote"><span class="bigquotes">&#171</span>';
+						$sOpenQuote = '<div class="quizzquote">';
+						//$sCloseQuote = '<span class="bigquotes">&#187</span></div>';
+						$sCloseQuote = '</div>';
 						$oPage->add('<div>');
 						while ($oComment = $oCommentSet->Fetch())
 						{
-							$oPage->add('<blockquote>'.trim($oComment->GetAsHtml('comment')).'</blockquote>');
+							$oPage->add($sOpenQuote.trim($oComment->GetAsHtml('comment')).$sCloseQuote);
 						}
 						$oPage->add('</div>');
 					}
@@ -574,7 +630,9 @@ class Survey extends cmdbAbstractObject
 }
 
 /**
+ *
  * SurveyTarget: a target of a survey
+ *
  */
 class SurveyTarget extends cmdbAbstractObject
 {
@@ -606,7 +664,9 @@ class SurveyTarget extends cmdbAbstractObject
 }
 
 /**
+ *
  * SurveyTargetAnswer: an anonymous target of a survey
+ *
  */
 class SurveyTargetAnswer extends cmdbAbstractObject
 {
@@ -648,7 +708,9 @@ class SurveyTargetAnswer extends cmdbAbstractObject
 }
 
 /**
+ *
  * SurveyAnswer: the answer of one target to a given question of a survey
+ *
  */
 class SurveyAnswer extends cmdbAbstractObject
 {
@@ -682,7 +744,11 @@ class SurveyAnswer extends cmdbAbstractObject
 	}
 }
 
-// Add menus creation here
+/*
+*
+* Menus
+*
+*/
 class CustomerSurvey extends ModuleHandlerAPI
 {
 	public static function OnMenuCreation()
