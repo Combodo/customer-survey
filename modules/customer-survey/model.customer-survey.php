@@ -22,7 +22,7 @@ class Quizz extends cmdbAbstractObject
 	{
 		$aParams = array
 		(
-			"category" => "searchable,survey",
+			"category" => "searchable,quizz",
 			"key_type" => "autoincrement",
 			"name_attcode" => "name",
 			"state_attcode" => "",
@@ -75,15 +75,16 @@ class Quizz extends cmdbAbstractObject
 		if (!$bEditMode)
 		{
 			$oPage->SetCurrentTab(Dict::S('Survey-quizz-overview'));
-			$oPage->p(Dict::S('Survey-quizz-shortcuttoquizz').': <a href="'.$this->MakeDraftUrl().'">'.Dict::S('Survey-quizz-shortcutlabel').'</a>');
+			$oPage->p(Dict::S('Survey-quizz-shortcuttoquizz').': <a href="'.$this->MakeFormUrl().'">'.Dict::S('Survey-quizz-shortcutlabel').'</a>');
 		}
 	}
 
 	/*
-	 * Helper to get a URL pointing to the quizz form in preview mode
+	 * Helper to get a URL pointing to the quizz form
+	 * @param string sToken Identifies the target answer ; if not present, the form is shown in test mode	 
 	 * @return string HTTP URL fo the form
 	 */
-	function MakeDraftUrl()
+	function MakeFormUrl($sToken = null)
 	{
 		$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
 		return $sAbsoluteUrl.'modules/customer-survey/run_survey.php?operation=test&quizz_id='.$this->GetKey();
@@ -240,7 +241,7 @@ class QuizzQuestion extends cmdbAbstractObject
 	{
 		$aParams = array
 		(
-			"category" => "searchable,survey",
+			"category" => "searchable,quizz",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("order", "title"),
 			"state_attcode" => "",
@@ -305,7 +306,9 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeLinkedSetIndirect("survey_target_list", array("linked_class"=>"SurveyTarget", "ext_key_to_me"=>"survey_id", "ext_key_to_remote"=>"contact_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_target_answer_list", array("linked_class"=>"SurveyTargetAnswer", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
-		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_subject', 'email_body', 'survey_target_list'));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("notification_list", array("linked_class"=>"SurveyNotification", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
+
+		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_subject', 'email_body', 'survey_target_list', 'notification_list'));
 		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'status', 'date_sent', 'language'));
 		MetaModel::Init_SetZListItems('list', array('status', 'date_sent', 'language'));
 
@@ -331,7 +334,7 @@ class Survey extends cmdbAbstractObject
 				"attribute_list" => array(
 					'quizz_id' => OPT_ATT_READONLY,
 					'date_sent' => OPT_ATT_READONLY,
-					'on_behalf_of' => OPT_ATT_READONLY | OPT_ATT_MUSTPROMPT,
+					'on_behalf_of' => OPT_ATT_READONLY,
 					'email_subject' => OPT_ATT_READONLY,
 					'email_body' => OPT_ATT_READONLY,
 				),
@@ -348,8 +351,11 @@ class Survey extends cmdbAbstractObject
 
 		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_start", array()));
 		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_close", array()));
+		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_test", array()));
 
+		MetaModel::Init_DefineTransition("new", "ev_test", array("target_state"=>"new", "actions"=>array('SendPreview'), "user_restriction"=>null));
 		MetaModel::Init_DefineTransition("new", "ev_start", array("target_state"=>"running", "actions"=>array('SendQuizz'), "user_restriction"=>null));
+		MetaModel::Init_DefineTransition("running", "ev_test", array("target_state"=>"running", "actions"=>array('SendPreview'), "user_restriction"=>null));
 		MetaModel::Init_DefineTransition("running", "ev_close", array("target_state"=>"closed", "actions"=>array(), "user_restriction"=>null));
 	}
 
@@ -361,13 +367,56 @@ class Survey extends cmdbAbstractObject
 	{
 		$this->Set('date_sent', time());
 
-		$oTargetSet = $this->Get('survey_target_list');
+		$oTargetSet = $this->GetTargetsFromDB();
 		while($oTarget = $oTargetSet->Fetch())
 		{
 			$this->SendQuizzToTarget($oTarget);
 		}
-
 		return true;
+	}
+
+	/*
+	 * Send a preview message (with a link to a preview of the quizz) to the current user 
+	 * @return void
+	 */
+	public function SendPreview($sStimulusCode)
+	{
+		$bRes = false;
+		if ($oCurrentUser = UserRights::GetUserObject())
+		{
+			if ($iCurrentContact = $oCurrentUser->Get('contactid'))
+			{
+				if ($oCurrentContact = MetaModel::GetObject('Contact', $iCurrentContact, false, true /*allow all data*/))
+				{
+					try
+					{
+						$this->SendQuizzToContactLocalized($oCurrentContact);
+						$bRes = true;
+					}
+					catch (Exception $e)
+					{
+						// $bRes remains false
+					}
+				}
+			}
+		}
+		return $bRes;
+	}
+
+	/*
+	 * Helper to return the targets whatever the visibility of the current user 
+	 * @return object DBObjectSet
+	 */
+	public function GetTargetsFromDB()
+	{
+		// This is equivalent to returning
+		// $this->Get('survey_target_list');
+		// + Allow all data !
+		// TO BE IMPROVED AS A GENERIC WAY TO SPECIFY "UNTIL FURTHER NOTICE I NEED EVERYTHING"
+		
+		$oSearch = DBObjectSearch::FromOQL_AllData('SELECT SurveyTarget WHERE survey_id = '.$this->GetKey());
+		$oSet = new DBObjectSet($oSearch);
+		return $oSet;
 	}
 
 	/*
@@ -377,17 +426,57 @@ class Survey extends cmdbAbstractObject
 	 */
 	protected function SendQuizzToTarget($oTarget)
 	{
-		$oContact = MetaModel::GetObject('Contact', $oTarget->Get('contact_id'));
+		$oContact = MetaModel::GetObject('Contact', $oTarget->Get('contact_id'), true, true /*allow all data*/);
 
 		$oTargetAnswer = new SurveyTargetAnswer();
 		$oTargetAnswer->Set('survey_id', $oTarget->Get('survey_id'));
 		$sToken = $oTargetAnswer->SetToken();
 
-		$oQuizz = MetaModel::GetObject('Quizz', $this->Get('quizz_id'));
+		$oEvent = new SurveyNotification();
+		$oEvent->Set('userinfo', UserRights::GetUser());
+		$oEvent->Set('survey_id', $oTarget->Get('survey_id'));
+		$oEvent->Set('contact_id', $oContact->GetKey());
+
+		$bRes = false;
+		try
+		{
+			$this->SendQuizzToContactLocalized($oContact, $sToken);
+			$oEvent->Set('message', Dict::S('Survey-email-ok'));
+			$bRes = true;
+		}
+		catch (Exception $e)
+		{
+			$oEvent->Set('message', $e->getMessage());
+		}
+
+		if ($bRes)
+		{
+			// Create the anonymous answer
+			$oMyChange = MetaModel::NewObject("CMDBChange");
+			$oMyChange->Set("date", time());
+			$sUserString = CMDBChange::GetCurrentUserName();
+			$oMyChange->Set("userinfo", $sUserString);
+			$iChangeId = $oMyChange->DBInsert();
+	
+			$oTargetAnswer->DBInsertTracked($oMyChange);
+		}
+
+		// Keep track of the notification
+		$oEvent->DBInsertNoReload();
+	}
+
+	/*
+	* Send the quizz and make sure the email and form are localized according to the language of the survey/quizz
+	* @param object $oContact Target recipient
+	* @param string $sToken Optional token; if omitted then the email and forms will be in preview mode		
+	*/
+	protected function SendQuizzToContactLocalized($oContact, $sToken = null)
+	{
+		$oQuizz = MetaModel::GetObject('Quizz', $this->Get('quizz_id'), true, true /*allow all data*/);
 		$oQuizz->ChangeDictionnaryLanguage();		
 		try
 		{
-			$this->SendQuizzToContact($oContact, $sToken);
+			$this->SendQuizzToContact($oQuizz, $oContact, $sToken);
 		}
 		catch(Exception $e)
 		{
@@ -395,53 +484,36 @@ class Survey extends cmdbAbstractObject
 			throw $e;		
 		}
 		$oQuizz->RestoreDictionnaryLanguage();
-
-		// Create the anonymous answer
-		$oMyChange = MetaModel::NewObject("CMDBChange");
-		$oMyChange->Set("date", time());
-		$sUserString = CMDBChange::GetCurrentUserName();
-		$oMyChange->Set("userinfo", $sUserString);
-		$iChangeId = $oMyChange->DBInsert();
-
-		$oTargetAnswer->DBInsertTracked($oMyChange);
 	}
 
 	/*
 	 * Prepare the email and send it
+	 * @param object $oQuizz The quizz
 	 * @param object $oContact The target contact
-	 * @param string $sToken The token identifying the recipient for the anonymous answer
+	 * @param string $sToken The token identifying the recipient for the anonymous answer ; if omitted, this is a sample email
 	 * @return void
 	 */
-	protected function SendQuizzToContact($oContact, $sToken)
+	protected function SendQuizzToContact($oQuizz, $oContact, $sToken = null)
 	{
 		$oEmail = new EMail();
 
-		$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
-		$sQuizzUrl = $sAbsoluteUrl.'modules/customer-survey/run_survey.php?token='.urlencode($sToken);
+		$sQuizzUrl = $oQuizz->MakeFormUrl($sToken);
 
 		$sBody = $this->Get('email_body');
 		$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
 
-		$oEmail->SetSubject($this->Get('email_subject'));
+		if ($sToken)
+		{
+			$oEmail->SetSubject($this->Get('email_subject'));
+		}
+		else
+		{
+			$oEmail->SetSubject('['.Dict::S('Survey-email-preview').'] '.$this->Get('email_subject'));
+		}
 		$oEmail->SetBody($sBody);
 		$oEmail->SetRecipientTO($oContact->Get('email'));
 
-		if ($oUser = UserRights::GetUserObject())
-		{
-			if ($iContact = $oUser->Get('contactid'))
-			{
-				if ($oContact = MetaModel::GetObject('Contact', $iContact, false))
-				{
-					$sBCC = trim($oContact->Get('email'));
-					if (strlen($sBCC) > 0)
-					{
-						$oEmail->SetRecipientBCC($sBCC);
-					}
-				}
-			}
-		}
-
-		$oSender = MetaModel::GetObject('Contact', $this->Get('on_behalf_of'));
+		$oSender = MetaModel::GetObject('Contact', $this->Get('on_behalf_of'), true, true /*allow all data*/);
 		$sFrom = $oSender->Get('email');
 		$oEmail->SetRecipientFrom($sFrom);
 		//$oEmail->SetRecipientReplyTo($sReplyTo);
@@ -458,7 +530,7 @@ class Survey extends cmdbAbstractObject
 				return;
 
 			case EMAIL_SEND_ERROR:
-				throw new Exception("Errors: ".implode(', ', $aErrors));
+				throw new Exception(Dict::S('Survey-email-notsent').': '.implode(', ', $aErrors));
 		}
 	}
 
@@ -472,8 +544,7 @@ class Survey extends cmdbAbstractObject
 		if ($this->Get('status') == 'running')
 		{
 			// Detect new users and send them a notification
-			$oOriginalTargetSearch = DBObjectSearch::FromOQL('SELECT SurveyTarget WHERE survey_id = '.$this->GetKey());
-			$oOriginalTargetSet = new DBObjectSet($oOriginalTargetSearch);
+			$oOriginalTargetSet = $this->GetTargetsFromDB();
 			$aOriginalSet = $oOriginalTargetSet->ToArray();
 			 
 			$oNewTargetSet = $this->Get('survey_target_list');
@@ -562,7 +633,7 @@ class Survey extends cmdbAbstractObject
 				$oPage->add('<h1>'.Dict::S('Survey-results-statistics').'</h1>');
 				if ($iAnswerCount > 0)
 				{
-					$oQuestionSearch = DBObjectSearch::FromOQL('SELECT QuizzQuestion AS Q JOIN SurveyAnswer AS A ON A.question_id = Q.id JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey());
+					$oQuestionSearch = DBObjectSearch::FromOQL_AllData('SELECT QuizzQuestion AS Q JOIN SurveyAnswer AS A ON A.question_id = Q.id JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey());
 					$oQuestionSet = new DBObjectSet($oQuestionSearch);
 					while ($oQuestion = $oQuestionSet->Fetch())
 					{
@@ -575,7 +646,7 @@ class Survey extends cmdbAbstractObject
 							$aResults[$value] = 0;
 						}
 	
-						$oAnswerSearch = DBObjectSearch::FromOQL('SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE A.question_id = '.$oQuestion->GetKey().' AND T.survey_id = '.$this->GetKey());
+						$oAnswerSearch = DBObjectSearch::FromOQL_AllData('SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE A.question_id = '.$oQuestion->GetKey().' AND T.survey_id = '.$this->GetKey());
 						$oAnswerSet = new DBObjectSet($oAnswerSearch);
 						while ($oAnswer = $oAnswerSet->Fetch())
 						{
@@ -599,12 +670,12 @@ class Survey extends cmdbAbstractObject
 					$oPage->add('</div>');
 					$oPage->add('<div class="survey-comments">');
 					$oPage->add('<h1>'.Dict::S('Survey-results-comments').'</h1>');
-					$oCommentSearch = DBObjectSearch::FromOQL('SELECT SurveyTargetAnswer AS T WHERE T.comment != "" AND T.survey_id = '.$this->GetKey());
+					$oCommentSearch = DBObjectSearch::FromOQL_AllData('SELECT SurveyTargetAnswer AS T WHERE T.comment != "" AND T.survey_id = '.$this->GetKey());
 					$oCommentSet = new DBObjectSet($oCommentSearch);
 					if ($oCommentSet->Count() > 0)
 					{
 						//$sOpenQuote = '<div class="quizzquote"><span class="bigquotes">&#171</span>';
-						$sOpenQuote = '<div class="quizzquote">';
+						$sOpenQuote = '<div class="quizzquote" style="margin:5px; padding:5px; border-style:solid; border-width:thin; border-color:#696969; background-color:#DDDDDD;">';
 						//$sCloseQuote = '<span class="bigquotes">&#187</span></div>';
 						$sCloseQuote = '</div>';
 						$oPage->add('<div>');
@@ -743,6 +814,40 @@ class SurveyAnswer extends cmdbAbstractObject
 		MetaModel::Init_SetZListItems('list', array('survey_target_id', 'question_id', 'value'));
 	}
 }
+
+
+/**
+ *
+ * Log of notifications sent to target contacts
+ *
+ */
+class SurveyNotification extends Event
+{
+	public static function Init()
+	{
+		$aParams = array
+		(
+			"category" => "core/cmdb,view_in_gui",
+			"key_type" => "autoincrement",
+			"name_attcode" => "",
+			"state_attcode" => "",
+			"reconc_keys" => array(),
+			"db_table" => "qz_event_notification",
+			"db_key_field" => "id",
+			"db_finalclass_field" => "",
+			"display_template" => "",
+		);
+		MetaModel::Init_Params($aParams);
+		MetaModel::Init_InheritAttributes();
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("survey_id", array("targetclass"=>"Survey", "jointype"=> "", "allowed_values"=>null, "sql"=>"survey_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("contact_id", array("targetclass"=>"Contact", "jointype"=> "", "allowed_values"=>null, "sql"=>"contact_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+
+		// Display lists
+		MetaModel::Init_SetZListItems('details', array('survey_id', 'userinfo', 'contact_id', 'date', 'message')); // Attributes to be displayed for the complete details
+		MetaModel::Init_SetZListItems('list', array('contact_id', 'date', 'message')); // Attributes to be displayed for a list
+	}
+}
+
 
 /*
 *

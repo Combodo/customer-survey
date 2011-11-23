@@ -14,7 +14,7 @@
 Dict::Add('EN US', 'English', 'English', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Customer Survey',
-	'Survey-Title-Draft' => 'iTop Customer Survey (draft)',
+	'Survey-Title-Draft' => 'iTop Customer Survey (preview mode)',
 
 	'Menu:CustomerSurvey' => 'Customer surveys',
 	'Menu:Quizzes' => 'Quizzes',
@@ -26,8 +26,8 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Survey-quizz-frame-description' => 'Form header',
 
 	'Survey-quizz-overview' => 'Preview',
-	'Survey-quizz-shortcuttoquizz' => 'Click here to display the Quizz as a draft',
-	'Survey-quizz-shortcutlabel' => 'quiz',
+	'Survey-quizz-shortcuttoquizz' => 'Click here to preview the Quizz',
+	'Survey-quizz-shortcutlabel' => 'quizz',
 
 	'Survey-MandatoryQuestion' => 'This question is mandatory',
 	'Survey-missing-answers' => 'Please, give an answer to all of the questions marked with an asterisk.',
@@ -50,7 +50,9 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Survey-form-done' => 'Your answers have been recorded.',
 	'Survey-form-thankyou' => 'Thank you for your participation.',
 
-
+	'Survey-email-preview' => 'Preview',
+	'Survey-email-notsent' => 'Failed to send the email:',
+	'Survey-email-ok' => 'Email sent',
 
 	'Class:Quizz' => 'Quizz',
 	'Class:Quizz+' => '',
@@ -104,8 +106,11 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:Survey/Attribute:email_body+' => '',
 	'Class:Survey/Attribute:survey_target_list' => 'Target contacts',
 	'Class:Survey/Attribute:survey_target_list+' => '',
+	'Class:Survey/Attribute:notification_list' => 'Notifications',
+	'Class:Survey/Attribute:notification_list+' => '',
 	'Class:Survey/Stimulus:ev_start' => 'Start',
 	'Class:Survey/Stimulus:ev_close' => 'Close',
+	'Class:Survey/Stimulus:ev_test' => 'Send me a sample message',
 
 	'Class:SurveyTarget' => 'Target contact',
 	'Class:SurveyTarget+' => '',
@@ -120,6 +125,12 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:SurveyAnswer/Attribute:value/Value:3' => 'Good',
 	'Class:SurveyAnswer/Attribute:value/Value:4' => 'Very good',
 
+	'Class:SurveyNotification' => 'Survey Email',
+	'Class:SurveyNotification+' => 'Survey Email',
+	'Class:SurveyNotification/Attribute:survey_id' => 'Survey',
+	'Class:SurveyNotification/Attribute:survey_id+' => '',
+	'Class:SurveyNotification/Attribute:contact_id' => 'Target contact',
+	'Class:SurveyNotification/Attribute:contact_id+' => '',
 ));
 
 ?>

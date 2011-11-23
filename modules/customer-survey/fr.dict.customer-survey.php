@@ -13,7 +13,7 @@
 
 Dict::Add('FR FR', 'French', 'Français', array(
 	'Survey-Title' => 'iTop Enquête client',
-	'Survey-Title-Draft' => 'iTop Enquête client (brouillon)',
+	'Survey-Title-Draft' => 'iTop Enquête client (mode Prévisualisation)',
 
 	'Menu:CustomerSurvey' => 'Enquêtes de satisfaction des clients',
 	'Menu:Quizzes' => 'Questionnaires',
@@ -25,7 +25,7 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Survey-quizz-frame-description' => 'En-tête du formulaire',
 
 	'Survey-quizz-overview' => 'Prévisualisation',
-	'Survey-quizz-shortcuttoquizz' => 'Cliquez sur le lien pour accéder au formulaire en mode "brouillon"',
+	'Survey-quizz-shortcuttoquizz' => 'Cliquez sur le lien pour prévisualiser le formulaire',
 	'Survey-quizz-shortcutlabel' => 'questionnaire',
 
 	'Survey-MandatoryQuestion' => 'Cette question est obligatoire',
@@ -49,7 +49,9 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Survey-form-done' => 'Vos réponses ont été enregistrées.',
 	'Survey-form-thankyou' => 'Merci pour votre participation.',
 
-
+	'Survey-email-preview' => 'Prévisualisation',
+	'Survey-email-notsent' => 'Echec de l\envoi de l\email :',
+	'Survey-email-ok' => 'Email envoyé',
 
 	'Class:Quizz' => 'Questionnaire',
 	'Class:Quizz+' => '',
@@ -103,8 +105,11 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:Survey/Attribute:email_body+' => '',
 	'Class:Survey/Attribute:survey_target_list' => 'Contacts ciblés',
 	'Class:Survey/Attribute:survey_target_list+' => '',
+	'Class:Survey/Attribute:notification_list' => 'Notifications',
+	'Class:Survey/Attribute:notification_list+' => '',
 	'Class:Survey/Stimulus:ev_start' => 'Démarrer',
 	'Class:Survey/Stimulus:ev_close' => 'Arrêter',
+	'Class:Survey/Stimulus:ev_test' => 'Envoyez-moi un échantillon de message',
 
 	'Class:SurveyTarget' => 'Cible d\'enquête',
 	'Class:SurveyTarget+' => '',

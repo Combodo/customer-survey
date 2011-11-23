@@ -56,19 +56,19 @@ function GetContext($sToken)
 {
 	// Find the corresponding survey target -> survey -> Quizz
 	//
-	$oTargetSearch = DBObjectSearch::FromOQL("SELECT SurveyTargetAnswer WHERE token = :token");
+	$oTargetSearch = DBObjectSearch::FromOQL_AllData("SELECT SurveyTargetAnswer WHERE token = :token");
 	$oTargetSet = new CMDBObjectSet($oTargetSearch, array(), array('token' => $sToken));
 	if ($oTargetSet->Count() == 0)
 	{
 		throw new UnknownTokenException($sToken);
 	}
 	$oTarget = $oTargetSet->Fetch();
-	$oSurvey = MetaModel::GetObject('Survey', $oTarget->Get('survey_id'));
-	$oQuizz = MetaModel::GetObject('Quizz', $oSurvey->Get('quizz_id'));
+	$oSurvey = MetaModel::GetObject('Survey', $oTarget->Get('survey_id'), true, true /*allow all data*/);
+	$oQuizz = MetaModel::GetObject('Quizz', $oSurvey->Get('quizz_id'), true, true /*allow all data*/);
 
   	// Find the questions
 	//
-	$oQuestionSearch = DBObjectSearch::FromOQL("SELECT QuizzQuestion WHERE quizz_id = :Quizz");
+	$oQuestionSearch = DBObjectSearch::FromOQL_AllData("SELECT QuizzQuestion WHERE quizz_id = :Quizz");
 	$oQuestionSet = new CMDBObjectSet($oQuestionSearch, array('order' => true), array('Quizz' => $oQuizz->GetKey()));
 	if ($oQuestionSet->Count() == 0)
 	{
@@ -84,7 +84,7 @@ function GetContext($sToken)
 
 function ShowDraftQuizz($oP, $iQuizz)
 {
-	$oQuizz = MetaModel::GetObject('Quizz', $iQuizz, false);
+	$oQuizz = MetaModel::GetObject('Quizz', $iQuizz, false, true /*allow all data*/);
 	if ($oQuizz)
 	{
 		// Set the current language to the language of the survey
