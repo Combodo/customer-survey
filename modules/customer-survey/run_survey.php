@@ -188,7 +188,7 @@ function SubmitAnswers($oP, $sToken)
 try
 {
 	require_once(APPROOT.'/application/startup.inc.php');
-	require_once(APPROOT.'/modules/customer-survey/Quizzwebpage.class.inc.php');
+	require_once(APPROOT.'/modules/customer-survey/quizzwebpage.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
 	
