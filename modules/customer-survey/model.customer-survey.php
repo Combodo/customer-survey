@@ -87,7 +87,16 @@ class Quizz extends cmdbAbstractObject
 	function MakeFormUrl($sToken = null)
 	{
 		$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
-		return $sAbsoluteUrl.'modules/customer-survey/run_survey.php?operation=test&quizz_id='.$this->GetKey();
+		if ($sToken)
+		{
+			$sUrl = $sAbsoluteUrl.'modules/customer-survey/run_survey.php?token='.urlencode($sToken);
+		}
+		else
+		{
+			// Draft
+			$sUrl = $sAbsoluteUrl.'modules/customer-survey/run_survey.php?operation=test&quizz_id='.$this->GetKey();
+		}
+		return $sUrl;
 	}
 
 	/*
