@@ -188,14 +188,14 @@ function SubmitAnswers($oP, $sToken)
 try
 {
 	require_once(APPROOT.'/application/startup.inc.php');
-	require_once(APPROOT.'/modules/customer-survey/quizzwebpage.class.inc.php');
+	require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
 	
 	require_once(APPROOT.'/application/loginwebpage.class.inc.php');
 
-	$sCSSFileSuffix = '/modules/customer-survey/run_survey.css';
-	if (@file_exists(APPROOT.$sCSSFileSuffix))
+	$sCSSFileSuffix = '/customer-survey/run_survey.css';
+	if (@file_exists(MODULESROOT.$sCSSFileSuffix))
 	{
 //		$oP = new QuizzWebPage(Dict::S('Survey-Title'), $sCSSFileSuffix);
 //		$oP->add($sCSSFileSuffix);
