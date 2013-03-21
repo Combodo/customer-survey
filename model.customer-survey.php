@@ -48,15 +48,16 @@ class Quizz extends cmdbAbstractObject
 //		MetaModel::Init_AddAttribute(new AttributeString("max_label", array("allowed_values"=>null, "sql"=>"max_label", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 //		MetaModel::Init_AddAttribute(new AttributeString("above_labels", array("allowed_values"=>null, "sql"=>"above_labels", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 //		MetaModel::Init_AddAttribute(new AttributeEnum("comments", array("allowed_values"=>new ValueSetEnum('yes,no'), "sql"=>"comments", "default_value"=>"yes", "is_null_allowed"=>false, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeText("scale_values", array("allowed_values"=>null, "sql"=>"scale_values", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_list", array("linked_class"=>"Survey", "ext_key_to_me"=>"quizz_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeLinkedSet("question_list", array("linked_class"=>"QuizzQuestion", "ext_key_to_me"=>"quizz_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("question_list", array("linked_class"=>"QuizzElement", "ext_key_to_me"=>"quizz_id", "edit_mode" => LINKSET_EDITMODE_INPLACE, "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
 //		MetaModel::Init_AddAttribute(new AttributeText("default_message", array("allowed_values"=>null, "sql"=>"default_message", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 
 		MetaModel::Init_SetZListItems('details', array(
 				'survey_list',
 				'question_list',
-				'col:0'=> array('fieldset:Survey-quizz-frame-definition' => array('name','description', 'language'), 'fieldset:Survey-quizz-frame-description' => array('title','introduction')),
+				'col:0'=> array('fieldset:Survey-quizz-frame-definition' => array('name','description', 'language', 'scale_values'), 'fieldset:Survey-quizz-frame-description' => array('title','introduction')),
 		));
 		MetaModel::Init_SetZListItems('standard_search', array('name', 'description', 'language', 'title', 'introduction'));
 		MetaModel::Init_SetZListItems('list', array('description', 'language'));
@@ -108,12 +109,14 @@ class Quizz extends cmdbAbstractObject
 	 */
 	function ShowForm($oP, $oSurvey = null, $oTarget = null)
 	{
+		/*
 		$aChoices = array(); // Array of value => label
 		$aValueAttDef = MetaModel::GetAttributeDef('SurveyAnswer', 'value');
 		foreach ($aValueAttDef->GetAllowedValues() as $sKey => $value)
 		{
 			$aChoices[$sKey] = $value;
 		}
+		*/
 
 		// Build the form
 		//
@@ -134,40 +137,11 @@ class Quizz extends cmdbAbstractObject
 		$oQuestionSet = $this->Get('question_list');
 		while($oQuestion = $oQuestionSet->Fetch())
 		{
-			$iQuestionId = $oQuestion->GetKey();
-			$sTitle = $oQuestion->GetAsHtml('title');
-			$sDescription = $oQuestion->GetAsHtml('description');
-
-			$oP->add("<div class=\"quizzQuestion\" id=\"$iQuestionId\">");
+			$oQuestion->DisplayForm($oP, ''); //TODO: retrieve the previously saved values
 			if ($oQuestion->Get('mandatory') == 'yes')
 			{
 				$bHasMandatoryQuestions = true;
-				$oP->add("<h3>$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
 			}
-			else
-			{
-				$oP->add("<h3>$sTitle</h3>");
-			}
-			$oP->add("<p>$sDescription</p>");
-	
-			$sTDProps = "width=\"80px\" align=\"center\"";
-	
-			$oP->add("<table>");
-	
-			$oP->add("<tr>");
-			foreach($aChoices as $sValue => $sLabel)
-			{
-				$oP->add("<td $sTDProps>$sLabel</td>");
-			}
-			$oP->add("</tr>");
-			$oP->add("<tr>");
-			foreach($aChoices as $sValue => $sLabel)
-			{
-				$oP->add("<td $sTDProps><INPUT type=\"radio\" name=\"answer[$iQuestionId]\" value=\"$sValue\"></td>");
-			}
-			$oP->add("</tr>");
-			$oP->add("</table>");
-			$oP->add("</div>");
 		}
 	
 		$oP->add("<div class=\"quizzQuestion\">");
@@ -244,7 +218,7 @@ EOF
  * A simple question inside a quizz
  *
  */
-class QuizzQuestion extends cmdbAbstractObject
+abstract class QuizzElement extends cmdbAbstractObject
 {
 	public static function Init()
 	{
@@ -255,9 +229,9 @@ class QuizzQuestion extends cmdbAbstractObject
 			"name_attcode" => array("order", "title"),
 			"state_attcode" => "",
 			"reconc_keys" => array("quizz_id_friendlyname", "order"),
-			"db_table" => "qz_question",
+			"db_table" => "qz_element",
 			"db_key_field" => "id",
-			"db_finalclass_field" => "",
+			"db_finalclass_field" => "finalclass",
 			"icon" => "",
 		);
 		MetaModel::Init_Params($aParams);
@@ -271,11 +245,274 @@ class QuizzQuestion extends cmdbAbstractObject
 
 		MetaModel::Init_SetZListItems('details', array('quizz_id', 'order', 'title', 'description', 'mandatory'));
 		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'title', 'description', 'mandatory'));
-		MetaModel::Init_SetZListItems('list', array('description', 'mandatory'));
+		MetaModel::Init_SetZListItems('list', array('order', 'title', 'description', 'mandatory'));
+	}
+	
+	public function HasValue()
+	{
+		return true;
+	}
+	
+	public function IsNewPage()
+	{
+		return false;
+	}
+	
+	/**
+	 * Check that the value is an valid one for this question
+	 * @param string $sValue The value to check
+	 * @return string The value to store
+	 */
+	public function ValidateValue($sValue)
+	{
+		// By default, any value will do
+		return $sValue;
+	}
+	
+	abstract public function DisplayForm(WebPage $oPage, $sCurrentValue);
+	abstract public function DisplayResults(WebPage $oPage, DBObjectSet $oSet);
+	
+	/**
+	 * Helper method for derived classes to display an horizontal set of radio buttons
+	 * based on the given list of "choices"
+	 * @param WebPage $oPage
+	 * @param array $aChoices
+	 * @param string $sCurrentValue
+	 */
+	protected function DisplayChoices(WebPage $oPage, $aChoices, $sCurrentValue)
+	{
+		$iQuestionId = $this->GetKey();
+		$sTitle = $this->GetAsHtml('title');
+		$sDescription = $this->GetAsHtml('description');
+		if ($this->Get('mandatory') == 'yes')
+		{
+			$oPage->add("<h3>$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
+		}
+		else
+		{
+			$oPage->add("<h3>$sTitle</h3>");
+		}
+		$oPage->add("<p>$sDescription</p>");
+
+		$sTDProps = "width=\"80px\" align=\"center\"";
+
+		$oPage->add("<table>");
+
+		$oPage->add("<tr>");
+		foreach($aChoices as $sValue)
+		{
+			$sValue = trim($sValue);
+			$oPage->add("<td $sTDProps>$sValue</td>");
+		}
+		$oPage->add("</tr>");
+		$oPage->add("<tr>");
+		foreach($aChoices as $sValue)
+		{
+			$sValue = trim($sValue);
+			$sChecked = ($sCurrentValue == $sValue) ? 'checked' : '';
+			$sMandatory = ($this->Get('mandatory') == 'yes') ? 'true' : 'false';
+			$oPage->add("<td $sTDProps><INPUT type=\"radio\" $sChecked name=\"answer[$iQuestionId]\" value=\"$sValue\" data-mandatory=\"$sMandatory\"></td>");
+		}
+		$oPage->add("</tr>");
+		$oPage->add("</table>");		
 	}
 }
 
+class QuizzScaleQuestion extends QuizzElement
+{
+	public static function Init()
+	{
+		$aParams = array
+		(
+			"category" => "searchable,quizz",
+			"key_type" => "autoincrement",
+			"name_attcode" => array("order", "title"),
+			"state_attcode" => "",
+			"reconc_keys" => array("quizz_id_friendlyname", "order"),
+			"db_table" => "qz_scale_question",
+			"db_key_field" => "id",
+			"db_finalclass_field" => "",
+			"icon" => "",
+		);
+		MetaModel::Init_Params($aParams);
+		MetaModel::Init_InheritAttributes();
+		MetaModel::Init_AddAttribute(new AttributeExternalField("scale_values", array("extkey_attcode"=> 'quizz_id', "target_attcode"=>"scale_values")));
+	}
+	
+	public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		$aChoices = explode(',', $this->Get('scale_values'));
+		$this->DisplayChoices($oPage, $aChoices, $sCurrentValue);	
+	}
+	
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oSet)
+	{
 		
+	}
+	
+	/**
+	 * Check that the value is an valid one for this question
+	 * @param string $sValue The value to check
+	 * @return string The value to store
+	 */
+	public function ValidateValue($sValue)
+	{
+		$aChoices = explode(',', $this->Get('scale_values'));
+		// Check that the value is one of the possible values
+		foreach($aChoices as $sPossibleValue)
+		{
+			if (trim($sPossibleValue) == trim($sValue))
+			{
+				return trim($sValue);
+			}
+		}
+		// By default, store an empty string...
+		return '';
+	}
+}
+
+class QuizzFreeTextQuestion extends QuizzElement
+{
+	public static function Init()
+	{
+		$aParams = array
+		(
+			"category" => "searchable,quizz",
+			"key_type" => "autoincrement",
+			"name_attcode" => array("order", "title"),
+			"state_attcode" => "",
+			"reconc_keys" => array("quizz_id_friendlyname", "order"),
+			"db_table" => "qz_free_text",
+			"db_key_field" => "id",
+			"db_finalclass_field" => "",
+			"icon" => "",
+		);
+		MetaModel::Init_Params($aParams);
+		MetaModel::Init_InheritAttributes();
+	}
+	
+	public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		$sTitle = $this->GetAsHtml('title');
+		$sDescription = $this->GetAsHtml('description');
+		$iQuestionId = $this->GetKey();
+		if ($this->Get('mandatory') == 'yes')
+		{
+			$oPage->add("<h3>$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
+		}
+		else
+		{
+			$oPage->add("<h3>$sTitle</h3>");
+		}
+		$sMandatory = ($this->Get('mandatory') == 'yes') ? 'true' : 'false';
+		$oPage->add("<p>$sDescription</p>");
+		$oPage->add('<TEXTAREA style="width:100%;" name="answer['.$iQuestionId.']" data-mandatory="'.$sMandatory.'">'.htmlentities($sCurrentValue, ENT_QUOTES, 'UTF-8').'</TEXTAREA>');
+	}
+	
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oSet)
+	{
+		
+	}
+}
+
+
+class QuizzNewPageElement extends QuizzElement
+{
+	public static function Init()
+	{
+		$aParams = array
+		(
+			"category" => "searchable,quizz",
+			"key_type" => "autoincrement",
+			"name_attcode" => array("order", "title"),
+			"state_attcode" => "",
+			"reconc_keys" => array("quizz_id_friendlyname", "order"),
+			"db_table" => "qz_new_page",
+			"db_key_field" => "id",
+			"db_finalclass_field" => "",
+			"icon" => "",
+		);
+		MetaModel::Init_Params($aParams);
+		MetaModel::Init_InheritAttributes();
+	}
+	
+	public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		$sTitle = $this->GetAsHtml('title');
+		$sDescription = $this->GetAsHtml('description');
+		$oPage->add("<hr/>");
+		$oPage->add("<h3>$sTitle</h3>");
+		$oPage->add("<p>$sDescription</p>");
+	}
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oSet)
+	{
+		
+	}
+	
+	public function HasValue()
+	{
+		return false;
+	}
+	
+	public function IsNewPage()
+	{
+		return true;
+	}
+}
+
+class QuizzValueQuestion extends QuizzElement
+{
+	public static function Init()
+	{
+		$aParams = array
+		(
+			"category" => "searchable,quizz",
+			"key_type" => "autoincrement",
+			"name_attcode" => array("order", "title"),
+			"state_attcode" => "",
+			"reconc_keys" => array("quizz_id_friendlyname", "order"),
+			"db_table" => "qz_value_question",
+			"db_key_field" => "id",
+			"db_finalclass_field" => "",
+			"icon" => "",
+		);
+		MetaModel::Init_Params($aParams);
+		MetaModel::Init_InheritAttributes();
+		MetaModel::Init_AddAttribute(new AttributeText("choices", array("allowed_values"=>null, "sql"=>"choices", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
+		
+		MetaModel::Init_SetZListItems('details', array('quizz_id', 'order', 'title', 'description', 'choices', 'mandatory'));
+	}
+
+	public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		$aChoices = explode(',', $this->Get('choices'));
+		$this->DisplayChoices($oPage, $aChoices, $sCurrentValue);			
+	}
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oSet)
+	{
+		
+	}
+	
+	/**
+	 * Check that the value is an valid one for this question
+	 * @param string $sValue The value to check
+	 * @return string The value to store
+	 */
+	public function ValidateValue($sValue)
+	{
+		$aChoices = explode(',', $this->Get('choices'));
+		// Check that the value is one of the possible values
+		foreach($aChoices as $sPossibleValue)
+		{
+			if (trim($sPossibleValue) == trim($sValue))
+			{
+				return trim($sValue);
+			}
+		}
+		// By default, store an empty string...
+		return '';
+	}}
+
 /**
  *
  * Survey: an instanciation of a quizz for a given set of persons
@@ -305,9 +542,8 @@ class Survey extends cmdbAbstractObject
 
 		MetaModel::Init_AddAttribute(new AttributeEnum("status", array("allowed_values"=>new ValueSetEnum('new,running,closed'), "sql"=>"status", "default_value"=>"new", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeDateTime("date_sent", array("allowed_values"=>null, "sql"=>"date_sent", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
-		// todo - unused ?
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("on_behalf_of", array("targetclass"=>"Contact", "jointype"=>null, "allowed_values"=>null, "sql"=>"on_behalf_of", "is_null_allowed"=>false, "on_target_delete"=>DEL_MANUAL, "depends_on"=>array())));
-
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("target_phrase_id", array("targetclass"=>"QueryOQL", "jointype"=>null, "allowed_values"=>new ValueSetObjects("SELECT QueryOQL WHERE (oql LIKE 'SELECT Person %') OR (oql LIKE 'SELECT Contact %')"), "sql"=>"target_phrase_id", "is_null_allowed"=>true, "on_target_delete"=>DEL_MANUAL, "depends_on"=>array())));
 
 		MetaModel::Init_AddAttribute(new AttributeString("email_subject", array("allowed_values"=>null, "sql"=>"email_subject", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("email_body", array("allowed_values"=>null, "sql"=>"email_body", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
@@ -317,7 +553,7 @@ class Survey extends cmdbAbstractObject
 
 		MetaModel::Init_AddAttribute(new AttributeLinkedSet("notification_list", array("linked_class"=>"SurveyNotification", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
-		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_subject', 'email_body', 'survey_target_list', 'notification_list'));
+		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_subject', 'email_body', 'target_phrase_id', 'survey_target_list', 'notification_list'));
 		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'status', 'date_sent', 'language'));
 		MetaModel::Init_SetZListItems('list', array('status', 'date_sent', 'language'));
 
@@ -333,7 +569,8 @@ class Survey extends cmdbAbstractObject
 					'on_behalf_of' => OPT_ATT_NORMAL,
 					'email_subject' => OPT_ATT_NORMAL,
 					'email_body' => OPT_ATT_NORMAL,
-				),
+					'target_phrase_id' => OPT_ATT_NORMAL,
+			),
 			)
 		);
 		MetaModel::Init_DefineState(
@@ -346,7 +583,8 @@ class Survey extends cmdbAbstractObject
 					'on_behalf_of' => OPT_ATT_READONLY,
 					'email_subject' => OPT_ATT_READONLY,
 					'email_body' => OPT_ATT_READONLY,
-				),
+					'target_phrase_id' => OPT_ATT_READONLY,
+			),
 			)
 		);
 		MetaModel::Init_DefineState(
@@ -772,7 +1010,14 @@ class SurveyTargetAnswer extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeDateTime("date_response", array("allowed_values"=>null, "sql"=>"date_response", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("comment", array("allowed_values"=>null, "sql"=>"comment", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		//MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_answer_list", array("linked_class"=>"SurveyAnswer", "ext_key_to_me"=>"survey_target_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("contact_id", array("targetclass"=>"Contact", "jointype"=>null, "allowed_values"=>null, "sql"=>"contact_id", "is_null_allowed"=>true, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
 
+		MetaModel::Init_AddAttribute(new AttributeExternalField("org_id", array("allowed_values"=>null, "extkey_attcode"=> 'contact_id', "target_attcode"=>"org_id")));
+
+		MetaModel::Init_AddAttribute(new AttributeEnum("status", array("allowed_values"=>new ValueSetEnum('ongoing,finished'), "sql"=>"status", "default_value"=>"finished", "is_null_allowed"=>false, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeInteger("nb_notifications_sent", array("allowed_values"=>null, "sql"=>"nb_notifications_sent", "default_value"=>0, "is_null_allowed"=>false, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("last_question_id", array("targetclass"=>"QuizzQuestion", "jointype"=>null, "allowed_values"=>null, "sql"=>"last_question_id", "is_null_allowed"=>true, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+		
 		MetaModel::Init_SetZListItems('details', array('survey_id', 'date_response'));
 		MetaModel::Init_SetZListItems('standard_search', array('survey_id', 'date_response'));
 		MetaModel::Init_SetZListItems('list', array('survey_id', 'date_response'));
@@ -812,12 +1057,12 @@ class SurveyAnswer extends cmdbAbstractObject
 		MetaModel::Init_InheritAttributes();
 
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("survey_target_id", array("targetclass"=>"SurveyTargetAnswer", "jointype"=>null, "allowed_values"=>null, "sql"=>"survey_target_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeExternalKey("question_id", array("targetclass"=>"QuizzQuestion", "jointype"=>null, "allowed_values"=>null, "sql"=>"question_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("question_id", array("targetclass"=>"QuizzElement", "jointype"=>null, "allowed_values"=>null, "sql"=>"question_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeExternalField("question_title", array("allowed_values"=>null, "extkey_attcode"=> 'question_id', "target_attcode"=>"title")));
 		MetaModel::Init_AddAttribute(new AttributeExternalField("question_description", array("allowed_values"=>null, "extkey_attcode"=> 'question_id', "target_attcode"=>"description")));
 		//MetaModel::Init_AddAttribute(new AttributeInteger("value", array("allowed_values"=>null, "sql"=>"value", "default_value"=>0, "is_null_allowed"=>false, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeEnum("value", array("allowed_values"=>new ValueSetEnum('0,1,2,3,4'), "sql"=>"value", "default_value"=>'2', "is_null_allowed"=>false, "depends_on"=>array())));
-
+		MetaModel::Init_AddAttribute(new AttributeText("value", array("allowed_values"=>null, "sql"=>"value", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
+		
 		MetaModel::Init_SetZListItems('details', array('survey_target_id', 'question_id', 'value'));
 		MetaModel::Init_SetZListItems('standard_search', array('survey_target_id', 'question_id', 'value'));
 		MetaModel::Init_SetZListItems('list', array('survey_target_id', 'question_id', 'value'));

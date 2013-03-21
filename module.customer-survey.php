@@ -15,7 +15,7 @@ SetupWebPage::AddModule(
 		// Setup
 		//
 		'dependencies' => array(
-			
+			'itop-config-mgmt/2.0.0',
 		),
 		'mandatory' => false,
 		'visible' => true,
@@ -48,6 +48,8 @@ SetupWebPage::AddModule(
 		//
 		'settings' => array(
 			// Module specific settings go here, if any
+			'anonymous_survey' => false,
+			'quiz_scale' => 'Very bad, Bad, Average, Good, Very good',
 		),
 	)
 );

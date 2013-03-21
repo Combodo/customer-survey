@@ -27,20 +27,6 @@ require_once(APPROOT.'/application/application.inc.php');
 require_once(APPROOT.'/application/nicewebpage.class.inc.php');
 require_once(APPROOT.'/application/wizardhelper.class.inc.php');
 
-class UnknownTokenException extends Exception
-{
-	protected $m_sToken;
-	public function __construct($sToken)
-	{
-		parent::__construct('Unknown token or closed survey: '.$sToken);
-		$this->m_sToken = $sToken;
-	}
-	public function GetToken()
-	{
-		return $this->m_sToken;
-	}
-}
-
 function ReadMandatoryParam($sParam, $sSanitizationFilter = 'parameter')
 {
 	$value = utils::ReadParam($sParam, null, false /*allow CLI*/, $sSanitizationFilter);
@@ -52,39 +38,11 @@ function ReadMandatoryParam($sParam, $sSanitizationFilter = 'parameter')
 }
 
 
-function GetContext($sToken)
-{
-	// Find the corresponding survey target -> survey -> Quizz
-	//
-	$oTargetSearch = DBObjectSearch::FromOQL_AllData("SELECT SurveyTargetAnswer WHERE token = :token");
-	$oTargetSet = new CMDBObjectSet($oTargetSearch, array(), array('token' => $sToken));
-	if ($oTargetSet->Count() == 0)
-	{
-		throw new UnknownTokenException($sToken);
-	}
-	$oTarget = $oTargetSet->Fetch();
-	$oSurvey = MetaModel::GetObject('Survey', $oTarget->Get('survey_id'), true, true /*allow all data*/);
-	$oQuizz = MetaModel::GetObject('Quizz', $oSurvey->Get('quizz_id'), true, true /*allow all data*/);
-
-  	// Find the questions
-	//
-	$oQuestionSearch = DBObjectSearch::FromOQL_AllData("SELECT QuizzQuestion WHERE quizz_id = :Quizz");
-	$oQuestionSet = new CMDBObjectSet($oQuestionSearch, array('order' => true), array('Quizz' => $oQuizz->GetKey()));
-	if ($oQuestionSet->Count() == 0)
-	{
-		throw new Exception("Sorry, there is no question for this Quizz (?!)");
-	}
-
-	// Set the current language to the language of the survey
-	$oQuizz->ChangeDictionnaryLanguage();
-
-	return array($oTarget, $oSurvey, $oQuizz, $oQuestionSet);
-}
-
+/*
 
 function ShowDraftQuizz($oP, $iQuizz)
 {
-	$oQuizz = MetaModel::GetObject('Quizz', $iQuizz, false, true /*allow all data*/);
+	$oQuizz = MetaModel::GetObject('Quizz', $iQuizz, false, true);
 	if ($oQuizz)
 	{
 		// Set the current language to the language of the survey
@@ -178,7 +136,7 @@ function SubmitAnswers($oP, $sToken)
 	$oP->add("<p>".Dict::S('Survey-form-done')."</p>\n");
 	$oP->add("<p>".Dict::S('Survey-form-thankyou')."</p>\n");
 }
-
+*/
 /////////////////////////////
 //
 // Main
@@ -189,10 +147,18 @@ try
 {
 	require_once(APPROOT.'/application/startup.inc.php');
 	require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
+	require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
 	
 	require_once(APPROOT.'/application/loginwebpage.class.inc.php');
+	
+	$iQuizz = ReadMandatoryParam('quizz_id');
+	
+	$oWizard = new QuizzController('QuizzWizStepQuestions', 0, $iQuizz);
+	$oWizard->Run();
+/*	
+	
 
 	$sCSSFileSuffix = '/customer-survey/run_survey.css';
 	if (@file_exists(MODULESROOT.$sCSSFileSuffix))
@@ -254,11 +220,12 @@ textarea {
 	}
 
 	$oP->output();
+*/
 }
 catch(CoreException $e)
 {
 	require_once(APPROOT.'/setup/setuppage.class.inc.php');
-	$oP = new SetupWebPage(Dict::S('UI:PageTitle:FatalError'));
+	$oP = new SetupPage(Dict::S('UI:PageTitle:FatalError'));
 	$oP->add("<h1>".Dict::S('UI:FatalErrorMessage')."</h1>\n");	
 	$oP->error(Dict::Format('UI:Error_Details', $e->getHtmlDesc()));	
 	$oP->output();
@@ -294,7 +261,7 @@ catch(CoreException $e)
 catch(Exception $e)
 {
 	require_once(APPROOT.'/setup/setuppage.class.inc.php');
-	$oP = new SetupWebPage(Dict::S('UI:PageTitle:FatalError'));
+	$oP = new SetupPage(Dict::S('UI:PageTitle:FatalError'));
 	$oP->add("<h1>".Dict::S('UI:FatalErrorMessage')."</h1>\n");	
 	$oP->error(Dict::Format('UI:Error_Details', $e->getMessage()));	
 	$oP->output();
