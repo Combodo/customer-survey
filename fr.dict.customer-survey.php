@@ -30,8 +30,18 @@ Dict::Add('FR FR', 'French', 'Français', array(
 
 	'Survey-MandatoryQuestion' => 'Cette question est obligatoire',
 	'Survey-missing-answers' => 'Veuillez donner une réponse pour toute question marquée d\'un astérisque',
-	'Survey-tab-progress' => 'Suivi',
+	'Survey-tab-progress' => 'Avancement',
 	'Survey-awaited-answers' => 'Réponses en attente',
+	'Survey-progress-status' => 'Réponses, par cible (client)',
+	'Survey-progress-notifications' => 'Notifications envoyées',
+
+	'Survey-With-Selected' => 'Avec les éléments sélectionnés...',
+	'Survey-Resend-Button' => 'Relancer...',
+	'Survey-Resend-Title' => 'Relance',
+	'Survey-Resend-Ok' => 'Relancer!',
+	'Survey-Resend-Cancel' => 'Annuler',
+
+	'Survey-tab-results' => 'Résultats',
 	'Survey-query-comments' => 'Commentaire(s)',
 	'Survey-query-results' => 'Réponse(s)',
 	'Survey-results-excel' => 'Pour MS-Excel',
@@ -105,8 +115,6 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:Survey/Attribute:email_body+' => '',
 	'Class:Survey/Attribute:survey_target_list' => 'Contacts ciblés',
 	'Class:Survey/Attribute:survey_target_list+' => '',
-	'Class:Survey/Attribute:notification_list' => 'Notifications',
-	'Class:Survey/Attribute:notification_list+' => '',
 	'Class:Survey/Stimulus:ev_start' => 'Démarrer',
 	'Class:Survey/Stimulus:ev_close' => 'Arrêter',
 	'Class:Survey/Stimulus:ev_test' => 'Envoyez-moi un échantillon de message',
