@@ -544,7 +544,9 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeDateTime("date_sent", array("allowed_values"=>null, "sql"=>"date_sent", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("on_behalf_of", array("targetclass"=>"Contact", "jointype"=>null, "allowed_values"=>null, "sql"=>"on_behalf_of", "is_null_allowed"=>false, "on_target_delete"=>DEL_MANUAL, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("target_phrase_id", array("targetclass"=>"QueryOQL", "jointype"=>null, "allowed_values"=>new ValueSetObjects("SELECT QueryOQL WHERE (oql LIKE 'SELECT Person %') OR (oql LIKE 'SELECT Contact %')"), "sql"=>"target_phrase_id", "is_null_allowed"=>true, "on_target_delete"=>DEL_MANUAL, "depends_on"=>array())));
-
+		// Sne dme an email when someone completes the survey
+		MetaModel::Init_AddAttribute(new AttributeEnum("email_on_completion", array("allowed_values"=>new ValueSetEnum('yes,no'), "sql"=>"email_on_completion", "default_value"=>"no", "is_null_allowed"=>false, "depends_on"=>array())));
+		
 		MetaModel::Init_AddAttribute(new AttributeString("email_subject", array("allowed_values"=>null, "sql"=>"email_subject", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("email_body", array("allowed_values"=>null, "sql"=>"email_body", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 
@@ -553,7 +555,7 @@ class Survey extends cmdbAbstractObject
 
 		MetaModel::Init_AddAttribute(new AttributeLinkedSet("notification_list", array("linked_class"=>"SurveyNotification", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 
-		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_subject', 'email_body', 'target_phrase_id', 'survey_target_list', 'notification_list'));
+		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_on_completion', 'email_subject', 'email_body', 'target_phrase_id', 'survey_target_list', 'notification_list'));
 		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'status', 'date_sent', 'language'));
 		MetaModel::Init_SetZListItems('list', array('status', 'date_sent', 'language'));
 
@@ -621,6 +623,12 @@ class Survey extends cmdbAbstractObject
 		}
 		return true;
 	}
+	
+	public function IsAnonymous()
+	{
+		// For now only anonyous surveys are implemented... temporary
+		return true;
+	}
 
 	/*
 	 * Send a preview message (with a link to a preview of the quizz) to the current user 
@@ -677,6 +685,11 @@ class Survey extends cmdbAbstractObject
 
 		$oTargetAnswer = new SurveyTargetAnswer();
 		$oTargetAnswer->Set('survey_id', $oTarget->Get('survey_id'));
+		$oTargetAnswer->Set('status', 'ongoing');
+		if (!$this->IsAnonymous())
+		{
+			$oTargetAnswer->Set('contact_id',  $oContact->GetKey());
+		}
 		$sToken = $oTargetAnswer->SetToken();
 
 		$oEvent = new SurveyNotification();
@@ -698,7 +711,7 @@ class Survey extends cmdbAbstractObject
 
 		if ($bRes)
 		{
-			// Create the anonymous answer
+			// Create the anonymous (or not) answer
 			$oMyChange = MetaModel::NewObject("CMDBChange");
 			$oMyChange->Set("date", time());
 			$sUserString = CMDBChange::GetCurrentUserName();
@@ -874,16 +887,18 @@ class Survey extends cmdbAbstractObject
 				$oPage->add('</table>');
 
 				$aValueAttDef = MetaModel::GetAttributeDef('SurveyAnswer', 'value');
-				$aChoices = $aValueAttDef->GetAllowedValues(); // Array of value => label
 
 				$oPage->add('<div class="survey-stats">');
 				$oPage->add('<h1>'.Dict::S('Survey-results-statistics').'</h1>');
 				if ($iAnswerCount > 0)
 				{
-					$oQuestionSearch = DBObjectSearch::FromOQL_AllData('SELECT QuizzQuestion AS Q JOIN SurveyAnswer AS A ON A.question_id = Q.id JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey());
+					$oQuestionSearch = DBObjectSearch::FromOQL_AllData('SELECT QuizzElement AS Q JOIN SurveyAnswer AS A ON A.question_id = Q.id JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey());
 					$oQuestionSet = new DBObjectSet($oQuestionSearch);
 					while ($oQuestion = $oQuestionSet->Fetch())
 					{
+						//TODO: Question specific display of the results
+						/*
+						$aChoices = $aValueAttDef->GetAllowedValues(); // Array of value => label
 						$oPage->add('<div>');
 						$oPage->add('<h2>'.$oQuestion->GetName().'</h2>');
 
@@ -913,6 +928,7 @@ class Survey extends cmdbAbstractObject
 						
 	
 						$oPage->add('</div>');
+						*/
 					}
 					$oPage->add('</div>');
 					$oPage->add('<div class="survey-comments">');
@@ -1016,7 +1032,7 @@ class SurveyTargetAnswer extends cmdbAbstractObject
 
 		MetaModel::Init_AddAttribute(new AttributeEnum("status", array("allowed_values"=>new ValueSetEnum('ongoing,finished'), "sql"=>"status", "default_value"=>"finished", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeInteger("nb_notifications_sent", array("allowed_values"=>null, "sql"=>"nb_notifications_sent", "default_value"=>0, "is_null_allowed"=>false, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeExternalKey("last_question_id", array("targetclass"=>"QuizzQuestion", "jointype"=>null, "allowed_values"=>null, "sql"=>"last_question_id", "is_null_allowed"=>true, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeExternalKey("last_question_id", array("targetclass"=>"QuizzElement", "jointype"=>null, "allowed_values"=>null, "sql"=>"last_question_id", "is_null_allowed"=>true, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
 		
 		MetaModel::Init_SetZListItems('details', array('survey_id', 'date_response'));
 		MetaModel::Init_SetZListItems('standard_search', array('survey_id', 'date_response'));
@@ -1102,7 +1118,6 @@ class SurveyNotification extends Event
 	}
 }
 
-
 /*
 *
 * Menus
@@ -1132,9 +1147,3 @@ class CustomerSurvey extends ModuleHandlerAPI
 		}
 	}
 }
-// Declare a class that implements iBackgroundProcess (will be called by the CRON)
-// Extend the class AsyncTask to create a queue of asynchronous tasks (process by the CRON)
-// Declare a class that implements iApplicationUIExtension (to tune object display and edition form)
-// Declare a class that implements iApplicationObjectExtension (to tune object read/write rules)
-
-?>

@@ -25,118 +25,7 @@
 require_once('../../approot.inc.php');
 require_once(APPROOT.'/application/application.inc.php');
 require_once(APPROOT.'/application/nicewebpage.class.inc.php');
-require_once(APPROOT.'/application/wizardhelper.class.inc.php');
 
-function ReadMandatoryParam($sParam, $sSanitizationFilter = 'parameter')
-{
-	$value = utils::ReadParam($sParam, null, false /*allow CLI*/, $sSanitizationFilter);
-	if (is_null($value))
-	{
-		throw new Exception("Missing argument '$sParam'");
-	}
-	return $value; 
-}
-
-
-/*
-
-function ShowDraftQuizz($oP, $iQuizz)
-{
-	$oQuizz = MetaModel::GetObject('Quizz', $iQuizz, false, true);
-	if ($oQuizz)
-	{
-		// Set the current language to the language of the survey
-		$oQuizz->ChangeDictionnaryLanguage();
-
-		$oP->set_title(Dict::S('Survey-Title-Draft'));
-		$oQuizz->ShowForm($oP);
-	}
-	else
-	{
-		$oP->p("Invalid value for quizz_id: '$iQuizz'");
-	}
-}
-
-function ShowQuizz($oP, $sToken)
-{
-	try
-	{
-		list($oTarget, $oSurvey, $oQuizz, $oQuestionSet) = GetContext($sToken);
-		$oP->set_title(Dict::S('Survey-Title'));
-
-		if (strlen($oTarget->Get('date_response')) > 0)
-		{
-			$oP->p(Dict::Format('Survey-form-alreadydone', $oTarget->Get('date_response')));
-		}
-		elseif($oSurvey->Get('status') != 'running')
-		{
-			$oP->p(Dict::S('Survey-form-closed'));
-		}
-		else
-		{
-			$oQuizz->ShowForm($oP, $oSurvey, $oTarget);
-		}
-	}
-	catch (UnknownTokenException $e)
-	{
-		$oP->p(Dict::S('Survey-form-closed'));
-	}
-}
-
-function SubmitAnswers($oP, $sToken)
-{
-	list($oTarget, $oSurvey, $oQuizz, $oQuestionSet) = GetContext($sToken);
-	$oP->set_title(Dict::S('Survey-Title'));
-
-	$aAnswers = ReadMandatoryParam('answer', 'raw_data');
-	$sComment = trim(ReadMandatoryParam('comment', 'raw_data'));
-
-	// Todo - check if there are already some answers (to update)
-
-	$oMyChange = MetaModel::NewObject("CMDBChange");
-	$oMyChange->Set("date", time());
-	$sUserString = CMDBChange::GetCurrentUserName();
-	$oMyChange->Set("userinfo", $sUserString);
-	$iChangeId = $oMyChange->DBInsert();
-
-	// Foreach question, find the answer
-	//
-	while($oQuestion = $oQuestionSet->Fetch())
-	{
-		$iQuestion = $oQuestion->GetKey();
-		
-		if (!isset($aAnswers[$iQuestion]))
-		{
-// TODO: understand why ???
-//			$oP->add("<p>Missing answer for question #$iQuestion</p>\n");
-		}
-		else
-		{
-			$oAnswer = new SurveyAnswer();
-			$oAnswer->Set('survey_target_id', $oTarget->GetKey());
-			$oAnswer->Set('question_id', $iQuestion);
-			$oAnswer->Set('value', $aAnswers[$iQuestion]);
-			
-			list($bRes, $aIssues) = $oAnswer->CheckToWrite();
-// TODO: understand why ???
-			//if ($bRes)
-			if (true)
-	      {
-				$oAnswer->DBInsertTracked($oMyChange);
-			}
-		}
-	}
-
-	// Update the target record
-	//
-	$oTarget->Set('date_response', time());
-	$oTarget->Set('comment', $sComment);
-	$oTarget->DBUpdateTracked($oMyChange);
-
-	$oP->add("<p>".Dict::S('Survey-form-done')."</p>\n");
-	$oP->add("<p>".Dict::S('Survey-form-thankyou')."</p>\n");
-}
-*/
 /////////////////////////////
 //
 // Main
@@ -150,16 +39,36 @@ try
 	require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
+	$sToken = utils::ReadParam('token', '', false, 'raw_data');
+	$iQuizz = utils::ReadParam('quizz_id', '');
 	
-	require_once(APPROOT.'/application/loginwebpage.class.inc.php');
-	
-	$iQuizz = ReadMandatoryParam('quizz_id');
-	
-	$oWizard = new QuizzController('QuizzWizStepQuestions', 0, $iQuizz);
-	$oWizard->Run();
-/*	
-	
+	switch($sOperation)
+	{
+		case 'async_action':
+		require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
+		ini_set('max_execution_time', max(240, ini_get('max_execution_time')));
+				
+		$sClass = utils::ReadParam('step_class', '');
+		$sState = utils::ReadParam('step_state', '');
+		$sActionCode = utils::ReadParam('code', '');
+		$aParams = utils::ReadParam('params', array(), false, 'raw_data');
+		$oPage = new ajax_page('');
+		if (is_subclass_of($sClass, 'WizardStep'))
+		{
+			$oDummyController = new QuizzController($sClass, 0, $iQuizz, $sToken);
+			$oStep = new $sClass($oDummyController, $sState);
 
+			$oStep->AsyncAction($oPage, $sActionCode, $aParams);
+		}
+		$oPage->output();
+		break;
+
+		default:		
+		$oWizard = new QuizzController('QuizzWizStepQuestions', 'start', $iQuizz, $sToken);
+		$oWizard->Run();
+	}	
+	
+/*
 	$sCSSFileSuffix = '/customer-survey/run_survey.css';
 	if (@file_exists(MODULESROOT.$sCSSFileSuffix))
 	{
@@ -291,4 +200,3 @@ catch(Exception $e)
 		IssueLog::Error($e->getMessage());
 	}
 }
-?>

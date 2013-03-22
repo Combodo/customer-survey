@@ -18,16 +18,45 @@ class UnknownTokenException extends Exception
 class QuizzController extends WizardController
 {
 	protected $oQuizz;
+	protected $oSurveyTargetAnswer;
+	protected $oSurvey;
 	
-	public function __construct($sInitialStepClass, $sInitialState = '', $iQuizzId = 0)
+	public function __construct($sInitialStepClass, $sInitialState = '', $iQuizzId = 0, $sToken = '')
 	{
 		parent::__construct($sInitialStepClass, $sInitialState);
-		$this->oQuizz = MetaModel::GetObject('Quizz', $iQuizzId);
+		$this->oSurveyTargetAnswer = null;
+		$this->oSurvey = null;
+		if ($sToken != '')
+		{			
+			$oTargetSearch = DBObjectSearch::FromOQL_AllData("SELECT SurveyTargetAnswer WHERE token = :token");
+			$oTargetSet = new CMDBObjectSet($oTargetSearch, array(), array('token' => $sToken));
+			if ($oTargetSet->Count() == 0)
+			{
+				throw new UnknownTokenException($sToken);
+			}
+			$this->oSurveyTargetAnswer = $oTargetSet->Fetch();
+			$this->oSurvey = MetaModel::GetObject('Survey', $this->oSurveyTargetAnswer->Get('survey_id'), true, true /*allow all data*/);
+			$this->oQuizz = MetaModel::GetObject('Quizz', $this->oSurvey->Get('quizz_id'), true, true /*allow all data*/);
+		}
+		else
+		{
+			$this->oQuizz = MetaModel::GetObject('Quizz', $iQuizzId);
+		}
 	}
 	
 	public function GetQuizz()
 	{
 		return $this->oQuizz;
+	}
+	
+	public function GetSurveyTargetAnswer()
+	{
+		return $this->oSurveyTargetAnswer;
+	}
+	
+	public function GetSurvey()
+	{
+		return $this->oSurvey;
 	}
 	
 	/**
@@ -38,39 +67,20 @@ class QuizzController extends WizardController
 	{
 		$oPage = new QuizzWebPage($oStep->GetTitle());
 
-		$oPage->add_linked_script('../setup/setup.js');
+		$oPage->add_linked_script(utils::GetAbsoluteUrlModulesRoot().'customer-survey/js/quizzwizard.js');
 		$oPage->add_script("function CanMoveForward()\n{\n".$oStep->JSCanMoveForward()."\n}\n");
 		$oPage->add_script("function CanMoveBackward()\n{\n".$oStep->JSCanMoveBackward()."\n}\n");
+		$iQuizz = $this->GetQuizz()->GetKey();
+		$sTargetAnswer = '';
+		if ($this->GetSurveyTargetAnswer())
+		{
+			$sToken = addslashes($this->GetSurveyTargetAnswer()->Get('token'));
+		}
 		$oPage->add_script(
 <<<EOF
-function CheckMandatoryAnswers()
-{
-	bReturn = true;
-	
-	$('div[data-mandatory=true]').each(function() {
-		
-		var oRadios = $(this).find('input[type=radio]');
-		
-		if (oRadios.length > 0)
-		{
-			if ($(this).find('input[type=radio]:checked').length == 0)
-			{
-				bReturn = false;
-			}
-		}
-		else
-		{
-			oText = $(this).find('textarea');
-			
-			if (oText.val() == '')
-			{
-				bReturn = false;
-			}
-		}
-	});
-	
-	return bReturn;
-}
+var iQuizz = $iQuizz;
+var sToken = '$sToken';
+
 EOF
 		);
 		$oPage->add_ready_script(
@@ -80,6 +90,10 @@ $('div.question textarea').bind('keyup change', function() { WizardUpdateButtons
 EOF
 		);
 		
+		if ($this->oSurveyTargetAnswer == null)
+		{
+			$oPage->add('<div class="preview_watermark">'.Dict::S('Survery-Preview Mode').'</div>');
+		}
 		$oPage->add('<form id="wiz_form" method="post">');
 		$oStep->Display($oPage);
 		
@@ -89,7 +103,7 @@ EOF
 		$oPage->add('<input type="hidden" id="_state" name="_state" value="'.$oStep->GetState().'"/>');
 		foreach($this->aParameters as $sCode => $value)
 		{
-			$oPage->add('<input type="hidden" name="_params['.$sCode.']" value="'.htmlentities($value, ENT_QUOTES, 'UTF-8').'"/>');
+			$oPage->add('<input type="hidden" id="_params_'.$sCode.'" name="_params['.$sCode.']" value="'.htmlentities($value, ENT_QUOTES, 'UTF-8').'"/>');
 		}
 
 		$oPage->add('<input type="hidden" name="_steps" value="'.htmlentities(json_encode($this->aSteps), ENT_QUOTES, 'UTF-8').'"/>');
@@ -126,6 +140,7 @@ $('form').each(function () {
 	}));
 });
 $('#btn_back').click(function() { $('#wiz_form').data('back', true); });
+$('#btn_suspend').click(function() { Suspend(); });
 
 $('#wiz_form').submit(function() {
 	if ($(this).data('back'))
@@ -144,13 +159,34 @@ WizardUpdateButtons();
 EOF
 		);
 		$oPage->output();
-	}	
+	}
+		
+	/**
+	 * Move one step back: OVERLOADED/ REDEFINED to workaround a bug in iTop 2.0
+	 * ProcessParams was not called with false as an argument, thus making no difference
+	 * between moving back and forward !!
+	 */
+	protected function Back()
+	{
+		// let the current step save its parameters
+		$sCurrentStepClass = utils::ReadParam('_class', $this->sInitialStepClass);
+		$sCurrentState = utils::ReadParam('_state', $this->sInitialState);
+		$oStep = new $sCurrentStepClass($this, $sCurrentState);
+		$aNextStepInfo = $oStep->ProcessParams(false); // false => Moving backwards
+		
+		// Display the previous step
+		$aCurrentStepInfo = $this->PopStep();
+		$oStep = new $aCurrentStepInfo['class']($this, $aCurrentStepInfo['state']);
+		$this->DisplayStep($oStep);
+	}
 }
 
 class QuizzWizStepQuestions extends WizardStep
 {
 	protected $aQuestions;
 	protected $aPages;
+	protected $bAnswerCommitted;
+	protected $bSurveyFinished;
 	
 	public function __construct($oWizard, $sCurrentState)
 	{
@@ -158,6 +194,24 @@ class QuizzWizStepQuestions extends WizardStep
 		
 		$oQuizz = $oWizard->GetQuizz();
 		$oQuestionsSet = $oQuizz->Get('question_list');
+		
+		$this->bSurveyFinished = false;
+		$this->bAnswerCommitted = false;
+		$oSurveyTargetAnswer = $this->oWizard->GetSurveyTargetAnswer();
+		
+		if ($oSurveyTargetAnswer != null)
+		{
+			// A real survey is under way... or is it ?
+			if ($oSurveyTargetAnswer->Get('status') == 'finished')
+			{
+				$this->bAnswerCommitted = true;
+			}
+			$oSurvey = $this->oWizard->GetSurvey();
+			if ($oSurvey->Get('status') == 'closed')
+			{
+				$this->bSurveyFinished = true;
+			}
+		}
 		
 		$this->aQuestions = array(0 => array());
 		$this->aPages = array(0 => 'default');
@@ -179,7 +233,7 @@ class QuizzWizStepQuestions extends WizardStep
 			{
 				$this->aQuestions[$iPage][] = $oQuestion;
 			}
-		}		
+		}
 	}
 	
 	public function GetTitle()
@@ -194,6 +248,12 @@ class QuizzWizStepQuestions extends WizardStep
 	
 	public function ProcessParams($bMoveForward = true)
 	{
+		if ($this->bSurveyFinished || $this->bAnswerCommitted)
+		{
+			// Should never happen... but just in case someone tweaks the form
+			throw new Exception("Survey closed or already completed, not accepting answers anymore");
+		}
+		
 		$index = $this->GetStepIndex();		
 		$aQuestions = $this->GetStepQuestions($index);
 		if ( $aQuestions == null)
@@ -202,11 +262,6 @@ class QuizzWizStepQuestions extends WizardStep
 		}
 		else if ($bMoveForward)
 		{
-			if ($index == 0)
-			{
-				// Very first page of the wizard, save the token for later
-				$this->oWizard->SaveParameter('token', '');
-			}
 			// Save the "answers"
 			$aPageAnswers = utils::ReadPostedParam('answer', array(), 'raw_data');
 			$aAnswers = json_decode($this->oWizard->GetParameter('answer', '[]'), true);
@@ -224,16 +279,87 @@ class QuizzWizStepQuestions extends WizardStep
 			}
 			else
 			{
-				// Save the values, mark the survey as "finished" and call the trigger
+				$oSurveyTargetAnswer = $this->oWizard->GetSurveyTargetAnswer();
+				if ($oSurveyTargetAnswer != null)
+				{
+					// Save the values, mark the survey as "finished" and call the trigger
+					$this->SubmitAnswers($oSurveyTargetAnswer, $aAnswers, true /* bFinished */);
+					
+					$oSurvey = $this->oWizard->GetSurvey();
+					
+					if ($oSurvey != null)
+					{
+						if ($oSurvey->Get('email_on_completion') == 'yes')
+						{
+							$oContact = MetaModel::GetObject('Contact', $oSurvey->Get('on_behalf_of'), false);
+							if ($oContact && ($oContact->Get('email') != ''))
+							{
+								// Send a notification to the person "on behalf"
+								$oEmail = new EMail();
+								if ($oSurvey->IsAnonymous())
+								{
+									$oEmail->SetSubject(Dict::Format('Survey-CompletionNotification_name', $oSurvey->GetName()));
+									$sSurveyUrl = ApplicationContext::MakeObjectUrl('Survey', $oSurvey->GetKey(), null, false);
+									$sBody = Dict::Format('Survey-CompletionNotificationBody_url', $sSurveyUrl);
+								}
+								else
+								{
+									$oEmail->SetSubject(Dict::Format('Survey-CompletionNotification_name_contact', $oSurvey->GetName(), $oContact->GetName()));
+									$sSurveyUrl = ApplicationContext::MakeObjectUrl('Survey', $oSurvey->GetKey(), null, false);
+									$sBody = Dict::Format('Survey-CompletionNotificationBody_url_contact', $sSurveyUrl, $oContact->GetName());
+								}
+								$oEmail->SetBody($sBody);
+								$oEmail->SetRecipientTO($oContact->Get('email'));
+								$oEmail->SetRecipientFrom($oContact->Get('email'));
+								$aIssues = array();
+								$iRes = $oEmail->Send($aIssues);
+								switch ($iRes)
+								{
+									case EMAIL_SEND_ERROR:
+									IssueLog::Error("Failed to send email on survey completion. Errors: ".implode(', ', $aErrors));					
+								}													
+							}
+						}
+					}
+				}
 				// Move to the next step
 				return array('class' => 'QuizzWizStepDone', 'state' => '');
 			}
+		}
+		else
+		{
+			// Moving backwards, save the previous' page values
+			$aPageAnswers = utils::ReadPostedParam('answer', array(), 'raw_data');
+			$aAnswers = json_decode($this->oWizard->GetParameter('answer', '[]'), true);
+			foreach($aQuestions as $oQuestion)
+			{
+				if ($oQuestion->HasValue())
+				{
+					$aAnswers[$oQuestion->GetKey()] = $oQuestion->ValidateValue(isset($aPageAnswers[$oQuestion->GetKey()]) ? $aPageAnswers[$oQuestion->GetKey()] : '');
+				}
+			}
+			$this->oWizard->SetParameter('answer', json_encode($aAnswers));
 		}
 	}
 	
 	public function Display(WebPage $oPage)
 	{
-		$this->DisplayStep($oPage);
+		if ($this->bSurveyFinished)
+		{
+			$oPage->p(Dict::S('Survey-SurveyFinished'));
+			// Hide the buttons
+			$oPage->add_ready_script("$('#btn_suspend').hide(); $('#btn_next').hide();");
+		}
+		else if ($this->bAnswerCommitted)
+		{
+			$oPage->p(Dict::S('Survey-AnswerAlreadyCommitted'));
+			// Hide the buttons
+			$oPage->add_ready_script("$('#btn_suspend').hide(); $('#btn_next').hide();");
+		}
+		else
+		{
+			$this->DisplayStep($oPage);
+		}
 	}
 	
 	protected function DisplayStep($oPage)
@@ -241,10 +367,21 @@ class QuizzWizStepQuestions extends WizardStep
 		$index = $this->GetStepIndex();
 		$aQuestions = $this->GetStepQuestions($index);
 
+		// Check for any previous answer
+		$aPreviousAnswers = array();
+		$oSurveyTargetAnswer = $this->oWizard->GetSurveyTargetAnswer();
+		if ($oSurveyTargetAnswer != null)
+		{
+			$sOQL = "SELECT SurveyAnswer AS A WHERE A.survey_target_id = :id";
+			$oAnswerSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL, array('id' => $oSurveyTargetAnswer->GetKey())));
+			while($oAnswer = $oAnswerSet->Fetch())
+			{
+				$aPreviousAnswers[$oAnswer->Get('question_id')] = $oAnswer; 
+			}
+		}
+		
 		// Build the form
 		//
-		//$oPage->add("<h1>".$this->GetAsHtml('title')."</h1>\n");
-		//$oPage->add("<p>".$this->GetAsHtml('introduction')."</p>\n");
 		if ($index ==0)
 		{
 			$sTitle = $this->oWizard->GetQuizz()->GetAsHtml('title');
@@ -268,13 +405,7 @@ class QuizzWizStepQuestions extends WizardStep
 		$oPage->add("<h1>$sTitle</h1>\n");
 		$oPage->add("<p>$sDescription</p>\n");	
 		$oPage->add("<div class=\"wizContainer\">\n");
-/*	
-		if ($oTarget)
-		{
-			$sToken = $oTarget->Get('token');
-			$oPage->add("<input type=\"hidden\" name=\"token\" value=\"$sToken\">");
-		}
-*/
+
 		$bHasMandatoryQuestions = false;
 		$aAnswers = json_decode($this->oWizard->GetParameter('answer'), true);
 		foreach($aQuestions as $oQuestion)
@@ -286,8 +417,13 @@ class QuizzWizStepQuestions extends WizardStep
 				$sMandatory = 'true';
 			}
 			$oPage->add('<div class="question" data-mandatory="'.$sMandatory.'">');
-			//TODO: retrieve the previously saved values (via the "suspend" function)
-			$sAnswer = isset($aAnswers[$oQuestion->GetKey()]) ? $aAnswers[$oQuestion->GetKey()] : '';
+			$sSavedValue = '';
+			if (isset($aPreviousAnswers[$oQuestion->GetKey()]))
+			{
+				// Retrieve the previously saved values (via the "suspend" function)
+				$sSavedValue = $aPreviousAnswers[$oQuestion->GetKey()]->Get('value');
+			}
+			$sAnswer = isset($aAnswers[$oQuestion->GetKey()]) ? $aAnswers[$oQuestion->GetKey()] : $sSavedValue;
 			$oQuestion->DisplayForm($oPage, $sAnswer); 
 			$oPage->add('</div>');
 		}
@@ -348,59 +484,41 @@ class QuizzWizStepQuestions extends WizardStep
 	
 	public function JSCanMoveForward()
 	{
-		return "return CheckMandatoryAnswers();";
+		if ($this->bSurveyFinished || $this->bAnswerCommitted)
+		{
+			return "return false";
+		}
+		else
+		{
+			return "return CheckMandatoryAnswers();";
+		}
 	}
 	
-	function GetContext($sToken)
+	function SubmitAnswers($oSurveyTargetAnswer, $aAnswers, $bFinished = true, $iLastQuestionId = 0)
 	{
-		$sToken = $this->oWizard->GetParameter('token');
-		// Find the corresponding survey target -> survey -> Quizz
-		//
-		$oTargetSearch = DBObjectSearch::FromOQL_AllData("SELECT SurveyTargetAnswer WHERE token = :token");
-		$oTargetSet = new CMDBObjectSet($oTargetSearch, array(), array('token' => $sToken));
-		if ($oTargetSet->Count() == 0)
-		{
-			throw new UnknownTokenException($sToken);
-		}
-		$oTarget = $oTargetSet->Fetch();
-		$oSurvey = MetaModel::GetObject('Survey', $oTarget->Get('survey_id'), true, true /*allow all data*/);
-		$oQuizz = MetaModel::GetObject('Quizz', $oSurvey->Get('quizz_id'), true, true /*allow all data*/);
-	
-	  	// Find the questions
-		//
-		$oQuestionSearch = DBObjectSearch::FromOQL_AllData("SELECT QuizzQuestion WHERE quizz_id = :Quizz");
-		$oQuestionSet = new CMDBObjectSet($oQuestionSearch, array('order' => true), array('Quizz' => $oQuizz->GetKey()));
+		$oQuestionSearch = DBObjectSearch::FromOQL_AllData("SELECT QuizzElement WHERE quizz_id = :Quizz");
+		$oQuestionSet = new CMDBObjectSet($oQuestionSearch, array('order' => true), array('Quizz' => $this->oWizard->GetQuizz()->GetKey()));
 		if ($oQuestionSet->Count() == 0)
 		{
 			throw new Exception("Sorry, there is no question for this Quizz (?!)");
 		}
-	
-		// Set the current language to the language of the survey
-		$oQuizz->ChangeDictionnaryLanguage();
-	
-		return array($oTarget, $oSurvey, $oQuizz, $oQuestionSet);
-	}
-	
-	function SubmitAnswers($sToken, $aAnswers, $bFinished = true)
-	{
-		list($oTarget, $oSurvey, $oQuizz, $oQuestionSet) = GetContext($sToken);
 		
 		// Check for any previous answer
-		$sOQL = "SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.token = :token";
-		$oAnswerSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL, array('token' => $sToken)));
+		$sOQL = "SELECT SurveyAnswer AS A WHERE A.survey_target_id = :id";
+		$oAnswerSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL, array('id' => $oSurveyTargetAnswer->GetKey())));
 		$aPreviousAnswers = array();
 		while($oAnswer = $oAnswerSet->Fetch())
 		{
 			$aPreviousAnswers[$oAnswer->Get('question_id')] = $oAnswer; 
 		}
 	
-		// Foreach question, find the answer
+		// For each question, retrieve the answer and store it
 		//
 		while($oQuestion = $oQuestionSet->Fetch())
 		{
 			$iQuestion = $oQuestion->GetKey();
 			
-			if (isset($aAnswers[$iQuestion]))
+			if ($oQuestion->HasValue() && isset($aAnswers[$iQuestion]))
 			{
 				if (isset($aPreviousAnswers[$iQuestion]))
 				{
@@ -411,30 +529,71 @@ class QuizzWizStepQuestions extends WizardStep
 				{
 					// Create a new record
 					$oAnswer = new SurveyAnswer();
-					$oAnswer->Set('survey_target_id', $oTarget->GetKey());
+					$oAnswer->Set('survey_target_id', $oSurveyTargetAnswer->GetKey());
 					$oAnswer->Set('question_id', $iQuestion);
 				}
-				$oAnswer->Set('value', $aAnswers[$iQuestion]);
+				$oAnswer->Set('value', $oQuestion->ValidateValue($aAnswers[$iQuestion]));
 				$oAnswer->DBWrite();
 			}
 		}
 	
 		// Update the target record
 		//
-		$oTarget->Set('date_response', time());
-		$oTarget->Set('status', $bFinished ? 'finished' : 'ongoing');
-		$oTarget->DBUpdate();
-	
-		$oP->add("<p>".Dict::S('Survey-form-done')."</p>\n");
-		$oP->add("<p>".Dict::S('Survey-form-thankyou')."</p>\n");
+		$oSurveyTargetAnswer->Set('date_response', time());
+		$oSurveyTargetAnswer->Set('status', $bFinished ? 'finished' : 'ongoing');
+		$oSurveyTargetAnswer->Set('last_question_id', $bFinished ? null : $iLastQuestionId);
+		$oSurveyTargetAnswer->DBUpdate();
 	}	
+
+	/**
+	 * Overload this function to implement asynchronous action(s) (AJAX)
+	 * @param string $sCode The code of the action (if several actions need to be distinguished)
+	 * @param hash $aParameters The action's parameters name => value
+	 */
+	public function AsyncAction(WebPage $oPage, $sCode, $aParameters)
+	{
+		switch($sCode)
+		{
+			case 'suspend':
+			$oSurveyTargetAnswer = $this->oWizard->GetSurveyTargetAnswer();
+			if ($oSurveyTargetAnswer != null)
+			{
+				$iLastQuestionId = 0;
+				$aAnswers = array();
+				// Values from other pages (or previous values from the current page)
+				$aValues = json_decode(isset($aParameters['other_answers']) ? $aParameters['other_answers'] : '[]', true);
+				foreach($aValues as $sKey => $sValue)
+				{
+					$iQuestionId = (int)$sKey;
+					$iLastQuestionId = max($iLastQuestionId, $iQuestionId);
+					$aAnswers[$iQuestionId] = trim($sValue);
+				}
+				
+				// Values from the current page
+				foreach($aParameters as $sKey => $sValue)
+				{
+					if (preg_match('/^answer\[([0-9]+)$/', $sKey, $aMatches))
+					{
+						$iQuestionId = (int)$aMatches[1];
+						$iLastQuestionId = max($iLastQuestionId, $iQuestionId);
+						$aAnswers[$iQuestionId] = trim($sValue);
+					}
+				}
+				if ($iLastQuestionId > 0)
+				{
+					// Save the current state but don't mark the survey answer as finished
+					$this->SubmitAnswers($oSurveyTargetAnswer, $aAnswers, false, $iLastQuestionId);
+				}
+			}
+		}
+	}
 }
 
 class QuizzWizStepDone extends WizardStep
 {
 	public function GetTitle()
 	{
-		$sTitle = 'TBD';
+		$sTitle = Dict::S('Survey-SurveyCompleted-Title');
 		return $sTitle;
 	}
 	
@@ -450,7 +609,7 @@ class QuizzWizStepDone extends WizardStep
 	
 	public function Display(WebPage $oPage)
 	{
-		$oPage->p('Done !');
+		$oPage->p(Dict::S('Survey-SurveyCompleted-Text'));
 	}
 	
 	public function CanMoveForward()
