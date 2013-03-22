@@ -270,7 +270,7 @@ abstract class QuizzElement extends cmdbAbstractObject
 	}
 	
 	abstract public function DisplayForm(WebPage $oPage, $sCurrentValue);
-	abstract public function DisplayResults(WebPage $oPage, DBObjectSet $oSet);
+	abstract public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount);
 	
 	/**
 	 * Helper method for derived classes to display an horizontal set of radio buttons
@@ -345,9 +345,29 @@ class QuizzScaleQuestion extends QuizzElement
 		$this->DisplayChoices($oPage, $aChoices, $sCurrentValue);	
 	}
 	
-	public function DisplayResults(WebPage $oPage, DBObjectSet $oSet)
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount)
 	{
-		
+		$aChoices = explode(',', $this->Get('scale_values'));
+		$aResults = array();
+		foreach($aChoices as $sValue)
+		{
+			$aResults[trim($sValue)] = 0;
+		}
+		while ($oAnswer = $oAnswerSet->Fetch())
+		{
+			$aResults[$oAnswer->Get('value')] += 1;
+		}
+
+		$oPage->add('<table style="border-collapse: collapse;">');
+		foreach($aChoices as $sValue)
+		{
+			$iPercent = round(100 * $aResults[trim($sValue)] / $iTargetCount);
+			$iWidth = 200 * $iPercent / 100; // 200 px = 100 %
+			$oPage->add('<tr>');
+			$oPage->add('<td style="padding: 2px; width:150px; text-align:right;">'.$sValue.'</td><td style="border-left: 1px #1C94C4 solid; padding:2px; padding-left:0;"><div style="width:'.$iWidth.'px; display: inline-block; background: #1C94C4">&nbsp;</div>&nbsp;'.$iPercent.' %</td>');
+			$oPage->add('</tr>');
+		}
+		$oPage->add('</table>');	
 	}
 	
 	/**
@@ -373,6 +393,7 @@ class QuizzScaleQuestion extends QuizzElement
 
 class QuizzFreeTextQuestion extends QuizzElement
 {
+	static protected $bScriptOutput = false;
 	public static function Init()
 	{
 		$aParams = array
@@ -409,9 +430,54 @@ class QuizzFreeTextQuestion extends QuizzElement
 		$oPage->add('<TEXTAREA style="width:100%;" name="answer['.$iQuestionId.']" data-mandatory="'.$sMandatory.'">'.htmlentities($sCurrentValue, ENT_QUOTES, 'UTF-8').'</TEXTAREA>');
 	}
 	
-	public function DisplayResults(WebPage $oPage, DBObjectSet $oSet)
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount)
 	{
+		$aValues = array();
+		while($oAnswer = $oAnswerSet->Fetch())
+		{
+			$sValue = $oAnswer->Get('value');
+			if (trim($sValue) != '')
+			{
+				$aValues[] = $sValue;
+			}
+		}
+		$oPage->add('<div class="Collapsible"><span class="CollapsibleLabel">'.Dict::Format('Survey-X_NonEmptyValuesOutOf_N', count($aValues), $iTargetCount).'</span><div class="CollapsibleContent">');
+		foreach($aValues as $sValue)
+		{
+			$oPage->add('<div>'.htmlentities($sValue, ENT_QUOTES, 'UTF-8').'</div>');
+		}
+		$oPage->add('</div>');
 		
+		if (!self::$bScriptOutput)
+		{
+			self::$bScriptOutput = true; // output this only once per page
+			$oPage->add_style(
+<<<EOF
+.CollapsibleContent {
+	display: none;
+}
+div.open div.CollapsibleContent {
+	display: block;
+	border: #ccc 1px solid;
+	padding: 0.25em;
+	margin: 0.25em;
+}
+.CollapsibleLabel {
+	padding-left: 16px;
+	background: url(../images/plus.gif) left no-repeat;
+	cursor: pointer;
+}
+div.open div.CollapsibleLabel {
+	background: url(../images/minus.gif) left no-repeat;
+}
+EOF
+			);
+			$oPage->add_ready_script(
+<<<EOF
+$('.CollapsibleLabel').click(function() { $(this).parent().toggleClass('open'); });
+EOF
+			);			
+		}
 	}
 }
 
@@ -444,7 +510,7 @@ class QuizzNewPageElement extends QuizzElement
 		$oPage->add("<h3>$sTitle</h3>");
 		$oPage->add("<p>$sDescription</p>");
 	}
-	public function DisplayResults(WebPage $oPage, DBObjectSet $oSet)
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount)
 	{
 		
 	}
@@ -488,9 +554,29 @@ class QuizzValueQuestion extends QuizzElement
 		$aChoices = explode(',', $this->Get('choices'));
 		$this->DisplayChoices($oPage, $aChoices, $sCurrentValue);			
 	}
-	public function DisplayResults(WebPage $oPage, DBObjectSet $oSet)
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount)
 	{
-		
+		$aChoices = explode(',', $this->Get('choices'));
+		$aResults = array();
+		foreach($aChoices as $sValue)
+		{
+			$aResults[trim($sValue)] = 0;
+		}
+		while ($oAnswer = $oAnswerSet->Fetch())
+		{
+			$aResults[$oAnswer->Get('value')] += 1;
+		}
+
+		$oPage->add('<table style="border-collapse: collapse;">');
+		foreach($aChoices as $sValue)
+		{
+			$iPercent = round(100 * $aResults[trim($sValue)] / $iTargetCount);
+			$iWidth = 200 * $iPercent / 100; // 200 px = 100 %
+			$oPage->add('<tr>');
+			$oPage->add('<td style="padding: 2px; width:150px; text-align:right;">'.$sValue.'</td><td style="border-left: 1px #1C94C4 solid; padding:2px; padding-left:0;"><div style="width:'.$iWidth.'px; display: inline-block; background: #1C94C4">&nbsp;</div>&nbsp;'.$iPercent.' %</td>');
+			$oPage->add('</tr>');
+		}
+		$oPage->add('</table>');		
 	}
 	
 	/**
@@ -896,62 +982,19 @@ class Survey extends cmdbAbstractObject
 					$oQuestionSet = new DBObjectSet($oQuestionSearch);
 					while ($oQuestion = $oQuestionSet->Fetch())
 					{
-						//TODO: Question specific display of the results
-						/*
-						$aChoices = $aValueAttDef->GetAllowedValues(); // Array of value => label
+						
 						$oPage->add('<div>');
 						$oPage->add('<h2>'.$oQuestion->GetName().'</h2>');
-
-						$aResults = array();
-						foreach($aChoices as $value => $sLabel)
-						{
-							$aResults[$value] = 0;
-						}
 	
 						$oAnswerSearch = DBObjectSearch::FromOQL_AllData('SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE A.question_id = '.$oQuestion->GetKey().' AND T.survey_id = '.$this->GetKey());
 						$oAnswerSet = new DBObjectSet($oAnswerSearch);
-						while ($oAnswer = $oAnswerSet->Fetch())
-						{
-							$aResults[$oAnswer->Get('value')] += 1;
-						}
-
-						$oPage->add('<table>');
-						foreach($aChoices as $value => $sLabel)
-						{
-							$iPercent = round(100 * $aResults[$value] / $iTargetCount);
-							$iWidth = 200 * $iPercent / 100; // 200 px = 100 %
-							$oPage->add('<tr>');
-							$oPage->add('<td>'.$sLabel.'</td><td><div style="width:'.$iWidth.'px; display: inline-block; background: #1C94C4">&nbsp;</div>&nbsp;'.$iPercent.' %</td>');
-							$oPage->add('</tr>');
-						}
-						$oPage->add('</table>');
 						
+						$oQuestion->DisplayResults($oPage, $oAnswerSet, $iTargetCount);						
 	
 						$oPage->add('</div>');
-						*/
+						
 					}
 					$oPage->add('</div>');
-					$oPage->add('<div class="survey-comments">');
-					$oPage->add('<h1>'.Dict::S('Survey-results-comments').'</h1>');
-					$oCommentSearch = DBObjectSearch::FromOQL_AllData('SELECT SurveyTargetAnswer AS T WHERE T.comment != "" AND T.survey_id = '.$this->GetKey());
-					$oCommentSet = new DBObjectSet($oCommentSearch);
-					if ($oCommentSet->Count() > 0)
-					{
-						//$sOpenQuote = '<div class="quizzquote"><span class="bigquotes">&#171</span>';
-						$sOpenQuote = '<div class="quizzquote" style="margin:5px; padding:5px; border-style:solid; border-width:thin; border-color:#696969; background-color:#DDDDDD;">';
-						//$sCloseQuote = '<span class="bigquotes">&#187</span></div>';
-						$sCloseQuote = '</div>';
-						$oPage->add('<div>');
-						while ($oComment = $oCommentSet->Fetch())
-						{
-							$oPage->add($sOpenQuote.trim($oComment->GetAsHtml('comment')).$sCloseQuote);
-						}
-						$oPage->add('</div>');
-					}
-					else
-					{
-						$oPage->p(Dict::S('Survey-results-nocomment'));
-					}
 				}
 				else
 				{
