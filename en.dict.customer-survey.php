@@ -43,14 +43,14 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Survey-Resend-Cancel' => 'Cancel',
 
 	'Survey-tab-results' => 'Results',
-	'Survey-query-comments' => 'Comments (if any)',
-	'Survey-query-results' => 'Answers',
+	'Survey-query-results' => 'Export Raw Answers',
 	'Survey-results-excel' => 'For Excel',
 	'Survey-results-csv' => 'As CSV',
 	'Survey-results-statistics' => 'Statistics',
-	'Survey-results-comments' => 'Comments',
-	'Survey-results-nocomment' => 'No comment is available yet.',
+	'Survey-results-statistics-filtered' => 'Statistics (filtered)',
 	'Survey-results-noanswer' => 'No answer has been given yet.',
+	'Survey-results-X_NonEmptyValuesOutOf_N' => '%1$d non empty answer(s) out of %2$d',
+	'Survey-results-completion_X_out_of_Y_Percent' => '%1$d persons out of %2$d answered (%3$s %% completion)',
 
 	'Survey-notif-linktoquizz' => 'Click here to start the Quizz',
 	'Survey-form-alreadydone' => 'You have already answered (%1$s)',

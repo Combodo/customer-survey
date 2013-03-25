@@ -270,7 +270,7 @@ abstract class QuizzElement extends cmdbAbstractObject
 	}
 	
 	abstract public function DisplayForm(WebPage $oPage, $sCurrentValue);
-	abstract public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount);
+	abstract public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false);
 	
 	/**
 	 * Helper method for derived classes to display an horizontal set of radio buttons
@@ -345,7 +345,7 @@ class QuizzScaleQuestion extends QuizzElement
 		$this->DisplayChoices($oPage, $aChoices, $sCurrentValue);	
 	}
 	
-	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount)
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
 	{
 		$aChoices = explode(',', $this->Get('scale_values'));
 		$aResults = array();
@@ -430,27 +430,69 @@ class QuizzFreeTextQuestion extends QuizzElement
 		$oPage->add('<TEXTAREA style="width:100%;" name="answer['.$iQuestionId.']" data-mandatory="'.$sMandatory.'">'.htmlentities($sCurrentValue, ENT_QUOTES, 'UTF-8').'</TEXTAREA>');
 	}
 	
-	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount)
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
 	{
 		$aValues = array();
+		$sAuthor = '';
 		while($oAnswer = $oAnswerSet->Fetch())
 		{
 			$sValue = $oAnswer->Get('value');
 			if (trim($sValue) != '')
 			{
-				$aValues[] = $sValue;
+				$sAuthor = $oAnswer->Get('contact_name');
+				$aValues[] = array('text' => $sValue, 'author' => $oAnswer->Get('contact_name'));
 			}
 		}
-		$oPage->add('<div class="Collapsible"><span class="CollapsibleLabel">'.Dict::Format('Survey-X_NonEmptyValuesOutOf_N', count($aValues), $iTargetCount).'</span><div class="CollapsibleContent">');
-		foreach($aValues as $sValue)
+		$oPage->add('<div class="Collapsible"><span class="CollapsibleLabel">'.Dict::Format('Survey-results-X_NonEmptyValuesOutOf_N', count($aValues), $iTargetCount).'</span><div class="CollapsibleContent">');
+		foreach($aValues as $aAnswer)
 		{
-			$oPage->add('<div>'.htmlentities($sValue, ENT_QUOTES, 'UTF-8').'</div>');
+			$oPage->add('<div class="triangle-border">'.htmlentities($aAnswer['text'], ENT_QUOTES, 'UTF-8').'</div>');
+			if (!$bAnonymous)
+			{
+				$oPage->add('<div class="author">'.htmlentities($aAnswer['author'], ENT_QUOTES, 'UTF-8').'</div>');
+			}
 		}
 		$oPage->add('</div>');
 		
 		if (!self::$bScriptOutput)
 		{
 			self::$bScriptOutput = true; // output this only once per page
+			if (!$bAnonymous)
+			{
+				$sBubbleSpeechStyle = 
+<<<EOF
+.triangle-border:after {
+    border-color: #FFFFFF transparent;
+    border-style: solid;
+    border-width: 9px 9px 0;
+    bottom: -9px;
+    content: "";
+    display: block;
+    left: 21px;
+    position: absolute;
+    width: 0;
+}
+.triangle-border:before {
+    border-color: #1C94C4 transparent;
+    border-style: solid;
+    border-width: 10px 10px 0;
+    bottom: -10px;
+    content: "";
+    display: block;
+    left: 20px;
+    position: absolute;
+    width: 0;
+}
+.author {
+	font-size: small;
+}
+EOF
+				;
+			}
+			else
+			{
+				$sBubbleSpeechStyle = '';
+			}
 			$oPage->add_style(
 <<<EOF
 .CollapsibleContent {
@@ -458,7 +500,7 @@ class QuizzFreeTextQuestion extends QuizzElement
 }
 div.open div.CollapsibleContent {
 	display: block;
-	border: #ccc 1px solid;
+	background: #eee;
 	padding: 0.25em;
 	margin: 0.25em;
 }
@@ -470,6 +512,16 @@ div.open div.CollapsibleContent {
 div.open div.CollapsibleLabel {
 	background: url(../images/minus.gif) left no-repeat;
 }
+.triangle-border {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #1C94C4;
+    border-radius: 10px 10px 10px 10px;
+    color: #333333;
+    margin: 1em 0 0.5em;
+    padding: 0.5em;
+    position: relative;
+}
+$sBubbleSpeechStyle
 EOF
 			);
 			$oPage->add_ready_script(
@@ -510,7 +562,7 @@ class QuizzNewPageElement extends QuizzElement
 		$oPage->add("<h3>$sTitle</h3>");
 		$oPage->add("<p>$sDescription</p>");
 	}
-	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount)
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
 	{
 		
 	}
@@ -554,7 +606,7 @@ class QuizzValueQuestion extends QuizzElement
 		$aChoices = explode(',', $this->Get('choices'));
 		$this->DisplayChoices($oPage, $aChoices, $sCurrentValue);			
 	}
-	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount)
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
 	{
 		$aChoices = explode(',', $this->Get('choices'));
 		$aResults = array();
@@ -634,7 +686,7 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeEnum("email_on_completion", array("allowed_values"=>new ValueSetEnum('yes,no'), "sql"=>"email_on_completion", "default_value"=>"no", "is_null_allowed"=>false, "depends_on"=>array())));
 		
 		MetaModel::Init_AddAttribute(new AttributeString("email_subject", array("allowed_values"=>null, "sql"=>"email_subject", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeText("email_body", array("allowed_values"=>null, "sql"=>"email_body", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeHTML("email_body", array("allowed_values"=>null, "sql"=>"email_body", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 
 		MetaModel::Init_AddAttribute(new AttributeLinkedSetIndirect("survey_target_list", array("linked_class"=>"SurveyTarget", "ext_key_to_me"=>"survey_id", "ext_key_to_remote"=>"contact_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_target_answer_list", array("linked_class"=>"SurveyTargetAnswer", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
@@ -746,10 +798,10 @@ class Survey extends cmdbAbstractObject
 	{
 		return false;
 		// For now only anonyous surveys are implemented... temporary
-		return true;
+		//return true;
 	}
 
-	/*
+	/**
 	 * Send a preview message (with a link to a preview of the quizz) to the current user 
 	 * @return void
 	 */
@@ -777,7 +829,7 @@ class Survey extends cmdbAbstractObject
 		return $bRes;
 	}
 
-	/*
+	/**
 	 * Helper to return the targets whatever the visibility of the current user 
 	 * @return object DBObjectSet
 	 */
@@ -793,8 +845,8 @@ class Survey extends cmdbAbstractObject
 		return $oSet;
 	}
 
-	/*
-	 * For a given target contact, prepare the anonymous answer and send an email 
+	/**
+	 * For a given target contact, prepare the anonymous (or not) answer and send an email 
 	 * @param object $oContact Identifies the contact, then its email, etc.
 	 * @return void
 	 */
@@ -829,6 +881,7 @@ class Survey extends cmdbAbstractObject
 		if ($bRes)
 		{
 			// Create the anonymous (or not) answer
+			$oTargetAnswer->Set('nb_notifications_sent', 1); // The first notification was sent successfully
 			$oTargetAnswer->DBInsert();
 		}
 
@@ -836,18 +889,61 @@ class Survey extends cmdbAbstractObject
 		$oEvent->DBInsertNoReload();
 	}
 
-	/*
+	/**
+	 * For a given target contact, send again an invitation to answer the quizz 
+	 * @param object $oSTA Identifies the survey target contact
+	 * @param $sSubject Alternate email subject
+	 * @param $sBody Alternate email body
+	 * @return void
+	 */
+	public function SendAgainQuizzToTargetContact(SurveyTargetAnswer $oTargetAnswer, $sSubject, $sBody)
+	{
+		$sToken = $oTargetAnswer->Get('token');
+
+		$oEvent = new SurveyNotification();
+		$oEvent->Set('userinfo', UserRights::GetUser());
+		$oEvent->Set('survey_id', $this->GetKey());
+		$oEvent->Set('contact_id', $oTargetAnswer->Get('contact_id'));
+
+		$bRes = false;
+		try
+		{
+			$oContact = MetaModel::GetObject('Contact', $oTargetAnswer->Get('contact_id'));
+			$this->SendQuizzToContactLocalized($oContact, $sToken, $sSubject, $sBody);
+			$oEvent->Set('message', Dict::S('Survey-email-ok'));
+			$oTargetAnswer->Set('nb_notifications_sent', 1 + (int)$oTargetAnswer->Get('nb_notifications_sent'));
+			$bRes = true;
+		}
+		catch (Exception $e)
+		{
+			$oEvent->Set('message', $e->getMessage());
+		}
+
+		if ($bRes)
+		{
+			// Create the anonymous (or not) answer
+			$oTargetAnswer->DBUpdate();
+		}
+
+		// Keep track of the notification
+		$oEvent->DBInsertNoReload();
+	}
+	
+   /**
 	* Send the quizz and make sure the email and form are localized according to the language of the survey/quizz
 	* @param object $oContact Target recipient
 	* @param string $sToken Optional token; if omitted then the email and forms will be in preview mode		
+	* @param string $sEmailBody Alternate email body
+	* @param string $sEmailSubject Alternate email subject
+	* @return void
 	*/
-	protected function SendQuizzToContactLocalized($oContact, $sToken = null)
+	protected function SendQuizzToContactLocalized($oContact, $sToken = null, $sEmailSubject = null, $sEmailBody = null)
 	{
 		$oQuizz = MetaModel::GetObject('Quizz', $this->Get('quizz_id'), true, true /*allow all data*/);
 		$oQuizz->ChangeDictionnaryLanguage();		
 		try
 		{
-			$this->SendQuizzToContact($oQuizz, $oContact, $sToken);
+			$this->SendQuizzToContact($oQuizz, $oContact, $sToken, $sEmailSubject, $sEmailBody);
 		}
 		catch(Exception $e)
 		{
@@ -857,29 +953,47 @@ class Survey extends cmdbAbstractObject
 		$oQuizz->RestoreDictionnaryLanguage();
 	}
 
-	/*
+	/**
 	 * Prepare the email and send it
 	 * @param object $oQuizz The quizz
 	 * @param object $oContact The target contact
 	 * @param string $sToken The token identifying the recipient for the anonymous answer ; if omitted, this is a sample email
+	 * @param string $sEmailBody Alternate email body
+	 * @param string $sEmailSubject Alternate email subject
 	 * @return void
 	 */
-	protected function SendQuizzToContact($oQuizz, $oContact, $sToken = null)
+	protected function SendQuizzToContact($oQuizz, $oContact, $sToken = null, $sEmailSubject = null, $sEmailBody = null)
 	{
 		$oEmail = new EMail();
 
 		$sQuizzUrl = $oQuizz->MakeFormUrl($sToken);
 
-		$sBody = $this->Get('email_body');
-		$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
-
-		if ($sToken)
+		if ($sEmailBody != null)
 		{
-			$oEmail->SetSubject($this->Get('email_subject'));
+			$sBody = $sEmailBody;
 		}
 		else
 		{
-			$oEmail->SetSubject('['.Dict::S('Survey-email-preview').'] '.$this->Get('email_subject'));
+			$sBody = $this->Get('email_body');
+		}
+		$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
+
+		if ($sEmailSubject != null)
+		{
+			$sSubject = $sEmailSubject;
+		}
+		else
+		{
+			$sSubject = $this->Get('email_subject');
+		}
+		
+		if ($sToken)
+		{
+			$oEmail->SetSubject($sSubject);
+		}
+		else
+		{
+			$oEmail->SetSubject('['.Dict::S('Survey-email-preview').'] '.$sSubject);
 		}
 		$oEmail->SetBody($sBody);
 		$oEmail->SetRecipientTO($oContact->Get('email'));
@@ -906,7 +1020,7 @@ class Survey extends cmdbAbstractObject
 	}
 
 
-	/*
+	/**
 	 * In state running, detect new target contacts and align them to already existing contacts
 	 * @return void
 	 */
@@ -932,7 +1046,7 @@ class Survey extends cmdbAbstractObject
 	}
 
 
-	/*
+	/**
 	 * Add a tab with progress information, statistics and links to usefull queries for reporting
 	 * @param object $oPage Page
 	 * @param bool	$bEditMode True in edition, false in read-only mode
@@ -982,6 +1096,17 @@ class Survey extends cmdbAbstractObject
 			$oFilter = new DBObjectSearch('SurveyTargetAnswer');
 			$oFilter->AddCondition('survey_id', $this->GetKey());
 			$oBlock = new DisplayBlock($oFilter, 'list');
+			
+			// mark all "finished" targets as non-selectable
+			$oFinishedFilter = new DBObjectSearch('SurveyTargetAnswer');
+			$oFinishedFilter->AddCondition('survey_id', $this->GetKey());
+			$oFinishedFilter->AddCondition('status', 'finished');
+			$oSet = new DBObjectSet($oFinishedFilter);
+			$aSelectable = array();
+			while($oSTA = $oSet->Fetch())
+			{
+				$aSelectable[$oSTA->GetKey()] = false;
+			}
 			$aExtraParams = array(
 				'menu' => '0',
 				'table_id' => 'survey-progress-status',
@@ -989,6 +1114,7 @@ class Survey extends cmdbAbstractObject
 				'zlist' => false,
 				'extra_fields' => 'contact_id,nb_notifications_sent,status,date_response',
 				'selection_mode' => true,
+				'selection_enabled' => $aSelectable,
 			);
 			$sBlockId = 'block-survey-progress-status';
 			$oBlock->Display($oPage, $sBlockId, $aExtraParams);
@@ -1012,12 +1138,14 @@ class Survey extends cmdbAbstractObject
 			$oPage->add('</div>');
 
 			$iSurveyId = $this->GetKey();
-			$sAjaxUrl = addslashes(utils::GetAbsoluteUrlModulesRoot().'customer-survey/survey.ajax.php');
+			$sAjaxUrl = addslashes(utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php');
 
 			$oPage->add_ready_script(
 <<<EOF
 function SurveyRunDialogSendAgain()
 {
+	$('#$sDialogId textarea').ckeditor();
+	$('#$sDialogId input[type=text]').attr('size', 50);
 	$('#$sDialogId').dialog({
 		height: 'auto',
 		width: 'auto',
@@ -1042,11 +1170,13 @@ function SurveyRunDialogSendAgain()
 					targets: aTargets
 				};
 				$(this).dialog('close');
+				$('#SurveyEmailNotifications_indicator').html('<img src="../images/indicator.gif"/>')
 
 				var sUrl = '$sAjaxUrl';
 
 				$.post(sUrl, oMap, function(data) {
-					// TODO - reload the page to refresh the values
+					// Refresh the list of notifications
+					$('#SurveyEmailNotifications').html(data);
 				});
 
 			}
@@ -1077,8 +1207,14 @@ $('#survey_send_again').click(function (){
 EOF
 			);
 		}
-
-		$oPage->add('<h1>'.Dict::S('Survey-progress-notifications').'</h1>');
+		$oPage->add('<div id="SurveyEmailNotifications">');
+		$this->DisplayNotifications($oPage);
+		$oPage->add('</div>');
+	}
+	
+	public function DisplayNotifications(WebPage $oPage)
+	{
+		$oPage->add('<h1>'.Dict::S('Survey-progress-notifications').'&nbsp;<span id="SurveyEmailNotifications_indicator"></span></h1>');
 		$oFilter = new DBObjectSearch('SurveyNotification');
 		$oFilter->AddCondition('survey_id', $this->GetKey());
 		$oBlock = new DisplayBlock($oFilter, 'list');
@@ -1090,65 +1226,114 @@ EOF
 			'extra_fields' => 'contact_id,date,message'
 		);
 		$sBlockId = 'block-survey-progress-notif';
-		$oBlock->Display($oPage, $sBlockId, $aExtraParams);
+		$oBlock->Display($oPage, $sBlockId, $aExtraParams);		
 	}
 
 	protected function DisplayResultsTab($oPage)
 	{
 		$oPage->SetCurrentTab(Dict::S('Survey-tab-results'));
 	
-		$aQueries[Dict::S('Survey-query-comments')] = array(
-			'oql' => 'SELECT SurveyTargetAnswer WHERE date_response AND survey_id = '.$this->GetKey(),
-			'fields' => 'date_response,comment'
-		);
-		$aQueries[Dict::S('Survey-query-results')] = array(
-			'oql' => 'SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey(),
-			'fields' => 'question_title,question_description,value'
-		);
-	
-		$oPage->add('<table>');
-		foreach($aQueries AS $sLabel => $aData)
+		if (!$this->IsAnonymous())
 		{
-			$oPage->add('<tr>');
-			$oPage->add('<td>'.$sLabel.'</td>');
-	
-			$sQuery = urlencode($aData['oql']);
-			$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
-	
-			$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?login_mode=basic&format=HTML&expression='.$sQuery.'&fields='.$aData['fields'];
-			$oPage->add('<td><a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-excel').'</a></td>');
-	
-			$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?format=CSV&expression='.$sQuery.'&fields='.$aData['fields'];
-			$oPage->add('<td><a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-csv').'</a></td>');
-	
-			$oPage->add('</tr>');
+			$sHtml = $this->GetDropDownFilter('filter_stats_org_id', 'Contact', 'org_id');
+			$sHtml .= $this->GetDropDownFilter('filter_stats_contact_id', 'SurveyTargetAnswer', 'contact_id');
+			
+			$oPage->add('<fieldset><legend>Filtering</legend><div id="stats_filter">');
+			$oPage->add($sHtml);
+			$oPage->add('<button id="stats_filter_apply" type="button">Apply Filter</button>&nbsp;<span id="stats_filter_indicator"></span>');
+			$oPage->add('</div></fieldset>');
 		}
-		$oPage->add('</table>');
+		
+		$oPage->add('<div id="survey_stats">');
+		$this->DisplayStatisticsAndExport($oPage);
+		$oPage->add('</div>');
+		$iSurveyId = $this->GetKey();
+		$sAjaxUrl = addslashes(utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php');
+		$oPage->add_ready_script(
+<<<EOF
+function SurveyFilterStats()
+{
+	$('#stats_filter button').attr('disabled', 'disabled');
+	$('#stats_filter_indicator').html('<img src="../images/indicator.gif"/>');
+	var oMap = {
+		operation: 'filter_stats',
+		survey_id: $iSurveyId,
+		org_id: $('#filter_stats_org_id').val(),
+		contact_id: $('#filter_stats_contact_id').val()
+	}
+	$.post('$sAjaxUrl', oMap, function(html) {
 	
-		$aValueAttDef = MetaModel::GetAttributeDef('SurveyAnswer', 'value');
+		$('#survey_stats').html(html);
+		$('#stats_filter_indicator').html('');
+		$('#stats_filter button').removeAttr('disabled');
+	});
+}
+$('#stats_filter_apply').click(SurveyFilterStats);
+EOF
+		);
+	}
 	
+	public function DisplayStatisticsAndExport(WebPage $oPage, $aOrgIds = array(), $aContactIds = array())
+	{
+		$sFields = 'question_title,question_description,value';
+		$sOrgIdClause = '';
+		if (count($aOrgIds) > 0)
+		{
+			$sOrgIdClause = " AND T.org_id IN(".implode(',', $aOrgIds).")";
+		}
+		$sContactIdClause = '';
+		if (count($aContactIds) > 0)
+		{
+			$sContactIdClause = " AND T.contact_id IN(".implode(',', $aContactIds).")";
+		}
+		if (!$this->IsAnonymous())
+		{
+			$sFields .= ',contact_name,org_name';
+		}
+		$sOQL = "SELECT SurveyTargetAnswer AS T WHERE T.survey_id = ".$this->GetKey();
+		$sOQL .= $sOrgIdClause.$sContactIdClause;
+		$oFilter = DBObjectSearch::FromOQL_AllData($sOQL);
+		$oTargetSet = new DBObjectSet($oFilter);
+		$iTargetCount = $oTargetSet->Count();
+		
 		$oPage->add('<div class="survey-stats">');
-		$oPage->add('<h1>'.Dict::S('Survey-results-statistics').'</h1>');
+		if ( (count($aContactIds) > 0) || (count($aOrgIds) > 0))
+		{
+			$sFieldsetLegend = Dict::S('Survey-results-statistics-filtered');
+		}
+		else
+		{
+			$sFieldsetLegend = Dict::S('Survey-results-statistics');
+		}
+		$oPage->add("<fieldset style=\"background: #FFFFFF;\"><legend>$sFieldsetLegend</legend>");
 
-		$oFilter = new DBObjectSearch('SurveyTargetAnswer');
-		$oFilter->AddCondition('survey_id', $this->GetKey());
-		$oFilter->AddCondition('status', 'finished');
+		$sOQL = "SELECT SurveyTargetAnswer AS T WHERE T.status = 'finished' AND T.survey_id = ".$this->GetKey();
+		$sOQL .= $sOrgIdClause.$sContactIdClause;
+		$oFilter = DBObjectSearch::FromOQL_AllData($sOQL);
 		$oFinishedSet = new DBObjectSet($oFilter);
+
 		$iAnswerCount = $oFinishedSet->Count();
 		if ($iAnswerCount > 0)
 		{
-			$oQuestionSearch = DBObjectSearch::FromOQL_AllData('SELECT QuizzElement AS Q JOIN SurveyAnswer AS A ON A.question_id = Q.id JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.survey_id = '.$this->GetKey());
+			$oPage->add(Dict::Format('Survey-results-completion_X_out_of_Y_Percent', $iAnswerCount, $iTargetCount, sprintf('%.2f', $iAnswerCount/$iTargetCount*100.0)));
+			
+			$sOQL = "SELECT QuizzElement AS Q JOIN SurveyAnswer AS A ON A.question_id = Q.id JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.status = 'finished' AND T.survey_id = ".$this->GetKey();
+			$sOQL .= $sOrgIdClause.$sContactIdClause;
+			$oQuestionSearch = DBObjectSearch::FromOQL_AllData($sOQL);
 			$oQuestionSet = new DBObjectSet($oQuestionSearch);
 			while ($oQuestion = $oQuestionSet->Fetch())
 			{
 				
 				$oPage->add('<div>');
 				$oPage->add('<h2>'.$oQuestion->GetName().'</h2>');
-	
-				$oAnswerSearch = DBObjectSearch::FromOQL_AllData('SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE A.question_id = '.$oQuestion->GetKey().' AND T.survey_id = '.$this->GetKey());
+				$oPage->p($oQuestion->GetAsHtml('description'));
+				
+				$sOQL = "SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.status = 'finished' AND A.question_id = ".$oQuestion->GetKey().' AND T.survey_id = '.$this->GetKey();
+				$sOQL .= $sOrgIdClause.$sContactIdClause;
+				$oAnswerSearch = DBObjectSearch::FromOQL_AllData($sOQL);
 				$oAnswerSet = new DBObjectSet($oAnswerSearch);
 				
-				$oQuestion->DisplayResults($oPage, $oAnswerSet, $iTargetCount);						
+				$oQuestion->DisplayResults($oPage, $oAnswerSet, $iTargetCount, $this->IsAnonymous());						
 	
 				$oPage->add('</div>');
 				
@@ -1159,7 +1344,70 @@ EOF
 		{
 			$oPage->p(Dict::S('Survey-results-noanswer'));
 		}
+		$oPage->add('</fieldset>');
 		$oPage->add('</div>');
+		$aQueries[Dict::S('Survey-query-results')] = array(
+			'oql' => "SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.status = 'finished' AND T.survey_id = ".$this->GetKey().$sOrgIdClause.$sContactIdClause,
+			'fields' => $sFields
+		);
+	
+		$oPage->add('<fieldset><legend>Export</legend>');
+		$oPage->add('<table>');
+		foreach($aQueries AS $sLabel => $aData)
+		{
+			$oPage->add('<tr>');
+			$oPage->add('<td>'.$sLabel.'</td>');
+	
+			$sQuery = urlencode($aData['oql']);
+			$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
+	
+			$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?login_mode=basic&format=spreadsheet&expression='.$sQuery.'&fields='.$aData['fields'];
+			$oPage->add('<td><a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-excel').'</a></td>');
+	
+			$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?format=CSV&expression='.$sQuery.'&fields='.$aData['fields'];
+			$oPage->add('<td><a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-csv').'</a></td>');
+	
+			$oPage->add('</tr>');
+		}
+		$oPage->add('</table>');
+		$oPage->add('</fieldset>');
+	}
+	
+	protected function GetDropDownFilter($sId, $sClassName, $sFilterCode, $sFilterValue = '', $aExtraParams = array())
+	{
+		$aAllowedValues = MetaModel::GetAllowedValues_flt($sClassName, $sFilterCode, $aExtraParams);
+		$sHtml = '';
+		if (is_null($aAllowedValues))
+		{
+			// Any value is possible, display an input box
+			$sHtml .= "<label>".MetaModel::GetFilterLabel($sClassName, $sFilterCode).":</label>&nbsp;<input id=\"$sId\" class=\"textSearch\" name=\"$sFilterCode\" value=\"".htmlentities($sFilterValue, ENT_QUOTES, 'utf-8')."\"/>\n";
+		}
+		else
+		{
+			//Enum field, display a multi-select combo
+			$sValue = "<select id=\"$sId\" class=\"multiselect\" size=\"1\" name=\"{$sFilterCode}[]\" multiple>\n";
+			$bMultiSelect = true;
+			//$sValue .= "<option value=\"\">".Dict::S('UI:SearchValue:Any')."</option>\n";
+			foreach($aAllowedValues as $key => $value)
+			{
+				if (is_array($sFilterValue) && in_array($key, $sFilterValue))
+				{
+					$sSelected = ' selected';
+				}
+				else if ($sFilterValue == $key)
+				{
+					$sSelected = ' selected';
+				}
+				else
+				{
+					$sSelected = '';
+				}
+				$sValue .= "<option value=\"$key\"$sSelected>$value</option>\n";
+			}
+			$sValue .= "</select>\n";
+			$sHtml .= "<label>".MetaModel::GetFilterLabel($sClassName, $sFilterCode).":</label>&nbsp;$sValue\n";
+		}
+		return $sHtml;		
 	}
 }
 
@@ -1227,8 +1475,10 @@ class SurveyTargetAnswer extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeText("comment", array("allowed_values"=>null, "sql"=>"comment", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		//MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_answer_list", array("linked_class"=>"SurveyAnswer", "ext_key_to_me"=>"survey_target_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("contact_id", array("targetclass"=>"Contact", "jointype"=>null, "allowed_values"=>null, "sql"=>"contact_id", "is_null_allowed"=>true, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
-
+		MetaModel::Init_AddAttribute(new AttributeExternalField("contact_name", array("allowed_values"=>null, "extkey_attcode"=> 'contact_id', "target_attcode"=>"friendlyname")));
+		
 		MetaModel::Init_AddAttribute(new AttributeExternalField("org_id", array("allowed_values"=>null, "extkey_attcode"=> 'contact_id', "target_attcode"=>"org_id")));
+		MetaModel::Init_AddAttribute(new AttributeExternalField("org_name", array("allowed_values"=>null, "extkey_attcode"=> 'contact_id', "target_attcode"=>"org_name")));
 
 		MetaModel::Init_AddAttribute(new AttributeEnum("status", array("allowed_values"=>new ValueSetEnum('ongoing,finished'), "sql"=>"status", "default_value"=>"finished", "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeInteger("nb_notifications_sent", array("allowed_values"=>null, "sql"=>"nb_notifications_sent", "default_value"=>0, "is_null_allowed"=>false, "depends_on"=>array())));
@@ -1276,6 +1526,10 @@ class SurveyAnswer extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeExternalKey("question_id", array("targetclass"=>"QuizzElement", "jointype"=>null, "allowed_values"=>null, "sql"=>"question_id", "is_null_allowed"=>false, "on_target_delete"=>DEL_AUTO, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeExternalField("question_title", array("allowed_values"=>null, "extkey_attcode"=> 'question_id', "target_attcode"=>"title")));
 		MetaModel::Init_AddAttribute(new AttributeExternalField("question_description", array("allowed_values"=>null, "extkey_attcode"=> 'question_id', "target_attcode"=>"description")));
+		MetaModel::Init_AddAttribute(new AttributeExternalField("contact_id", array("allowed_values"=>null, "extkey_attcode"=> 'survey_target_id', "target_attcode"=>"contact_id")));
+		MetaModel::Init_AddAttribute(new AttributeExternalField("contact_name", array("allowed_values"=>null, "extkey_attcode"=> 'survey_target_id', "target_attcode"=>"contact_name")));
+		MetaModel::Init_AddAttribute(new AttributeExternalField("org_id", array("allowed_values"=>null, "extkey_attcode"=> 'survey_target_id', "target_attcode"=>"org_id")));
+		MetaModel::Init_AddAttribute(new AttributeExternalField("org_name", array("allowed_values"=>null, "extkey_attcode"=> 'survey_target_id', "target_attcode"=>"org_name")));
 		//MetaModel::Init_AddAttribute(new AttributeInteger("value", array("allowed_values"=>null, "sql"=>"value", "default_value"=>0, "is_null_allowed"=>false, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeText("value", array("allowed_values"=>null, "sql"=>"value", "default_value"=>"", "is_null_allowed"=>false, "depends_on"=>array())));
 		
@@ -1306,6 +1560,7 @@ class SurveyNotification extends Event
 			"db_key_field" => "id",
 			"db_finalclass_field" => "",
 			"display_template" => "",
+			'order_by_default' => array('date' => false),
 		);
 		MetaModel::Init_Params($aParams);
 		MetaModel::Init_InheritAttributes();

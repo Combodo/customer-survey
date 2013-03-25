@@ -42,6 +42,7 @@ class QuizzController extends WizardController
 		{
 			$this->oQuizz = MetaModel::GetObject('Quizz', $iQuizzId);
 		}
+		Dict::SetUserLanguage($this->oQuizz->Get('language'));
 	}
 	
 	public function GetQuizz()
@@ -71,7 +72,7 @@ class QuizzController extends WizardController
 		$oPage->add_script("function CanMoveForward()\n{\n".$oStep->JSCanMoveForward()."\n}\n");
 		$oPage->add_script("function CanMoveBackward()\n{\n".$oStep->JSCanMoveBackward()."\n}\n");
 		$iQuizz = $this->GetQuizz()->GetKey();
-		$sTargetAnswer = '';
+		$sToken = '';
 		if ($this->GetSurveyTargetAnswer())
 		{
 			$sToken = addslashes($this->GetSurveyTargetAnswer()->Get('token'));
@@ -238,7 +239,7 @@ class QuizzWizStepQuestions extends WizardStep
 	
 	public function GetTitle()
 	{
-		return $this->oWizard->GetQuizz()->GetAsHtml('title');
+		return $this->oWizard->GetQuizz()->Get('title');
 	}
 	
 	public function GetPossibleSteps()
