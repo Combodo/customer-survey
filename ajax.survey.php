@@ -79,7 +79,26 @@ try
 		{
 			$aContactIds = array();
 		}
-		$oSurvey->DisplayStatisticsAndExport($oPage, $aOrgIds, $aContactIds);
+		$oSurvey->DisplayStatisticsAndExport($oPage, false /* bPrintable */, $aOrgIds, $aContactIds);
+		break;
+		
+		case 'refresh_contacts_filter':
+		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
+			
+		$aOrgIds = utils::ReadParam('org_id', array());
+		if (!is_array($aOrgIds))
+		{
+			$aOrgIds = array();
+		}
+		$oPage->add($oSurvey->GetContactsFilter($aOrgIds));
+		$oPage->add_ready_script("$('#filter_stats_contact_id').multiselect({header: false, noneSelectedText: '".addslashes(Dict::S('UI:SearchValue:Any'))."', selectedList: 1, selectedText:'".addslashes(Dict::S('UI:SearchValue:NbSelected'))."'});");
+		break;
+		
+		case 'print_results':
+		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
+		$oPage = new NiceWebPage($oSurvey->GetName());
+		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
+		$oSurvey->DisplayResultsTab($oPage, true); // true => printable
 		break;
 	}
 	

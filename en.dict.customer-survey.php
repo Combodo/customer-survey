@@ -22,9 +22,6 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Menu:Surveys' => 'Surveys',
 	'Menu:Surveys+' => 'Surveys',
 
-	'Survey-quizz-frame-definition' => 'Private definition',
-	'Survey-quizz-frame-description' => 'Form header',
-
 	'Survey-quizz-overview' => 'Preview',
 	'Survey-quizz-shortcuttoquizz' => 'Click here to preview the Quizz',
 	'Survey-quizz-shortcutlabel' => 'quizz',
@@ -43,14 +40,6 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Survey-Resend-Cancel' => 'Cancel',
 
 	'Survey-tab-results' => 'Results',
-	'Survey-query-results' => 'Export Raw Answers',
-	'Survey-results-excel' => 'For Excel',
-	'Survey-results-csv' => 'As CSV',
-	'Survey-results-statistics' => 'Statistics',
-	'Survey-results-statistics-filtered' => 'Statistics (filtered)',
-	'Survey-results-noanswer' => 'No answer has been given yet.',
-	'Survey-results-X_NonEmptyValuesOutOf_N' => '%1$d non empty answer(s) out of %2$d',
-	'Survey-results-completion_X_out_of_Y_Percent' => '%1$d persons out of %2$d answered (%3$s %% completion)',
 
 	'Survey-notif-linktoquizz' => 'Click here to start the Quizz',
 	'Survey-form-alreadydone' => 'You have already answered (%1$s)',
@@ -116,8 +105,8 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:Survey/Attribute:email_body+' => '',
 	'Class:Survey/Attribute:survey_target_list' => 'Target contacts',
 	'Class:Survey/Attribute:survey_target_list+' => '',
-	'Class:Survey/Stimulus:ev_start' => 'Start',
-	'Class:Survey/Stimulus:ev_close' => 'Close',
+	'Class:Survey/Stimulus:ev_start' => 'Start the Survey',
+	'Class:Survey/Stimulus:ev_close' => 'Terminate the Survey',
 	'Class:Survey/Stimulus:ev_test' => 'Send me a sample message',
 
 	'Class:SurveyTarget' => 'Target contact',
@@ -127,18 +116,43 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:SurveyTarget/Attribute:contact_id' => 'Contact',
 	'Class:SurveyTarget/Attribute:contact_id+' => '',
 
-	'Class:SurveyAnswer/Attribute:value/Value:0' => 'Very bad',
-	'Class:SurveyAnswer/Attribute:value/Value:1' => 'Bad',
-	'Class:SurveyAnswer/Attribute:value/Value:2' => 'Average',
-	'Class:SurveyAnswer/Attribute:value/Value:3' => 'Good',
-	'Class:SurveyAnswer/Attribute:value/Value:4' => 'Very good',
-
 	'Class:SurveyNotification' => 'Survey Email',
 	'Class:SurveyNotification+' => 'Survey Email',
 	'Class:SurveyNotification/Attribute:survey_id' => 'Survey',
 	'Class:SurveyNotification/Attribute:survey_id+' => '',
 	'Class:SurveyNotification/Attribute:contact_id' => 'Target contact',
 	'Class:SurveyNotification/Attribute:contact_id+' => '',
-));
 
-?>
+	'Survey-results-filter-organization' => 'Organizations',
+	'Survey-results-filter-contact' => 'Contacts',
+	'Survey-results-apply-filter' => 'Apply Filter',
+	'Survey-query-results' => 'Export Raw Answers',
+	'Survey-results-excel' => 'For Excel',
+	'Survey-results-csv' => 'As CSV',
+	'Survey-results-statistics' => 'Statistics',
+	'Survey-results-statistics-filtered' => 'Statistics (filtered)',
+	'Survey-results-noanswer' => 'No answer has been given yet.',
+	'Survey-results-X_NonEmptyValuesOutOf_N' => '%1$d non empty answer(s) out of %2$d',
+	'Survey-results-completion_X_out_of_Y_Percent' => '%1$d persons out of %2$d answered (%3$s %% completion)',
+	'Survey-query-results-export' => 'Export',
+	'Survey-results-print' => 'Printable version',
+
+	'Survey-Preview Mode' => 'Preview mode',
+	'Survey-SuspendButton' => 'Suspend',
+	'Survey-CompletionNotificationSubject_name' => 'One more answer for the anonymous survey %1$s',
+	'Survey-CompletionNotificationBody_url' => 'The anonymous survey: $1%s just got one more answer',
+	'Survey-CompletionNotificationSubject_name_contact' => '%2$s just answered the survey %1$s',
+	'Survey-CompletionNotificationBody_url_contact' => '%2$s completed the survey: $1%s',
+	'Survey-SurveyFinished' => 'This survey is closed. Answers are no longer accepted.',
+	'Survey-AnswerAlreadyCommitted' => 'Your answers to this survey have already been recorded and can no longer be modified. You can now safely close this window.',
+	'Survey-DefaultTitle' => 'Survey',
+	'Survey-SurveyCompleted-Title' => 'Survey Completed',
+	'Survey-SurveyCompleted-Default-Text' => 'Thank you for completing this survey. Your answers have been recorded. You can now safely close this window.',
+	'Survey-suspend-confirmation-title' => 'Answers saved...',
+	'Survey-suspend-confirmation-message_hyperlink' => '<p>Your answers have been saved, but the survey is not complete. You can close your browser and come back later to complete the survey using this link:</p><p>%1$s</p>',
+	'Survey-exit-confirmation-message' => 'Are you sure you want to leave the page? (Your answers will NOT be saved)',
+
+	'Survey-quizz-frame-definition' => 'Survey Definition (non-public)',
+	'Survey-quizz-frame-description' => 'First Page',
+	'Survey-quizz-last-page' => 'Closing Page',
+));

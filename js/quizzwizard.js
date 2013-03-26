@@ -1,3 +1,20 @@
+var bAnswerModified = false;
+var bInSubmit = false;
+function IsModified()
+{
+	return ($('#_modified').val() != '');
+}
+
+function MarkAsModified()
+{
+	$('#_modified').val('true');
+}
+
+function ClearModified()
+{
+	$('#_modified').val('');
+}
+
 function WizardAsyncAction(sActionCode, oParams, OnErrorFunction)
 {
 	var sStepClass = $('#_class').val();
@@ -72,6 +89,8 @@ function CheckMandatoryAnswers()
 function Suspend()
 {
 	var oParams = {};
+	$('#suspend_indicator').html('<img src="../images/indicator.gif"/>');
+	$('#btn_suspend').attr('disabled', 'disabled');
 	oParams.other_answers = $('#_params_answer').val(); // values from other pages
 	$('div.question').each(function() {
 		
