@@ -106,7 +106,7 @@ EOF
 		{
 			$oPage->add('<div class="preview_watermark">'.Dict::S('Survey-Preview Mode').'</div>');
 		}
-		$oPage->add('<form id="wiz_form" method="post">');
+		$oPage->add('<div class="page_content"><form id="wiz_form" method="post">');
 		$oStep->Display($oPage);
 		
 		// Add the back / next buttons and the hidden form
@@ -135,11 +135,11 @@ EOF
 			}
 			$sNextButtons .= '<button id="btn_next" class="default" type="submit" name="operation" value="next">'.htmlentities($oStep->GetNextButtonLabel(), ENT_QUOTES, 'UTF-8').'</button>';
 		}
-		$oPage->add('<table style="width:100%;"><tr>');
+		$oPage->add('<table class="buttons_footer"><tr>');
 		$oPage->add('<td style="text-align: left">'.$sBackButton.'</td>');
 		$oPage->add('<td style="text-align: right">'.$sNextButtons.'</td>');
 		$oPage->add('</tr></table>');
-		$oPage->add("</form>");
+		$oPage->add("</form></div>");
 		$oPage->add('<div id="async_action" style="display:none;overflow:auto;max-height:100px;color:#F00;font-size:small;"></div>'); // The div may become visible in case of error
 
 		// Hack to have the "Next >>" button, be the default button, since the first submit button in the form is the default one
@@ -413,29 +413,37 @@ class QuizzWizStepQuestions extends WizardStep
 		// Build the form
 		//
 		$question = $this->GetStepInfo($index);
+		$iNbPages = $this->GetPagesCount();
+		$oPage->add("<div class=\"quizz_header\">\n");
 		if ($index == 0)
 		{
 			$sTitle = $this->oWizard->GetQuizz()->GetAsHtml('title');
 			$sDescription = $this->oWizard->GetQuizz()->GetAsHtml('introduction');	
-			$oPage->add("<h1>$sTitle</h1>\n");
-			$oPage->add("<p>$sDescription</p>\n");	
 			if (($question != 'default'))
 			{
+				$oPage->add("<h1 class=\"quizz_title\">$sTitle</h1>\n");
+				$oPage->add("<div class=\"quizz_intro\">$sDescription</div>\n");	
 				// Additional "page" info on the first page
 				$sTitle = $question->GetAsHTML('title');
 				$sDescription = $question->GetAsHTML('description');
-				$oPage->add("<h1>$sTitle</h1>\n");
-				$oPage->add("<p>$sDescription</p>\n");	
+				$oPage->add("<div class=\"page_intro\">$sDescription</div>\n");	
+			}
+			else
+			{
+				$oPage->add("<h1 class=\"page_title\">".Dict::Format('Survey-Title-Page_X_of_Y', $sTitle, (1+$index), $iNbPages)."</h1>\n");
+				$oPage->add("<div class=\"quizz_intro\">$sDescription</div>\n");	
 			}
 		}
 		else // Not on the first page
 		{
 			$sTitle = $question->GetAsHTML('title');
 			$sDescription = $question->GetAsHTML('description');
-			$oPage->add("<h1>$sTitle</h1>\n");
-			$oPage->add("<p>$sDescription</p>\n");	
+			$oPage->add("<h1 class=\"page_title\">".Dict::Format('Survey-Title-Page_X_of_Y', $sTitle, (1+$index), $iNbPages)."</h1>\n");
+			$oPage->add("<div class=\"page_intro\">$sDescription</div>\n");	
 		}
+		$oPage->add("</div>\n");
 		
+		$oPage->add("<div class=\"quizz_questions\">\n");
 		$bHasMandatoryQuestions = false;
 		if (count($aQuestions) > 0)
 		{
@@ -460,12 +468,13 @@ class QuizzWizStepQuestions extends WizardStep
 				$oQuestion->DisplayForm($oPage, $sAnswer); 
 				$oPage->add('</div>');
 			}
-		}
-	
+			$oPage->add("</div>");
+		}	
 		$oPage->add("</div>");
+		
 		if ($bHasMandatoryQuestions)
 		{		
-			$oPage->p("<span class=\"mandatory_asterisk\">*</span> ".Dict::S('Survey-MandatoryQuestion'));
+			$oPage->add("<div class=\"mandatory_footer\"><span class=\"mandatory_asterisk\">*</span> ".Dict::S('Survey-MandatoryQuestion').'</div>');
 		}
 	}
 	
@@ -503,6 +512,15 @@ class QuizzWizStepQuestions extends WizardStep
 	}
 	
 	/**
+	 * Get the number of pages for the wizard (i.e. sub-steps for this step of the wizard)
+	 * @return integer The number of pages > 0
+	 */
+	protected function GetPagesCount()
+	{		
+		return count($this->aQuestions);
+	}
+	
+	/**
 	 * Gets information about the "page" defined by the given state
 	 * 
 	 * @param integer $idx The internal state for which to get the information
@@ -522,11 +540,11 @@ class QuizzWizStepQuestions extends WizardStep
 	{
 		if ($this->GetStepQuestions(1 + $this->GetStepIndex()) == null)
 		{
-			return "Finish";
+			return Dict::S('Survey-FinishButton');
 		}
 		else
 		{
-			return parent::GetNextButtonLabel();
+			return  Dict::S('Survey-NextButton');
 		}
 	}
 	

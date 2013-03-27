@@ -68,6 +68,17 @@ class Quizz extends cmdbAbstractObject
 		MetaModel::Init_SetZListItems('list', array('description', 'language'));
 	}
 
+	public function __construct($aRow = null, $sClassAlias = '', $aAttToLoad = null, $aExtendedDataSpec = null)
+	{
+		parent::__construct($aRow, $sClassAlias, $aAttToLoad, $aExtendedDataSpec);
+		if ($aRow == null)
+		{
+			// creating a brand new object, initialize the "scale values" from the configuration
+			$sModule = basename(dirname(__FILE__));
+			$sScaleValues = MetaModel::GetModuleSetting($sModule, 'quiz_scale', '');
+			$this->Set('scale_values', $sScaleValues);
+		}
+	}
 
 	/**
 	 * Add a tab to display a preview of the quizz
@@ -81,7 +92,7 @@ class Quizz extends cmdbAbstractObject
 		if (!$bEditMode)
 		{
 			$oPage->SetCurrentTab(Dict::S('Survey-quizz-overview'));
-			$oPage->p(Dict::S('Survey-quizz-shortcuttoquizz').': <a href="'.$this->MakeFormUrl().'">'.Dict::S('Survey-quizz-shortcutlabel').'</a>');
+			$oPage->p(Dict::S('Survey-quizz-shortcuttoquizz').': <a href="'.$this->MakeFormUrl().'" target="_blank">'.Dict::S('Survey-quizz-shortcutlabel').'</a>');
 		}
 	}
 
@@ -155,7 +166,7 @@ abstract class QuizzElement extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeText("description", array("allowed_values"=>null, "sql"=>"description", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 		MetaModel::Init_AddAttribute(new AttributeEnum("mandatory", array("allowed_values"=>new ValueSetEnum('yes,no'), "sql"=>"mandatory", "default_value"=>"yes", "is_null_allowed"=>false, "depends_on"=>array())));
 
-		MetaModel::Init_SetZListItems('details', array('quizz_id', 'order', 'title', 'description', 'mandatory'));
+		MetaModel::Init_SetZListItems('details', array('quizz_id', 'order', 'finalclass', 'title', 'description', 'mandatory'));
 		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'title', 'description', 'mandatory'));
 		MetaModel::Init_SetZListItems('list', array('order', 'title', 'description', 'mandatory'));
 	}
@@ -198,17 +209,17 @@ abstract class QuizzElement extends cmdbAbstractObject
 		$sDescription = $this->GetAsHtml('description');
 		if ($this->Get('mandatory') == 'yes')
 		{
-			$oPage->add("<h3>$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
+			$oPage->add("<h3 class=\"question_title mandatory\">$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
 		}
 		else
 		{
-			$oPage->add("<h3>$sTitle</h3>");
+			$oPage->add("<h3 class=\"question_title mandatory\">$sTitle</h3>");
 		}
-		$oPage->add("<p>$sDescription</p>");
+		$oPage->add("<p class=\"question_description\">$sDescription</p>");
 
 		$sTDProps = "width=\"80px\" align=\"center\"";
 
-		$oPage->add("<table>");
+		$oPage->add("<table class=\"radio_buttons\">");
 
 		$oPage->add("<tr>");
 		foreach($aChoices as $sValue)
@@ -346,14 +357,14 @@ class QuizzFreeTextQuestion extends QuizzElement
 		$iQuestionId = $this->GetKey();
 		if ($this->Get('mandatory') == 'yes')
 		{
-			$oPage->add("<h3>$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
+			$oPage->add("<h3 class=\"question_title mandatory\">$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
 		}
 		else
 		{
-			$oPage->add("<h3>$sTitle</h3>");
+			$oPage->add("<h3 class=\"question_title\">$sTitle</h3>");
 		}
 		$sMandatory = ($this->Get('mandatory') == 'yes') ? 'true' : 'false';
-		$oPage->add("<p>$sDescription</p>");
+		$oPage->add("<p class=\"question_description\">$sDescription</p>");
 		$oPage->add('<TEXTAREA style="width:100%;" name="answer['.$iQuestionId.']" data-mandatory="'.$sMandatory.'">'.htmlentities($sCurrentValue, ENT_QUOTES, 'UTF-8').'</TEXTAREA>');
 	}
 	
@@ -486,11 +497,7 @@ class QuizzNewPageElement extends QuizzElement
 	
 	public function DisplayForm(WebPage $oPage, $sCurrentValue)
 	{
-		$sTitle = $this->GetAsHtml('title');
-		$sDescription = $this->GetAsHtml('description');
-		$oPage->add("<hr/>");
-		$oPage->add("<h3>$sTitle</h3>");
-		$oPage->add("<p>$sDescription</p>");
+		// Nothing to do here, handled directly by the QuizzWizardController
 	}
 	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
 	{
@@ -508,6 +515,44 @@ class QuizzNewPageElement extends QuizzElement
 	{
 		return true;
 	}
+	/**
+	 * Returns the set of flags (OPT_ATT_HIDDEN, OPT_ATT_READONLY, OPT_ATT_MANDATORY...)
+	 * for the given attribute in the current state of the object
+	 * @param $sAttCode string $sAttCode The code of the attribute
+	 * @param $aReasons array To store the reasons why the attribute is read-only (info about the synchro replicas)
+	 * @param $sTargetState string The target state in which to evalutate the flags, if empty the current state will be used
+	 * @return integer Flags: the binary combination of the flags applicable to this attribute
+	 */	 	  	 	
+	public function GetAttributeFlags($sAttCode, &$aReasons = array(), $sTargetState = '')
+	{
+		$iFlags = parent::GetAttributeFlags($sAttCode, $aReasons, $sTargetState);
+		
+		// The 'mandatory' flag is not editable, page breaks are always mandatory
+		if ($sAttCode == 'mandatory')
+		{
+			$iFlags |= OPT_ATT_READONLY;
+		}
+		return $iFlags;
+	}
+
+	/**
+	 * Returns the set of flags (OPT_ATT_HIDDEN, OPT_ATT_READONLY, OPT_ATT_MANDATORY...)
+	 * for the given attribute for the current state of the object considered as an INITIAL state
+	 * @param string $sAttCode The code of the attribute
+	 * @return integer Flags: the binary combination of the flags applicable to this attribute
+	 */	 	  	 	
+	public function GetInitialStateAttributeFlags($sAttCode, &$aReasons = array())
+	{
+		$iFlags = parent::GetInitialStateAttributeFlags($sAttCode, $aReasons);
+
+		// The 'mandatory' flag is not editable, page breaks are always mandatory
+		if ($sAttCode == 'mandatory')
+		{
+			$iFlags |= OPT_ATT_READONLY;
+		}
+		return $iFlags;
+	}	
+	
 }
 
 class QuizzValueQuestion extends QuizzElement
@@ -1173,7 +1218,7 @@ EOF
 		$oBlock->Display($oPage, $sBlockId, $aExtraParams);		
 	}
 
-	public function DisplayResultsTab($oPage, $bPrintable = false)
+	public function DisplayResultsTab($oPage, $bPrintable = false, $aOrgIds = array(), $aContactIds = array())
 	{
 		if (!$bPrintable)
 		{
@@ -1192,14 +1237,14 @@ EOF
 			$sHtml = $this->GetDropDownFilter('filter_stats_org_id', Dict::S('Survey-results-filter-organization'), $aAllowedValues,'org_id', '');
 			
 			$sHtml .= '<span id="filter_stats_contact_id_outer">'.$this->GetContactsFilter().'</span>';
-			$oPage->add('<fieldset><legend>Filtering</legend><div id="stats_filter">');
+			$oPage->add('<fieldset><legend>'.Dict::S('Survey-results-fitlering').'</legend><div id="stats_filter">');
 			$oPage->add($sHtml);
 			$oPage->add('<button id="stats_filter_apply" type="button">'.Dict::S('Survey-results-apply-filter').'</button>&nbsp;<span id="stats_filter_indicator"></span>');
 			$oPage->add('</div></fieldset>');
 		}
 		
 		$oPage->add('<div id="survey_stats">');
-		$this->DisplayStatisticsAndExport($oPage, $bPrintable);
+		$this->DisplayStatisticsAndExport($oPage, $bPrintable, $aOrgIds, $aContactIds);
 		$oPage->add('</div>');
 		$iSurveyId = $this->GetKey();
 		$sAjaxUrl = addslashes(utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php');
@@ -1289,8 +1334,24 @@ EOF
 		$oPage->add("<fieldset style=\"background: #FFFFFF;\"><legend>$sFieldsetLegend</legend>");
 		if (!$bPrintable)
 		{
-			$sUrl = utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php?operation=print_results&survey_id='.$this->GetKey();
-			$oPage->add('<div style="float:right"><a href="'.$sUrl.'" target="_blank">'.Dict::S('Survey-results-print').'</a></div>');
+			$sUrl = utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php';
+			$oPage->add('<div style="float:right"><form id="printable_version" method="post" target="_blank" action="'.$sUrl.'">');
+			$aVars = array('operation' => 'print_results', 'survey_id' => $this->GetKey(), 'org_id' => $aOrgIds, 'contact_id' => $aContactIds);
+			foreach($aVars as $sName => $value)
+			{
+				if (is_array($value))
+				{
+					foreach($value as $sVal)
+					{
+						$oPage->add('<input type="hidden" name="'.$sName.'[]" value="'.$sVal.'"/>');
+					}
+				}
+				else
+				{
+					$oPage->add('<input type="hidden" name="'.$sName.'" value="'.$value.'"/>');
+				}			
+			}
+			$oPage->add('<a href="#" onclick="$(\'#printable_version\').submit();">'.Dict::S('Survey-results-print').'</a></form></div>');
 		}
 
 		$sOQL = "SELECT SurveyTargetAnswer AS T WHERE T.status = 'finished' AND T.survey_id = ".$this->GetKey();

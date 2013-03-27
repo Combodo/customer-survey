@@ -37,7 +37,7 @@ class QuizzWebPage extends NiceWebPage
 	 */
 	protected $m_aMenuButtons;
 	
-	public function __construct($sTitle, $sAlternateStyleSheet = '')
+	public function __construct($sTitle)
 	{
 		$this->m_aMenuButtons = array();
 		parent::__construct($sTitle);
@@ -45,14 +45,8 @@ class QuizzWebPage extends NiceWebPage
 		$this->add_header("Cache-control: no-cache");
 		$this->add_linked_stylesheet("../css/jquery.treeview.css");
 		$this->add_linked_stylesheet("../css/jquery.autocomplete.css");
-		if ($sAlternateStyleSheet != '')
-		{
-			$this->add_linked_stylesheet("../portal/$sAlternateStyleSheet/portal.css");
-		}
-		else
-		{
-			$this->add_linked_stylesheet("../portal/portal.css");
-		}
+		$this->add_linked_stylesheet(utils::GetAbsoluteUrlModulesRoot()."customer-survey/css/quizz.css");
+		$this->add_linked_stylesheet("../portal/portal.css");
 		$this->add_linked_script('../js/jquery.layout.min.js');
 		$this->add_linked_script('../js/jquery.ba-bbq.min.js');
 		$this->add_linked_script("../js/jquery.tablehover.js");

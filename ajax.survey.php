@@ -98,7 +98,17 @@ try
 		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
 		$oPage = new NiceWebPage($oSurvey->GetName());
 		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
-		$oSurvey->DisplayResultsTab($oPage, true); // true => printable
+		$aOrgIds = utils::ReadParam('org_id', array());
+		if (!is_array($aOrgIds))
+		{
+			$aOrgIds = array();
+		}
+		$aContactIds = utils::ReadParam('contact_id', array());
+		if (!is_array($aContactIds))
+		{
+			$aContactIds = array();
+		}
+		$oSurvey->DisplayResultsTab($oPage, true, $aOrgIds, $aContactIds); // true => printable
 		break;
 	}
 	

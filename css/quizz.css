@@ -1,0 +1,45 @@
+@CHARSET "UTF-8";
+.buttons_footer {
+	width:50%;
+	margin-left:auto;
+	margin-right:auto;
+}
+.preview_watermark {
+	font-size: 40pt;
+	font-weight: bold;
+	color: red;
+	position: fixed;
+	top: 0;
+	left: 300px;
+	z-index: 1000;
+	margin-left: auto;
+	margin-right: auto;
+	opacity: 0.5;
+}
+h1.page_title {
+	font-size: 14pt;
+	font-weight: bold;
+}
+h3.mandatory {
+	border: 0;
+}
+h3.question_title {
+	font-size: 12pt;
+	font-weight: bold;
+}
+.page_content {
+	text-align: left;	
+}
+.page_intro {
+	padding: 5px;
+}
+.mandatory_asterisk {
+	color: red;
+}
+.wizContainer table.radio_buttons {
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	table-layout: fixed;
+	display: table;
+}
