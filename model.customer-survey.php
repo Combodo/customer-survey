@@ -156,6 +156,7 @@ abstract class QuizzElement extends cmdbAbstractObject
 			"db_key_field" => "id",
 			"db_finalclass_field" => "finalclass",
 			"icon" => "",
+			"order_by_default" => array('order' => true, 'title' => true),
 		);
 		MetaModel::Init_Params($aParams);
 		MetaModel::Init_InheritAttributes();
