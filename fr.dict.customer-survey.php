@@ -86,6 +86,10 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:QuizzElement/Attribute:description+' => '',
 	'Class:QuizzElement/Attribute:mandatory' => 'Obligatoire',
 	'Class:QuizzElement/Attribute:mandatory+' => '',
+	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'non',
+	'Class:QuizzElement/Attribute:mandatory/Value:no+' => 'non',
+	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'oui',
+	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => 'oui',
 	'Class:QuizzElement/Attribute:finalclass' => 'Type de question',
 
 	'Class:QuizzValueQuestion' => 'Choix spécifiques',

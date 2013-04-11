@@ -22,7 +22,7 @@ class Quizz extends cmdbAbstractObject
 	{
 		$aParams = array
 		(
-			"category" => "searchable,quizz",
+			"category" => "bizmodel,searchable,quizz",
 			"key_type" => "autoincrement",
 			"name_attcode" => "name",
 			"state_attcode" => "",
@@ -147,7 +147,7 @@ abstract class QuizzElement extends cmdbAbstractObject
 	{
 		$aParams = array
 		(
-			"category" => "searchable,quizz",
+			"category" => "bizmodel,searchable,quizz",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("order", "title"),
 			"state_attcode" => "",
@@ -263,7 +263,7 @@ class QuizzScaleQuestion extends QuizzElement
 	{
 		$aParams = array
 		(
-			"category" => "searchable,quizz",
+			"category" => "bizmodel,searchable,quizz",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("order", "title"),
 			"state_attcode" => "",
@@ -337,7 +337,7 @@ class QuizzFreeTextQuestion extends QuizzElement
 	{
 		$aParams = array
 		(
-			"category" => "searchable,quizz",
+			"category" => "bizmodel,searchable,quizz",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("order", "title"),
 			"state_attcode" => "",
@@ -482,7 +482,7 @@ class QuizzNewPageElement extends QuizzElement
 	{
 		$aParams = array
 		(
-			"category" => "searchable,quizz",
+			"category" => "bizmodel,searchable,quizz",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("order", "title"),
 			"state_attcode" => "",
@@ -562,7 +562,7 @@ class QuizzValueQuestion extends QuizzElement
 	{
 		$aParams = array
 		(
-			"category" => "searchable,quizz",
+			"category" => "bizmodel,searchable,quizz",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("order", "title"),
 			"state_attcode" => "",
@@ -641,7 +641,7 @@ class Survey extends cmdbAbstractObject
 	{
 		$aParams = array
 		(
-			"category" => "searchable,survey",
+			"category" => "bizmodel,searchable,survey",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("quizz_id_friendlyname", "date_sent"),
 			"state_attcode" => "status",
@@ -1475,7 +1475,7 @@ class SurveyTarget extends cmdbAbstractObject
 	{
 		$aParams = array
 		(
-			"category" => "searchable,survey",
+			"category" => "bizmodel,searchable,survey",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("contact_id_friendlyname"),
 			"state_attcode" => "",
@@ -1508,7 +1508,7 @@ class SurveyTargetAnswer extends cmdbAbstractObject
 	{
 		$aParams = array
 		(
-			"category" => "searchable,survey",
+			"category" => "bizmodel,searchable,survey",
 			"key_type" => "autoincrement",
 			"name_attcode" => array("token"),
 			"state_attcode" => "",
@@ -1560,7 +1560,7 @@ class SurveyAnswer extends cmdbAbstractObject
 	{
 		$aParams = array
 		(
-			"category" => "searchable,survey",
+			"category" => "bizmodel,searchable,survey",
 			"key_type" => "autoincrement",
 			"name_attcode" =>  array("survey_target_id_friendlyname", "question_id"),
 			"state_attcode" => "",
@@ -1633,23 +1633,10 @@ class CustomerSurvey extends ModuleHandlerAPI
 {
 	public static function OnMenuCreation()
 	{
-		// Add the admin menus
-		if (UserRights::IsAdministrator()) // TODO: define who has the rights to view this menu and where it is positioned (Helpdesk ?)
-		{
-			if (false)
-			{
-			$oQuizzMenu = new MenuGroup('CustomerSurvey', 72 /* fRank */);
-			}
-			else
-			{
-			// #@# Do we have to maintain the exact same declaration (see user rights) ?!?!?!
-			//$oMainMenu = new MenuGroup('DataAdministration', 70 /* fRank */, 'Organization', UR_ACTION_MODIFY, UR_ALLOWED_YES|UR_ALLOWED_DEPENDS);
-			$oMainMenu = new MenuGroup('RequestManagement', 30 /* fRank */);
-			$oQuizzMenu = new TemplateMenuNode('CustomerSurvey', '', $oMainMenu->GetIndex(), 50 /* fRank */);
-			}
-			$iIndex = 1;
-			new OQLMenuNode('Quizzes', 'SELECT Quizz', $oQuizzMenu->GetIndex(), $iIndex++ /* fRank */);
-			new OQLMenuNode('Surveys', 'SELECT Survey', $oQuizzMenu->GetIndex(), $iIndex++ /* fRank */);
-		}
+		$oMainMenu = new MenuGroup('RequestManagement', 30 /* fRank */);
+		$oQuizzMenu = new TemplateMenuNode('CustomerSurvey', '', $oMainMenu->GetIndex(), 50 /* fRank */);
+		$iIndex = 1;
+		new OQLMenuNode('Quizzes', 'SELECT Quizz', $oQuizzMenu->GetIndex(), $iIndex++ /* fRank */);
+		new OQLMenuNode('Surveys', 'SELECT Survey', $oQuizzMenu->GetIndex(), $iIndex++ /* fRank */);
 	}
 }
