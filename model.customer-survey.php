@@ -1304,14 +1304,24 @@ EOF
 	{
 		$sFields = 'question_title,question_description,value';
 		$sOrgIdClause = '';
+		$sOrgUrl = '';
 		if (count($aOrgIds) > 0)
 		{
 			$sOrgIdClause = " AND T.org_id IN(".implode(',', $aOrgIds).")";
+			foreach($aOrgIds as $iOrgId)
+			{
+				$sOrgUrl .= '&o[]='.$iOrgId;
+			}
 		}
 		$sContactIdClause = '';
+		$sContactUrl = '';
 		if (count($aContactIds) > 0)
 		{
 			$sContactIdClause = " AND T.contact_id IN(".implode(',', $aContactIds).")";
+			foreach($aContactIds as $iContactId)
+			{
+				$sContactUrl .= '&c[]='.$iContactId;
+			}
 		}
 		if (!$this->IsAnonymous())
 		{
@@ -1392,31 +1402,24 @@ EOF
 		}
 		$oPage->add('</fieldset>');
 		$oPage->add('</div>');
-		$aQueries[Dict::S('Survey-query-results')] = array(
-			'oql' => "SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.status = 'finished' AND T.survey_id = ".$this->GetKey().$sOrgIdClause.$sContactIdClause,
-			'fields' => $sFields
-		);
 	
 		if (!$bPrintable)
 		{
 			$oPage->add('<fieldset><legend>'.Dict::S('Survey-query-results-export').'</legend>');
 			$oPage->add('<table>');
-			foreach($aQueries AS $sLabel => $aData)
-			{
-				$oPage->add('<tr>');
-				$oPage->add('<td>'.$sLabel.'</td>');
-		
-				$sQuery = urlencode($aData['oql']);
-				$sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
-		
-				$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?login_mode=basic&format=spreadsheet&expression='.$sQuery.'&fields='.$aData['fields'];
-				$oPage->add('<td><a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-excel').'</a></td>');
-		
-				$sRunQueryUrl = $sAbsoluteUrl.'webservices/export.php?format=CSV&expression='.$sQuery.'&fields='.$aData['fields'];
-				$oPage->add('<td><a href="'.$sRunQueryUrl.'">'.Dict::S('Survey-results-csv').'</a></td>');
-		
-				$oPage->add('</tr>');
-			}
+			$oPage->add('<tr>');
+			$oPage->add('<td>'.Dict::S('Survey-query-results').'</td>');
+	
+			$sAbsoluteUrl = utils::GetAbsoluteUrlModulesRoot();
+	
+			$sRunQueryUrl = $sAbsoluteUrl.'customer-survey/report.php?s='.$this->GetKey().$sOrgUrl.$sContactUrl;
+			$oPage->add('<td><a href="'.$sRunQueryUrl.'" target="_blank">'.Dict::S('Survey-results-excel').'</a></td>');
+	
+			$sRunQueryUrl .= '&f=csv';
+			$oPage->add('<td><a href="'.$sRunQueryUrl.'" target="_blank">'.Dict::S('Survey-results-csv').'</a></td>');
+	
+			$oPage->add('</tr>');
+
 			$oPage->add('</table>');
 			$oPage->add('</fieldset>');
 		}
