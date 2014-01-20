@@ -216,7 +216,7 @@ abstract class QuizzElement extends cmdbAbstractObject
 		{
 			$oPage->add("<h3 class=\"question_title mandatory\">$sTitle</h3>");
 		}
-		$oPage->add("<p class=\"question_description\">$sDescription</p>");
+		$oPage->add("<div class=\"question_description\">$sDescription</div>");
 
 		$sTDProps = "width=\"80px\" align=\"center\"";
 
@@ -365,8 +365,8 @@ class QuizzFreeTextQuestion extends QuizzElement
 			$oPage->add("<h3 class=\"question_title\">$sTitle</h3>");
 		}
 		$sMandatory = ($this->Get('mandatory') == 'yes') ? 'true' : 'false';
-		$oPage->add("<p class=\"question_description\">$sDescription</p>");
-		$oPage->add('<TEXTAREA style="width:100%;" name="answer['.$iQuestionId.']" data-mandatory="'.$sMandatory.'">'.htmlentities($sCurrentValue, ENT_QUOTES, 'UTF-8').'</TEXTAREA>');
+		$oPage->add("<div class=\"question_description\">$sDescription</div>");
+		$oPage->add('<TEXTAREA style="width:99%;" name="answer['.$iQuestionId.']" data-mandatory="'.$sMandatory.'">'.htmlentities($sCurrentValue, ENT_QUOTES, 'UTF-8').'</TEXTAREA>');
 	}
 	
 	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)

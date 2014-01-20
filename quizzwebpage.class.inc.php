@@ -43,10 +43,14 @@ class QuizzWebPage extends NiceWebPage
 		parent::__construct($sTitle);
 		$this->add_header("Content-type: text/html; charset=utf-8");
 		$this->add_header("Cache-control: no-cache");
+
+		$sAppRoot = utils::GetAbsoluteUrlAppRoot();
+		$this->set_base($sAppRoot.'pages/');
+
 		$this->add_linked_stylesheet("../css/jquery.treeview.css");
 		$this->add_linked_stylesheet("../css/jquery.autocomplete.css");
-		$this->add_linked_stylesheet(utils::GetAbsoluteUrlModulesRoot()."customer-survey/css/quizz.css");
 		$this->add_linked_stylesheet("../portal/portal.css");
+		$this->add_linked_stylesheet(utils::GetAbsoluteUrlModulesRoot()."customer-survey/css/quizz.css");
 		$this->add_linked_script('../js/jquery.layout.min.js');
 		$this->add_linked_script('../js/jquery.ba-bbq.min.js');
 		$this->add_linked_script("../js/jquery.tablehover.js");
@@ -146,6 +150,12 @@ EOF
 EOF
 );
 		
+		// Customize the logo
+		if (file_exists(MODULESROOT.'branding/portal-logo.png'))
+		{
+			$sDisplayIcon = utils::GetAbsoluteUrlModulesRoot().'branding/portal-logo.png';
+			$this->add_style("div#portal #logo {background: url(\"$sDisplayIcon\") no-repeat scroll 0 0 transparent;}");
+		}
 	}
 	
 	/**
@@ -164,7 +174,7 @@ EOF
 		{
 			$sMenu .= "<a class=\"button\" id=\"{$aMenuItem['id']}\" href=\"{$aMenuItem['hyperlink']}\"><span>".Dict::S($aMenuItem['label'])."</span></a>";
 		}
-		$this->s_content = '<div id="portal"><div id="banner"><div id="logo"></div><h1 style="display: inline-block; float:right; vertical-align:middle; margin-right:20px">'.$this->s_title.'</h1>'.$sMenu.'</div><div id="content">'.$this->s_content.'</div></div>';
+		$this->s_content = '<div id="portal"><div id="banner"><div id="logo"></div>'.$sMenu.'</div><div id="content">'.$this->s_content.'</div></div>';
 		parent::output();
 	}
 }

@@ -1,24 +1,45 @@
 @CHARSET "UTF-8";
+
+div#portal #banner {
+	height: auto;
+	max-width: 50%;
+	min-width: 600px;
+}
+
+#content {
+	max-width: 50%;
+	min-width: 600px;
+}
 .buttons_footer {
-	width:50%;
 	margin-left:auto;
 	margin-right:auto;
+}
+.buttons_footer button{
+	margin: 10px;
+	padding: 10px;
+	font-size: 12pt;
+	font-weight: bold;
 }
 .preview_watermark {
 	font-size: 40pt;
 	font-weight: bold;
 	color: red;
 	position: fixed;
-	top: 0;
-	left: 300px;
+	top: 100px;
+	right: 20px;
 	z-index: 1000;
-	margin-left: auto;
-	margin-right: auto;
-	opacity: 0.5;
+	opacity: 0.20;
+	-webkit-transform: rotate(30deg);
+	-moz-transform: rotate(30deg);
+	-ms-transform: rotate(30deg);
+	-o-transform: rotate(30deg);
 }
 h1.page_title {
 	font-size: 14pt;
 	font-weight: bold;
+}
+div.wizContainer {
+	background-color: #EEEEEE;
 }
 h3.mandatory {
 	border: 0;
@@ -26,6 +47,13 @@ h3.mandatory {
 h3.question_title {
 	font-size: 12pt;
 	font-weight: bold;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+	margin-bottom: 0px;
+}
+div.question {
+	padding: 5px;
 }
 .page_content {
 	text-align: left;	
@@ -37,9 +65,8 @@ h3.question_title {
 	color: red;
 }
 .wizContainer table.radio_buttons {
-	width: 80%;
-	margin-left: auto;
-	margin-right: auto;
 	table-layout: fixed;
-	display: table;
+}
+.wizContainer table.radio_buttons td{
+	width: 120px;
 }
