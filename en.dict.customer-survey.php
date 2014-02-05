@@ -127,7 +127,7 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:Survey/Attribute:email_on_completion' => 'Email on completion',
 	'Class:Survey/Attribute:email_on_completion?' => 'Send an email to the emitter of the survey when someone completes the survey.',
 	'Class:Survey/Attribute:target_phrase_id' => 'Recipients of the Survey',
-	'Class:Survey/Attribute:email_on_completion?' => 'Define the recipients of the survey based on a query stored in the Phrasebook',
+	'Class:Survey/Attribute:target_phrase_id?' => 'Define the recipients of the survey based on a query stored in the Phrasebook',
 
 	'Class:SurveyTarget' => 'Target contact',
 	'Class:SurveyTarget+' => '',

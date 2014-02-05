@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) 2011 Combodo SARL
+// Copyright (C) 2011-2014 Combodo SARL
 //
 
 /**
@@ -297,7 +297,12 @@ class QuizzScaleQuestion extends QuizzElement
 		}
 		while ($oAnswer = $oAnswerSet->Fetch())
 		{
-			$aResults[$oAnswer->Get('value')] += 1;
+			$sAnswer = $oAnswer->Get('value');
+			// Note: the answer might be undefined if the question is optional
+			if (array_key_exists($sAnswer, $aResults))
+			{
+				$aResults[$sAnswer] += 1;
+			}
 		}
 
 		$oPage->add('<table style="border-collapse: collapse;">');
@@ -388,7 +393,7 @@ class QuizzFreeTextQuestion extends QuizzElement
 		$oPage->add('<div class="Collapsible"><span class="CollapsibleLabel">'.Dict::Format('Survey-results-X_NonEmptyValuesOutOf_N', count($aValues), $iTargetCount).'</span><div class="CollapsibleContent">');
 		foreach($aValues as $aAnswer)
 		{
-			$oPage->add('<div class="triangle-border">'.htmlentities($aAnswer['text'], ENT_QUOTES, 'UTF-8').'</div>');
+			$oPage->add('<div class="triangle-border"><div class="user_comment">'.htmlentities($aAnswer['text'], ENT_QUOTES, 'UTF-8').'</div></div>');
 			if (!$bAnonymous)
 			{
 				$oPage->add('<div class="author">'.htmlentities($aAnswer['author'], ENT_QUOTES, 'UTF-8').'</div>');
@@ -425,6 +430,11 @@ class QuizzFreeTextQuestion extends QuizzElement
     position: absolute;
     width: 0;
 }
+
+.user_comment {
+	white-space: pre-wrap;
+}
+
 .author {
 	font-size: small;
 }
@@ -597,7 +607,12 @@ class QuizzValueQuestion extends QuizzElement
 		}
 		while ($oAnswer = $oAnswerSet->Fetch())
 		{
-			$aResults[$oAnswer->Get('value')] += 1;
+			$sAnswer = $oAnswer->Get('value');
+			// Note: the answer might be undefined if the question is optional
+			if (array_key_exists($sAnswer, $aResults))
+			{
+				$aResults[$sAnswer] += 1;
+			}
 		}
 
 		$oPage->add('<table style="border-collapse: collapse;">');
@@ -668,7 +683,7 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_AddAttribute(new AttributeHTML("email_body", array("allowed_values"=>null, "sql"=>"email_body", "default_value"=>"", "is_null_allowed"=>true, "depends_on"=>array())));
 
 		MetaModel::Init_AddAttribute(new AttributeLinkedSetIndirect("survey_target_list", array("linked_class"=>"SurveyTarget", "ext_key_to_me"=>"survey_id", "ext_key_to_remote"=>"contact_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
-		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_target_answer_list", array("linked_class"=>"SurveyTargetAnswer", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array())));
+		MetaModel::Init_AddAttribute(new AttributeLinkedSet("survey_target_answer_list", array("linked_class"=>"SurveyTargetAnswer", "ext_key_to_me"=>"survey_id", "allowed_values"=>null, "count_min"=>0, "count_max"=>0, "depends_on"=>array(), "tracking_level"=>'none')));
 
 		MetaModel::Init_SetZListItems('details', array('quizz_id', 'language', 'status', 'date_sent', 'on_behalf_of', 'email_on_completion', 'email_subject', 'email_body', 'target_phrase_id', 'survey_target_list'));
 		MetaModel::Init_SetZListItems('standard_search', array('quizz_id', 'status', 'date_sent', 'language'));
@@ -1345,7 +1360,7 @@ EOF
 		$oPage->add("<fieldset style=\"background: #FFFFFF;\"><legend>$sFieldsetLegend</legend>");
 		if (!$bPrintable)
 		{
-			$sUrl = utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php';
+			$sUrl = utils::GetAbsoluteUrlModulePage('customer-survey', 'print.php');
 			$oPage->add('<div style="float:right"><form id="printable_version" method="post" target="_blank" action="'.$sUrl.'">');
 			$aVars = array('operation' => 'print_results', 'survey_id' => $this->GetKey(), 'org_id' => $aOrgIds, 'contact_id' => $aContactIds);
 			foreach($aVars as $sName => $value)
@@ -1362,7 +1377,7 @@ EOF
 					$oPage->add('<input type="hidden" name="'.$sName.'" value="'.$value.'"/>');
 				}			
 			}
-			$oPage->add('<a href="#" onclick="$(\'#printable_version\').submit();">'.Dict::S('Survey-results-print').'</a></form></div>');
+			$oPage->add('<a href="#" onclick="$(\'#printable_version\').submit(); return false;">'.Dict::S('Survey-results-print').'</a></form></div>');
 		}
 
 		$sOQL = "SELECT SurveyTargetAnswer AS T WHERE T.status = 'finished' AND T.survey_id = ".$this->GetKey();

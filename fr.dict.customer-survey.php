@@ -130,7 +130,7 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:Survey/Attribute:email_on_completion' => 'Email en cas de réponse',
 	'Class:Survey/Attribute:email_on_completion?' => 'Envoyer un email à l\'auteur de l\'enquête pour chaque réponse au questionnaire',
 	'Class:Survey/Attribute:target_phrase_id' => 'Destinaires',
-	'Class:Survey/Attribute:email_on_completion?' => 'Définit la liste des destinaires à partir d\'une entrée du livre des requêtes',
+	'Class:Survey/Attribute:target_phrase_id?' => 'Définit la liste des destinaires à partir d\'une entrée du livre des requêtes',
 
 	'Class:SurveyTarget' => 'Destinaire d\'enquête',
 	'Class:SurveyTarget+' => '',
