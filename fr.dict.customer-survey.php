@@ -129,6 +129,10 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:Survey/Stimulus:ev_test' => 'Envoyez-moi un échantillon de message',
 	'Class:Survey/Attribute:email_on_completion' => 'Email en cas de réponse',
 	'Class:Survey/Attribute:email_on_completion?' => 'Envoyer un email à l\'auteur de l\'enquête pour chaque réponse au questionnaire',
+	'Class:Survey/Attribute:email_on_completion/Value:no' => 'non',
+	'Class:Survey/Attribute:email_on_completion/Value:no+' => 'non',
+	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'oui',
+	'Class:Survey/Attribute:email_on_completion/Value:yes+' => 'oui',
 	'Class:Survey/Attribute:target_phrase_id' => 'Destinaires',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Définit la liste des destinaires à partir d\'une entrée du livre des requêtes',
 
