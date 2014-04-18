@@ -323,9 +323,9 @@ class QuizzWizStepQuestions extends WizardStep
 								}
 								else
 								{
-									$oEmail->SetSubject(Dict::Format('Survey-CompletionNotificationSubject_name_contact', $oSurvey->GetName(), $oContact->GetName()));
+									$oEmail->SetSubject(Dict::Format('Survey-CompletionNotificationSubject_name_contact', $oSurvey->GetName(), $oSurveyTargetAnswer->Get('contact_name')));
 									$sSurveyUrl = ApplicationContext::MakeObjectUrl('Survey', $oSurvey->GetKey(), null, false);
-									$sBody = Dict::Format('Survey-CompletionNotificationBody_url_contact', $sSurveyUrl, $oContact->GetName());
+									$sBody = Dict::Format('Survey-CompletionNotificationBody_url_contact', $sSurveyUrl, $oSurveyTargetAnswer->Get('contact_name'));
 								}
 								$oEmail->SetBody($sBody);
 								$oEmail->SetRecipientTO($oContact->Get('email'));
