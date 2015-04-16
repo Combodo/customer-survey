@@ -732,9 +732,9 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_close", array()));
 		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_test", array()));
 
-		MetaModel::Init_DefineTransition("new", "ev_test", array("target_state"=>"new", "actions"=>array(array('verb' => 'SendPreview', 'params' => array())), "user_restriction"=>null));
-		MetaModel::Init_DefineTransition("new", "ev_start", array("target_state"=>"running", "actions"=>array(array('verb' => 'SendQuizz', 'params' => array())), "user_restriction"=>null));
-		MetaModel::Init_DefineTransition("running", "ev_test", array("target_state"=>"running", "actions"=>array(array('verb' => 'SendPreview', 'params' => array())), "user_restriction"=>null));
+		MetaModel::Init_DefineTransition("new", "ev_test", array("target_state"=>"new", "actions"=>array('SendPreview'), "user_restriction"=>null));
+		MetaModel::Init_DefineTransition("new", "ev_start", array("target_state"=>"running", "actions"=>array('SendQuizz'), "user_restriction"=>null));
+		MetaModel::Init_DefineTransition("running", "ev_test", array("target_state"=>"running", "actions"=>array('SendPreview'), "user_restriction"=>null));
 		MetaModel::Init_DefineTransition("running", "ev_close", array("target_state"=>"closed", "actions"=>array(), "user_restriction"=>null));
 	}
 
