@@ -58,7 +58,7 @@ class Quizz extends cmdbAbstractObject
 		MetaModel::Init_SetZListItems('details', array(
 				'survey_list',
 				'question_list',
-				'col:0'=> array(
+				'col:col0'=> array(
 				'fieldset:Survey-quizz-frame-definition' => array('name','description', 'language', 'scale_values'),
 				'fieldset:Survey-quizz-frame-description' => array('title','introduction'),
 				'fieldset:Survey-quizz-last-page' => array('conclusion'),
