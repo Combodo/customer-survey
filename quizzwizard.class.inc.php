@@ -148,7 +148,7 @@ EOF
 
 $('form').each(function () {
 	var thisform = $(this);
-		thisform.prepend(thisform.find('button.default').clone().removeAttr('id').removeAttr('disabled').css({
+		thisform.prepend(thisform.find('button.default').clone().removeAttr('id').prop('disabled', false);.css({
 		position: 'absolute',
 		left: '-999px',
 		top: '-999px',
@@ -668,7 +668,7 @@ class QuizzWizStepQuestions extends WizardStep
 				$oPage->add_ready_script(
 <<<EOF
 	$('#suspend_indicator').html('');
-	$('#btn_suspend').removeAttr('disabled');
+	$('#btn_suspend').prop('disabled', false);
 	var oDlg = $('<div>$sMessage</div>');
 	oDlg.appendTo('body');
 	oDlg.dialog({

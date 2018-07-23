@@ -1193,16 +1193,16 @@ function SurveyRunDialogSendAgain()
 	});
 }
 $('#block-survey-progress-status .datacontents').append('$sWithSelected');
-$('#survey_send_again').attr('disabled', 'disabled');
+$('#survey_send_again').prop('disabled', true);
 
 $('#block-survey-progress-status .selectListblock_survey_progress_status').change(function (){
 	if ($('#block-survey-progress-status .selectListblock_survey_progress_status:checked').length > 0)
 	{
-		$('#survey_send_again').removeAttr('disabled');
+		$('#survey_send_again').prop('disabled', false);
 	}
 	else
 	{
-		$('#survey_send_again').attr('disabled', 'disabled');
+		$('#survey_send_again').prop('disabled', true);
 	}
 });
 
@@ -1268,7 +1268,7 @@ EOF
 <<<EOF
 function SurveyFilterStats()
 {
-	$('#stats_filter button').attr('disabled', 'disabled');
+	$('#stats_filter button').prop('disabled', true);
 	$('#stats_filter_indicator').html('<img src="../images/indicator.gif"/>');
 	var oMap = {
 		operation: 'filter_stats',
@@ -1280,12 +1280,12 @@ function SurveyFilterStats()
 	
 		$('#survey_stats').html(html);
 		$('#stats_filter_indicator').html('');
-		$('#stats_filter button').removeAttr('disabled');
+		$('#stats_filter button').prop('disabled', false);
 	});
 }
 function RefreshContactsFilter()
 {
-	$('#stats_filter button').attr('disabled', 'disabled');
+	$('#stats_filter button').prop('disabled', true);
 	$('#stats_filter_indicator').html('<img src="../images/indicator.gif"/>');
 	var oMap = {
 		operation: 'refresh_contacts_filter',
@@ -1296,7 +1296,7 @@ function RefreshContactsFilter()
 	
 		$('#filter_stats_contact_id_outer').html(html);
 		$('#stats_filter_indicator').html('');
-		$('#stats_filter button').removeAttr('disabled');
+		$('#stats_filter button').prop('disabled', false);
 	});
 }
 

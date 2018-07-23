@@ -40,20 +40,20 @@ function WizardUpdateButtons()
 {
 	if (CanMoveForward())
 	{
-		$("#btn_next").removeAttr("disabled");
+		$("#btn_next").prop('disabled', false);
 	}
 	else
 	{
-		$("#btn_next").attr("disabled", "disabled");		
+		$("#btn_next").prop('disabled', true);
 	}
 
 	if (CanMoveBackward())
 	{
-		$("#btn_back").removeAttr("disabled");
+		$("#btn_back").prop('disabled', false);
 	}
 	else
 	{
-		$("#btn_back").attr("disabled", "disabled");		
+		$("#btn_back").prop('disabled', true);
 	}
 }
 
@@ -90,7 +90,7 @@ function Suspend()
 {
 	var oParams = {};
 	$('#suspend_indicator').html('<img src="../images/indicator.gif"/>');
-	$('#btn_suspend').attr('disabled', 'disabled');
+	$('#btn_suspend').prop('disabled', true);
 	oParams.other_answers = $('#_params_answer').val(); // values from other pages
 	$('div.question').each(function() {
 		
