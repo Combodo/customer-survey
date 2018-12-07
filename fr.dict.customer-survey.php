@@ -1,7 +1,6 @@
 <?php
 // Copyright (C) 2011 Combodo SARL
 //
-
 /**
  * Localized data
  *
@@ -10,8 +9,8 @@
  * @author      Denis Flaven <denis.flaven@combodo.com>
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
-
 Dict::Add('FR FR', 'French', 'Français', array(
+	// Dictionary entries go here
 	'Survey-Title' => 'iTop Enquête client',
 	'Survey-Title-Draft' => 'iTop Enquête client (mode Prévisualisation)',
 
@@ -49,7 +48,7 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Survey-form-thankyou' => 'Merci pour votre participation.',
 
 	'Survey-email-preview' => 'Prévisualisation',
-	'Survey-email-notsent' => 'Echec de l\envoi de l\email :',
+	'Survey-email-notsent' => 'Echec de l\\envoi de l\\email :',
 	'Survey-email-ok' => 'Email envoyé',
 
 	'Class:Quizz' => 'Questionnaire',
@@ -86,10 +85,6 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:QuizzElement/Attribute:description+' => '',
 	'Class:QuizzElement/Attribute:mandatory' => 'Obligatoire',
 	'Class:QuizzElement/Attribute:mandatory+' => '',
-	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'non',
-	'Class:QuizzElement/Attribute:mandatory/Value:no+' => 'non',
-	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'oui',
-	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => 'oui',
 	'Class:QuizzElement/Attribute:finalclass' => 'Type de question',
 
 	'Class:QuizzValueQuestion' => 'Choix spécifiques',
@@ -129,10 +124,6 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:Survey/Stimulus:ev_test' => 'Envoyez-moi un échantillon de message',
 	'Class:Survey/Attribute:email_on_completion' => 'Email en cas de réponse',
 	'Class:Survey/Attribute:email_on_completion?' => 'Envoyer un email à l\'auteur de l\'enquête pour chaque réponse au questionnaire',
-	'Class:Survey/Attribute:email_on_completion/Value:no' => 'non',
-	'Class:Survey/Attribute:email_on_completion/Value:no+' => 'non',
-	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'oui',
-	'Class:Survey/Attribute:email_on_completion/Value:yes+' => 'oui',
 	'Class:Survey/Attribute:target_phrase_id' => 'Destinaires',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Définit la liste des destinaires à partir d\'une entrée du livre des requêtes',
 
