@@ -1,7 +1,6 @@
 <?php
 // Copyright (C) 2011 Combodo SARL
 //
-
 /**
  * Localized data
  *
@@ -11,7 +10,6 @@
  * @author		 Robert Jaehne <robert.jaehne@itomig.de>
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
-
 Dict::Add('DE DE', 'German', 'Deutsch', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Kundenbefragung',
@@ -88,10 +86,6 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Class:QuizzElement/Attribute:description+' => '',
 	'Class:QuizzElement/Attribute:mandatory' => 'Notwendig',
 	'Class:QuizzElement/Attribute:mandatory+' => '',
-	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'Nein',
-	'Class:QuizzElement/Attribute:mandatory/Value:no+' => 'Nein',
-	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'Ja',
-	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => 'Ja',
 	'Class:QuizzElement/Attribute:finalclass' => 'Typ der Frage',
 
 	'Class:QuizzValueQuestion' => 'Spezifische Auswahl',
@@ -131,10 +125,6 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Class:Survey/Stimulus:ev_test' => 'Testnachricht an mich versenden',
 	'Class:Survey/Attribute:email_on_completion' => 'Email bei Beendigung',
 	'Class:Survey/Attribute:email_on_completion?' => 'EMail an den Herausgeber der Umfrage senden, wenn sie von jemandem abgeschlossen wurde.',
-	'Class:Survey/Attribute:email_on_completion/Value:no' => 'Nein',
-	'Class:Survey/Attribute:email_on_completion/Value:no+' => 'Nein',
-	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'Ja',
-	'Class:Survey/Attribute:email_on_completion/Value:yes+' => 'Ja',
 	'Class:Survey/Attribute:target_phrase_id' => 'Empfänger der Befragung',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Definition der Empfänger der Befragung, basierend auf einer Abfrage die im Phrasebook gespeichert ist.',
 

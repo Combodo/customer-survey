@@ -5,7 +5,7 @@
 
 SetupWebPage::AddModule(
 	__FILE__, // Path to the current file, all other file names are relative to the directory containing this file
-	'customer-survey/2.2.1',
+	'customer-survey/2.3.0',
 	array(
 		// Identification
 		//
@@ -53,6 +53,3 @@ SetupWebPage::AddModule(
 		),
 	)
 );
-
-
-?>
