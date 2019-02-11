@@ -23,7 +23,8 @@ SetupWebPage::AddModule(
 		// Components
 		//
 		'datamodel' => array(
-			'model.customer-survey.php'
+			'main.customer-survey.php',
+			'model.customer-survey.php',
 		),
 		'webservice' => array(
 
