@@ -149,7 +149,7 @@ EOF
 	}
 EOF
 );
-		
+	$this->add_style('body{overflow:visible;}');
 		// Customize the logo
 		if (file_exists(MODULESROOT.'branding/portal-logo.png'))
 		{
