@@ -724,6 +724,7 @@ class Survey extends cmdbAbstractObject
 			array(
 				"attribute_inherit" => 'running',
 				"attribute_list" => array(
+					'survey_target_list' => OPT_ATT_READONLY,
 				),
 			)
 		);
@@ -1104,8 +1105,11 @@ class Survey extends cmdbAbstractObject
 			
 			// mark all "finished" targets as non-selectable
 			$oFinishedFilter = new DBObjectSearch('SurveyTargetAnswer');
-			$oFinishedFilter->AddCondition('survey_id', $this->GetKey());
-			$oFinishedFilter->AddCondition('status', 'finished');
+			if($this->Get(MetaModel::GetStateAttributeCode('Survey')) !== 'closed')
+			{
+				$oFinishedFilter->AddCondition('survey_id', $this->GetKey());
+				$oFinishedFilter->AddCondition('status', 'finished');
+			}
 			$oSet = new DBObjectSet($oFinishedFilter);
 			$aSelectable = array();
 			while($oSTA = $oSet->Fetch())
