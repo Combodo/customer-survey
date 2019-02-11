@@ -732,17 +732,17 @@ class Survey extends cmdbAbstractObject
 		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_close", array()));
 		MetaModel::Init_DefineStimulus(new StimulusUserAction("ev_test", array()));
 
-		MetaModel::Init_DefineTransition("new", "ev_test", array("target_state"=>"new", "actions"=>array(array('verb' => 'SendPreview', 'params' => array())), "user_restriction"=>null));
-		MetaModel::Init_DefineTransition("new", "ev_start", array("target_state"=>"running", "actions"=>array(array('verb' => 'SendQuizz', 'params' => array())), "user_restriction"=>null));
-		MetaModel::Init_DefineTransition("running", "ev_test", array("target_state"=>"running", "actions"=>array(array('verb' => 'SendPreview', 'params' => array())), "user_restriction"=>null));
-		MetaModel::Init_DefineTransition("running", "ev_close", array("target_state"=>"closed", "actions"=>array(), "user_restriction"=>null));
+		MetaModel::Init_DefineTransition("new", "ev_test", array("target_state"=>"new", "actions"=>array(array('verb' => 'SendPreview', 'params' => array())), "user_restriction"=>null, "attribute_list"=>array()));
+		MetaModel::Init_DefineTransition("new", "ev_start", array("target_state"=>"running", "actions"=>array(array('verb' => 'SendQuizz', 'params' => array())), "user_restriction"=>null, "attribute_list"=>array()));
+		MetaModel::Init_DefineTransition("running", "ev_test", array("target_state"=>"running", "actions"=>array(array('verb' => 'SendPreview', 'params' => array())), "user_restriction"=>null, "attribute_list"=>array()));
+		MetaModel::Init_DefineTransition("running", "ev_close", array("target_state"=>"closed", "actions"=>array(), "user_restriction"=>null, "attribute_list"=>array()));
 	}
 
 	protected $m_sApplicationLanguage;
 
 	// Lifecycle actions
 	//
-	public function SendQuizz($sStimulusCode)
+	public function SendQuizz()
 	{
 		$this->Set('date_sent', time());
 
@@ -799,7 +799,7 @@ class Survey extends cmdbAbstractObject
 	 * Send a preview message (with a link to a preview of the quizz) to the current user 
 	 * @return void
 	 */
-	public function SendPreview($sStimulusCode)
+	public function SendPreview()
 	{
 		$bRes = false;
 		if ($oCurrentUser = UserRights::GetUserObject())
