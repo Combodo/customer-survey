@@ -1122,10 +1122,10 @@ class Survey extends cmdbAbstractObject
 				'view_link' => false,
 				'zlist' => false,
 				'extra_fields' => 'contact_id,nb_notifications_sent,status,date_response',
-				'selection_mode' => true,
+				'selection_mode' => 'multiple',
 				'selection_enabled' => $aSelectable,
 			);
-			$sBlockId = 'block-survey-progress-status';
+			$sBlockId = 'block_survey_progress_status';
 			$oBlock->Display($oPage, $sBlockId, $aExtraParams);
 
 			$sWithSelected = addslashes('<div>'.Dict::S('Survey-With-Selected').'<input type="button" id="survey_send_again" value="'.Dict::S('Survey-Resend-Button').'"></div>');
@@ -1165,7 +1165,7 @@ function SurveyRunDialogSendAgain()
 			if ($('#$sDialogId .ui-state-error').length == 0)
 			{
 				var aTargets = [];
-				$('#block-survey-progress-status .datacontents .selectListblock_survey_progress_status:checked').each(function () {
+				$('#$sBlockId .datacontents .selectListblock_survey_progress_status:checked').each(function () {
 					aTargets.push($(this).val());
 				});
 
@@ -1196,11 +1196,11 @@ function SurveyRunDialogSendAgain()
 		],
 	});
 }
-$('#block-survey-progress-status .datacontents').append('$sWithSelected');
+$('#$sBlockId .datacontents').append('$sWithSelected');
 $('#survey_send_again').prop('disabled', true);
 
-$('#block-survey-progress-status .selectListblock_survey_progress_status').change(function (){
-	if ($('#block-survey-progress-status .selectListblock_survey_progress_status:checked').length > 0)
+$('#$sBlockId').on('change', '.selectListblock_survey_progress_status', function (){
+	if ($('#$sBlockId .selectListblock_survey_progress_status:checked').length > 0)
 	{
 		$('#survey_send_again').prop('disabled', false);
 	}
@@ -1234,7 +1234,7 @@ EOF
 			'zlist' => false,
 			'extra_fields' => 'contact_id,date,message'
 		);
-		$sBlockId = 'block-survey-progress-notif';
+		$sBlockId = 'block_survey_progress_notif';
 		$oBlock->Display($oPage, $sBlockId, $aExtraParams);		
 	}
 
