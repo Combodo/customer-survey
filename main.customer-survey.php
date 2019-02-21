@@ -725,6 +725,7 @@ class Survey extends cmdbAbstractObject
 				"attribute_inherit" => 'running',
 				"attribute_list" => array(
 					'survey_target_list' => OPT_ATT_READONLY,
+					'email_on_completion' => OPT_ATT_READONLY,
 				),
 			)
 		);
