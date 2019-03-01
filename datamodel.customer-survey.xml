@@ -671,7 +671,10 @@
       </presentation>
     </class>
     <class id="QuizzFreeTextQuestion" _delta="define">
-      <parent>QuizzElement</parent>
+      <php_parent>
+          <name>_QuizzFreeTextQuestion</name>
+      </php_parent>
+      <parent>cmdbAbstractObject</parent>
       <properties>
         <category>bizmodel,searchable,quizz</category>
         <abstract>false</abstract>
@@ -2452,6 +2455,10 @@ EOF
           <on_target_delete>DEL_AUTO</on_target_delete>
           <jointype/>
         </field>
+          <field id="contact_name" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>friendlyname</target_attcode>
+        </field>
         <field id="org_id" xsi:type="AttributeExternalField">
           <extkey_attcode>contact_id</extkey_attcode>
           <target_attcode>org_id</target_attcode>
@@ -2610,6 +2617,10 @@ EOF
           <extkey_attcode>survey_target_id</extkey_attcode>
           <target_attcode>contact_id</target_attcode>
         </field>
+        <field id="contact_name" xsi:type="AttributeExternalField">
+          <extkey_attcode>survey_target_id</extkey_attcode>
+          <target_attcode>contact_name</target_attcode>
+        </field>
         <field id="org_id" xsi:type="AttributeExternalField">
           <extkey_attcode>survey_target_id</extkey_attcode>
           <target_attcode>org_id</target_attcode>
@@ -2700,4 +2711,28 @@ EOF
       <do_search/>
     </menu>
   </menus>
+  <snippets>
+    <snippet id="_QuizzFreeTextQuestion" _delta="define">
+      <placement>module</placement>
+      <module>customer-survey</module>
+      <rank>-1</rank>
+      <content>
+        <![CDATA[
+        class _QuizzFreeTextQuestion extends QuizzElement
+{
+	static protected $bScriptOutput = false;
+    public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		// TODO: Implement DisplayForm() method.
+	}
+
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
+	{
+		// TODO: Implement DisplayResults() method.
+	}
+}
+        ]]>
+      </content>
+    </snippet>
+  </snippets>
 </itop_design>
