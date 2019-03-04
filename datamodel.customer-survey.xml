@@ -298,9 +298,9 @@
         </reconciliation>
         <order>
           <columns>
-            <column id="order" order="0" ascending="true">
+            <column id="order" ascending="true">
             </column>
-            <column id="title" order="1" ascending="true">
+            <column id="title" ascending="true">
             </column>
           </columns>
         </order>
