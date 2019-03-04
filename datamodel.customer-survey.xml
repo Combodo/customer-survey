@@ -1903,11 +1903,17 @@ function SurveyRunDialogSendAgain()
 		{ text: "$sOkButtonLabel", click: function() {
 			if ($('#$sDialogId .ui-state-error').length == 0)
 			{
-				var aTargets = [];
+				var aTargetsSelect = [];
 				$('#$sBlockId .datacontents .selectListblock_survey_progress_status:checked').each(function () {
-					aTargets.push($(this).val());
+					aTargetsSelect.push($(this).val());
 				});
+				var aTargetsStored = [];
+				$('#$sBlockId :input[name^=storedSelection]').each(function () {
+					aTargetsStored.push($(this).val());
+				});
+				var sSelectionMode = $('#$sBlockId  input[name^=selectionMode]').val();
 
+				var sFilter = $('#datatable_$sBlockId').data('itopDatatable').options.sFilter
 				var sEmailSubject = $('#$sDialogId #attr_email_subject').val();
 				var sEmailBody = $('#$sDialogId #attr_email_body').val();
 				var oMap = {
@@ -1915,7 +1921,10 @@ function SurveyRunDialogSendAgain()
 					survey_id: $iSurveyId,
 					email_subject: sEmailSubject,
 					email_body: sEmailBody,
-					targets: aTargets
+					selectObject: aTargetsSelect,
+					storedSelection: aTargetsStored,
+					selectionMode: sSelectionMode,
+					filter: sFilter,
 				};
 				$(this).dialog('close');
 				$('#SurveyEmailNotifications_indicator').html('<img src="../images/indicator.gif"/>')
