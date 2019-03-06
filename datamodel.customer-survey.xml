@@ -2742,4 +2742,30 @@ EOF
       </content>
     </snippet>
   </snippets>
+   <meta>
+    <classes>
+      <class id="Query" _delta="define">
+        <parent>cmdbAbstractObject</parent>
+        <properties>
+          <category>core/cmdb,view_in_gui,application,grant_by_profile</category>
+        </properties>
+        <fields>
+          <field id="name" xsi:type="AttributeString"/>
+          <field id="description" xsi:type="AttributeText"/>
+        </fields>
+      </class>
+      <class id="QueryOQL" _delta="define">
+        <parent>Query</parent>
+        <properties>
+          <category>core/cmdb,view_in_gui,application,grant_by_profile</category>
+        </properties>
+        <fields>
+          <field id="name" xsi:type="AttributeString"/>
+          <field id="description" xsi:type="AttributeText"/>
+          <field id="oql" xsi:type="AttributeOQL"/>
+          <field id="fields" xsi:type="AttributeText"/>
+        </fields>
+      </class>
+    </classes>
+  </meta>
 </itop_design>
