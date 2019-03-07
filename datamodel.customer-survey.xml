@@ -2744,17 +2744,7 @@ EOF
   </snippets>
    <meta>
     <classes>
-      <class id="Query" _delta="define">
-        <parent>cmdbAbstractObject</parent>
-        <properties>
-          <category>core/cmdb,view_in_gui,application,grant_by_profile</category>
-        </properties>
-        <fields>
-          <field id="name" xsi:type="AttributeString"/>
-          <field id="description" xsi:type="AttributeText"/>
-        </fields>
-      </class>
-      <class id="QueryOQL" _delta="define">
+      <class id="QueryOQL" _delta="define_if_not_exists">
         <parent>Query</parent>
         <properties>
           <category>core/cmdb,view_in_gui,application,grant_by_profile</category>
