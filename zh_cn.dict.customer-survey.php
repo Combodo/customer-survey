@@ -204,3 +204,134 @@ Dict::Add('ZH CN', 'Chinese', '简体中文', array(
 	'Survey-quizz-frame-description' => 'First Page~~',
 	'Survey-quizz-last-page' => 'Closing Page~~',
 ));
+
+//
+// Class: SurveyAnswer
+//
+
+Dict::Add('ZH CN', 'Chinese', '简体中文', array(
+	'Class:SurveyAnswer' => 'SurveyAnswer~~',
+	'Class:SurveyAnswer+' => '~~',
+	'Class:SurveyAnswer/Attribute:survey_target_id' => 'Survey target id~~',
+	'Class:SurveyAnswer/Attribute:survey_target_id+' => '~~',
+	'Class:SurveyAnswer/Attribute:question_id' => 'Question id~~',
+	'Class:SurveyAnswer/Attribute:question_id+' => '~~',
+	'Class:SurveyAnswer/Attribute:question_title' => 'Question title~~',
+	'Class:SurveyAnswer/Attribute:question_title+' => '~~',
+	'Class:SurveyAnswer/Attribute:question_description' => 'Question description~~',
+	'Class:SurveyAnswer/Attribute:question_description+' => '~~',
+	'Class:SurveyAnswer/Attribute:contact_id' => 'Contact id~~',
+	'Class:SurveyAnswer/Attribute:contact_id+' => '~~',
+	'Class:SurveyAnswer/Attribute:contact_name' => 'Contact name~~',
+	'Class:SurveyAnswer/Attribute:contact_name+' => '~~',
+	'Class:SurveyAnswer/Attribute:org_id' => 'Org id~~',
+	'Class:SurveyAnswer/Attribute:org_id+' => '~~',
+	'Class:SurveyAnswer/Attribute:org_name' => 'Org name~~',
+	'Class:SurveyAnswer/Attribute:org_name+' => '~~',
+	'Class:SurveyAnswer/Attribute:value' => 'Value~~',
+	'Class:SurveyAnswer/Attribute:value+' => '~~',
+	'Class:SurveyAnswer/Attribute:question_id_finalclass_recall' => 'Question id finalclass recall~~',
+	'Class:SurveyAnswer/Attribute:question_id_finalclass_recall+' => '~~',
+	'Class:SurveyAnswer/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
+	'Class:SurveyAnswer/Attribute:contact_id_obsolescence_flag+' => '~~',
+	'Class:SurveyAnswer/Attribute:org_id_obsolescence_flag' => 'Org id obsolescence flag~~',
+	'Class:SurveyAnswer/Attribute:org_id_obsolescence_flag+' => '~~',
+));
+
+//
+// Class: Quizz
+//
+
+Dict::Add('ZH CN', 'Chinese', '简体中文', array(
+	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)' => 'Brazilian (Brazilian)~~',
+	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)' => 'Hungarian (Magyar)~~',
+	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Chinese (简体中文)' => 'Chinese (简体中文)~~',
+	'Class:Quizz/Attribute:language/Value:Chinese (简体中文)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Dutch (Nederlands)' => 'Dutch (Nederlands)~~',
+	'Class:Quizz/Attribute:language/Value:Dutch (Nederlands)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:English (English)' => 'English (English)~~',
+	'Class:Quizz/Attribute:language/Value:English (English)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:German (Deutsch)' => 'German (Deutsch)~~',
+	'Class:Quizz/Attribute:language/Value:German (Deutsch)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Russian (Русский)' => 'Russian (Русский)~~',
+	'Class:Quizz/Attribute:language/Value:Russian (Русский)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)' => 'Spanish (Español, Castellaño)~~',
+	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:French (Français)' => 'French (Français)~~',
+	'Class:Quizz/Attribute:language/Value:French (Français)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Japanese (日本語)' => 'Japanese (日本語)~~',
+	'Class:Quizz/Attribute:language/Value:Japanese (日本語)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Turkish (Türkçe)' => 'Turkish (Türkçe)~~',
+	'Class:Quizz/Attribute:language/Value:Turkish (Türkçe)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Danish (Dansk)' => 'Danish (Dansk)~~',
+	'Class:Quizz/Attribute:language/Value:Danish (Dansk)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Czech (Čeština)' => 'Czech (Čeština)~~',
+	'Class:Quizz/Attribute:language/Value:Czech (Čeština)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Italian (Italiano)' => 'Italian (Italiano)~~',
+	'Class:Quizz/Attribute:language/Value:Italian (Italiano)+' => '~~',
+));
+
+//
+// Class: QuizzElement
+//
+
+Dict::Add('ZH CN', 'Chinese', '简体中文', array(
+	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'Yes~~',
+	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => '~~',
+	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'No~~',
+	'Class:QuizzElement/Attribute:mandatory/Value:no+' => '~~',
+));
+
+//
+// Class: QuizzScaleQuestion
+//
+
+Dict::Add('ZH CN', 'Chinese', '简体中文', array(
+	'Class:QuizzScaleQuestion/Attribute:scale_values' => 'Scale values~~',
+	'Class:QuizzScaleQuestion/Attribute:scale_values+' => '~~',
+));
+
+//
+// Class: Survey
+//
+
+Dict::Add('ZH CN', 'Chinese', '简体中文', array(
+	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'Yes~~',
+	'Class:Survey/Attribute:email_on_completion/Value:yes+' => '~~',
+	'Class:Survey/Attribute:email_on_completion/Value:no' => 'No~~',
+	'Class:Survey/Attribute:email_on_completion/Value:no+' => '~~',
+	'Class:Survey/Attribute:survey_target_answer_list' => 'Survey target answer list~~',
+	'Class:Survey/Attribute:survey_target_answer_list+' => '~~',
+	'Class:Survey/Attribute:on_behalf_of_finalclass_recall' => 'On behalf of finalclass recall~~',
+	'Class:Survey/Attribute:on_behalf_of_finalclass_recall+' => '~~',
+	'Class:Survey/Attribute:on_behalf_of_obsolescence_flag' => 'On behalf of obsolescence flag~~',
+	'Class:Survey/Attribute:on_behalf_of_obsolescence_flag+' => '~~',
+));
+
+//
+// Class: SurveyTarget
+//
+
+Dict::Add('ZH CN', 'Chinese', '简体中文', array(
+	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
+	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall+' => '~~',
+	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
+	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag+' => '~~',
+));
+
+//
+// Class: SurveyTargetAnswer
+//
+
+Dict::Add('ZH CN', 'Chinese', '简体中文', array(
+	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
+	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall+' => '~~',
+	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
+	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag+' => '~~',
+	'Class:SurveyTargetAnswer/Attribute:org_id_obsolescence_flag' => 'Org id obsolescence flag~~',
+	'Class:SurveyTargetAnswer/Attribute:org_id_obsolescence_flag+' => '~~',
+	'Class:SurveyTargetAnswer/Attribute:last_question_id_finalclass_recall' => 'Last question id finalclass recall~~',
+	'Class:SurveyTargetAnswer/Attribute:last_question_id_finalclass_recall+' => '~~',
+));
