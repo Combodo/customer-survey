@@ -5,7 +5,7 @@
 
 SetupWebPage::AddModule(
 	__FILE__, // Path to the current file, all other file names are relative to the directory containing this file
-	'customer-survey/2.3.0',
+	'customer-survey/2.4.0',
 	array(
 		// Identification
 		//
@@ -23,7 +23,8 @@ SetupWebPage::AddModule(
 		// Components
 		//
 		'datamodel' => array(
-			'model.customer-survey.php'
+			'main.customer-survey.php',
+			'model.customer-survey.php',
 		),
 		'webservice' => array(
 

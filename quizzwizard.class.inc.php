@@ -148,7 +148,7 @@ EOF
 
 $('form').each(function () {
 	var thisform = $(this);
-		thisform.prepend(thisform.find('button.default').clone().removeAttr('id').prop('disabled', false);.css({
+		thisform.prepend(thisform.find('button.default').clone().removeAttr('id').prop('disabled', false).css({
 		position: 'absolute',
 		left: '-999px',
 		top: '-999px',

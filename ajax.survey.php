@@ -45,9 +45,14 @@ try
 	{
 		case 'send_again':
 		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
-		$aTargets = utils::ReadParam('targets', array());
+		$aTargets =array();
 		$sSubject = utils::ReadParam('email_subject','', false, 'raw_data');
 		$sBody = utils::ReadParam('email_body', '', false, 'raw_data');
+		$aSelectedObj = utils::ReadParam('targetSelect', array());
+		$sSelectionMode = utils::ReadParam('selectionMode', '');
+		$sFilter = utils::ReadParam('filter', '', false, 'raw_data');
+		$oFullSetFilter = DBObjectSearch::unserialize($sFilter);
+		$aTargets = utils::ReadMultipleSelection($oFullSetFilter);
 		if (!is_array($aTargets))
 		{
 			$aTargets = array();

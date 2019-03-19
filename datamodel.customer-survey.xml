@@ -1,0 +1,2761 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<itop_design xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+  <classes>
+    <class id="Quizz" _delta="define">
+      <parent>cmdbAbstractObject</parent>
+      <properties>
+        <comment>/**
+ *
+ * Defines a quizz used to generate a survey
+ *
+ */</comment>
+        <category>bizmodel,searchable,quizz</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_quizz</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s</format>
+          <attributes>
+            <attribute id="name"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="name"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields>
+        <field id="name" xsi:type="AttributeString">
+          <sql>name</sql>
+          <default_value/>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="description" xsi:type="AttributeText">
+          <sql>description</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="language" xsi:type="AttributeApplicationLanguage">
+          <values>
+            <value>Brazilian (Brazilian)</value>
+            <value>Hungarian (Magyar)</value>
+            <value>Chinese (简体中文)</value>
+            <value>Dutch (Nederlands)</value>
+            <value>English (English)</value>
+            <value>German (Deutsch)</value>
+            <value>Russian (Русский)</value>
+            <value>Spanish (Español, Castellaño)</value>
+            <value>French (Français)</value>
+            <value>Japanese (日本語)</value>
+            <value>Turkish (Türkçe)</value>
+            <value>Danish (Dansk)</value>
+            <value>Czech (Čeština)</value>
+            <value>Italian (Italiano)</value>
+          </values>
+          <sql>language</sql>
+          <default_value>EN US</default_value>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="title" xsi:type="AttributeString">
+          <sql>title</sql>
+          <default_value/>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="introduction" xsi:type="AttributeHTML">
+          <sql>introduction</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="scale_values" xsi:type="AttributeText">
+          <sql>scale_values</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="conclusion" xsi:type="AttributeHTML">
+          <sql>conclusion</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="survey_list" xsi:type="AttributeLinkedSet">
+          <linked_class>Survey</linked_class>
+          <ext_key_to_me>quizz_id</ext_key_to_me>
+          <count_min>0</count_min>
+          <count_max>0</count_max>
+        </field>
+        <field id="question_list" xsi:type="AttributeLinkedSet">
+          <linked_class>QuizzElement</linked_class>
+          <ext_key_to_me>quizz_id</ext_key_to_me>
+          <count_min>0</count_min>
+          <count_max>0</count_max>
+          <edit_mode>in_place</edit_mode>
+        </field>
+      </fields>
+      <methods>
+        <method id="__construct">
+          <static>false</static>
+          <access>public</access>
+          <type>OQLMenuNode</type>
+          <code><![CDATA[	public function __construct($aRow = null, $sClassAlias = '', $aAttToLoad = null, $aExtendedDataSpec = null)
+	{
+		parent::__construct($aRow, $sClassAlias, $aAttToLoad, $aExtendedDataSpec);
+		if ($aRow == null)
+		{
+			// creating a brand new object, initialize the "scale values" from the configuration
+			$sModule = basename(dirname(__FILE__));
+			$sScaleValues = MetaModel::GetModuleSetting($sModule, 'quiz_scale', '');
+			$this->Set('scale_values', $sScaleValues);
+		}
+	}]]></code>
+        </method>
+        <method id="DisplayBareRelations">
+          <comment>/**
+	 * Add a tab to display a preview of the quizz
+	 * @param object $oPage Page
+	 * @param bool $bEditMode True if in edition, false in Read-only mode
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	function DisplayBareRelations(WebPage $oPage, $bEditMode = false)
+	{
+		parent::DisplayBareRelations($oPage, $bEditMode);
+		if (!$bEditMode)
+		{
+			$oPage->SetCurrentTab(Dict::S('Survey-quizz-overview'));
+			$oPage->p(Dict::S('Survey-quizz-shortcuttoquizz').': <a href="'.$this->MakeFormUrl().'" target="_blank">'.Dict::S('Survey-quizz-shortcutlabel').'</a>');
+		}
+	}]]></code>
+        </method>
+        <method id="MakeFormUrl">
+          <comment>/**
+	 * Helper to get a URL pointing to the quizz form
+	 * @param string sToken Identifies the target answer ; if not present, the form is shown in test mode	 
+	 * @return string HTTP URL fo the form
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	function MakeFormUrl($sToken = null)
+	{
+		$sAbsoluteUrl = utils::GetAbsoluteUrlModulesRoot();
+		if ($sToken)
+		{
+			$sUrl = $sAbsoluteUrl.'customer-survey/run_survey.php?token='.urlencode($sToken);
+		}
+		else
+		{
+			// Draft: no token supplied
+			$sUrl = $sAbsoluteUrl.'customer-survey/run_survey.php?quizz_id='.$this->GetKey();
+		}
+		return $sUrl;
+	}]]></code>
+        </method>
+        <method id="ChangeDictionnaryLanguage">
+          <comment>/**
+	 * Change the current language to the language of the quizz
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function ChangeDictionnaryLanguage()
+	{
+		$this->m_sApplicationLanguage = Dict::GetUserLanguage();
+		Dict::SetUserLanguage($this->Get('language'));
+	}]]></code>
+        </method>
+        <method id="RestoreDictionnaryLanguage">
+          <comment>/**
+	 * Restore the current language the value it had when calling ChangeDictionnaryLanguage
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function RestoreDictionnaryLanguage()
+	{
+		Dict::SetUserLanguage($this->m_sApplicationLanguage);
+	}]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <details>
+          <items>
+            <item id="survey_list">
+              <rank>10</rank>
+            </item>
+            <item id="question_list">
+              <rank>20</rank>
+            </item>
+            <item id="col:col0">
+              <rank>30</rank>
+              <items>
+                <item id="fieldset:Survey-quizz-frame-definition">
+                  <rank>10</rank>
+                  <items>
+                    <item id="name">
+                      <rank>10</rank>
+                    </item>
+                    <item id="description">
+                      <rank>20</rank>
+                    </item>
+                    <item id="language">
+                      <rank>30</rank>
+                    </item>
+                    <item id="scale_values">
+                      <rank>40</rank>
+                    </item>
+                  </items>
+                </item>
+                <item id="fieldset:Survey-quizz-frame-description">
+                  <rank>20</rank>
+                  <items>
+                    <item id="title">
+                      <rank>10</rank>
+                    </item>
+                    <item id="introduction">
+                      <rank>20</rank>
+                    </item>
+                  </items>
+                </item>
+                <item id="fieldset:Survey-quizz-last-page">
+                  <rank>30</rank>
+                  <items>
+                    <item id="conclusion">
+                      <rank>10</rank>
+                    </item>
+                  </items>
+                </item>
+              </items>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="name">
+              <rank>10</rank>
+            </item>
+            <item id="description">
+              <rank>20</rank>
+            </item>
+            <item id="language">
+              <rank>30</rank>
+            </item>
+            <item id="title">
+              <rank>40</rank>
+            </item>
+            <item id="introduction">
+              <rank>50</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="description">
+              <rank>10</rank>
+            </item>
+            <item id="language">
+              <rank>20</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="QuizzElement" _delta="define">
+      <parent>cmdbAbstractObject</parent>
+      <properties>
+        <comment>/**
+ *
+ * A simple question inside a quizz
+ *
+ */</comment>
+        <category>bizmodel,searchable,quizz</category>
+        <abstract>true</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_element</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field>finalclass</db_final_class_field>
+        <naming>
+          <format>%1$s - %2$s</format>
+          <attributes>
+            <attribute id="order"/>
+            <attribute id="title"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="quizz_id_friendlyname"/>
+            <attribute id="order"/>
+          </attributes>
+        </reconciliation>
+        <order>
+          <columns>
+            <column id="order" ascending="true">
+            </column>
+            <column id="title" ascending="true">
+            </column>
+          </columns>
+        </order>
+      </properties>
+      <fields>
+        <field id="quizz_id" xsi:type="AttributeExternalKey">
+          <sql>quizz_id</sql>
+          <target_class>Quizz</target_class>
+          <is_null_allowed>false</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="order" xsi:type="AttributeInteger">
+          <sql>order</sql>
+          <default_value>0</default_value>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="title" xsi:type="AttributeString">
+          <sql>title</sql>
+          <default_value/>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="description" xsi:type="AttributeText">
+          <sql>description</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="mandatory" xsi:type="AttributeEnum">
+          <values>
+            <value>yes</value>
+            <value>no</value>
+          </values>
+          <sql>mandatory</sql>
+          <default_value>yes</default_value>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+      </fields>
+      <methods>
+        <method id="HasValue">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code>	public function HasValue()
+	{
+		return true;
+	}</code>
+        </method>
+        <method id="IsNewPage">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code>	public function IsNewPage()
+	{
+		return false;
+	}</code>
+        </method>
+        <method id="ValidateValue">
+          <comment>/**
+	 * Check that the value is an valid one for this question
+	 * @param string $sValue The value to check
+	 * @return string The value to store
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code>	public function ValidateValue($sValue)
+	{
+		// By default, any value will do
+		return $sValue;
+	}</code>
+        </method>
+        <method id="DisplayForm">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code>	abstract public function DisplayForm(WebPage $oPage, $sCurrentValue);</code>
+        </method>
+        <method id="DisplayResults">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code>	abstract public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false);</code>
+        </method>
+        <method id="DisplayChoices">
+          <comment><![CDATA[/**
+	 * Helper method for derived classes to display an horizontal set of radio buttons
+	 * based on the given list of "choices"
+	 * @param WebPage $oPage
+	 * @param array $aChoices
+	 * @param string $sCurrentValue
+	 */]]></comment>
+          <static>false</static>
+          <access>protected</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	protected function DisplayChoices(WebPage $oPage, $aChoices, $sCurrentValue)
+	{
+		$iQuestionId = $this->GetKey();
+		$sTitle = $this->GetAsHtml('title');
+		$sDescription = $this->GetAsHtml('description');
+		if ($this->Get('mandatory') == 'yes')
+		{
+			$oPage->add("<h3 class=\"question_title mandatory\">$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
+		}
+		else
+		{
+			$oPage->add("<h3 class=\"question_title mandatory\">$sTitle</h3>");
+		}
+		$oPage->add("<div class=\"question_description\">$sDescription</div>");
+
+		$sTDProps = "width=\"80px\" align=\"center\"";
+
+		$oPage->add("<table class=\"radio_buttons\">");
+
+		$oPage->add("<tr>");
+		foreach($aChoices as $sValue)
+		{
+			$sValue = trim($sValue);
+			$oPage->add("<td $sTDProps>$sValue</td>");
+		}
+		$oPage->add("</tr>");
+		$oPage->add("<tr>");
+		foreach($aChoices as $sValue)
+		{
+			$sValue = trim($sValue);
+			$sChecked = ($sCurrentValue == $sValue) ? 'checked' : '';
+			$sMandatory = ($this->Get('mandatory') == 'yes') ? 'true' : 'false';
+			$oPage->add("<td $sTDProps><INPUT type=\"radio\" $sChecked name=\"answer[$iQuestionId]\" value=\"$sValue\" data-mandatory=\"$sMandatory\"></td>");
+		}
+		$oPage->add("</tr>");
+		$oPage->add("</table>");		
+	}]]></code>
+        </method>
+        <method id="DrawHtmlBar">
+          <static>false</static>
+          <access>protected</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	protected function DrawHtmlBar($oPage, $sLabel, $iPercentage)
+	{
+		$iWidth = 200 * $iPercentage / 100; // 200 px = 100 %
+		$oPage->add('<tr>');
+		$sBar = '';
+		if ($iWidth > 1)
+		{
+			// Draw a bar with a border around the colored area so that it gets printed (browers usually don't print the background colors)
+			$sBar = '<div style="width:'.$iWidth.'px; display: inline-block; background: #1C94C4; border: 1px #1C94C4 solid;">&nbsp;</div>';
+		}
+		$oPage->add('<td style="padding: 2px; width:150px; text-align:right;">'.$sLabel.'</td><td style="border-left: 1px #1C94C4 solid; padding:2px; padding-left:0;">'.$sBar.'&nbsp;'.$iPercentage.' %</td>');
+		$oPage->add('</tr>');
+		
+	}]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <details>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="order">
+              <rank>20</rank>
+            </item>
+            <item id="finalclass">
+              <rank>30</rank>
+            </item>
+            <item id="title">
+              <rank>40</rank>
+            </item>
+            <item id="description">
+              <rank>50</rank>
+            </item>
+            <item id="mandatory">
+              <rank>60</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="order">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="QuizzScaleQuestion" _delta="define">
+      <parent>QuizzElement</parent>
+      <properties>
+        <category>bizmodel,searchable,quizz</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_scale_question</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s %2$s</format>
+          <attributes>
+            <attribute id="order"/>
+            <attribute id="title"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="quizz_id_friendlyname"/>
+            <attribute id="order"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields>
+        <field id="scale_values" xsi:type="AttributeExternalField">
+          <extkey_attcode>quizz_id</extkey_attcode>
+          <target_attcode>scale_values</target_attcode>
+        </field>
+      </fields>
+      <methods>
+        <method id="DisplayForm">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		$aChoices = explode(',', $this->Get('scale_values'));
+		$this->DisplayChoices($oPage, $aChoices, $sCurrentValue);	
+	}]]></code>
+        </method>
+        <method id="DisplayResults">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
+	{
+		$oPage->add('<h2>'.$this->GetAsHtml('title').'</h2>');
+		$oPage->p($this->GetAsHtml('description'));
+		
+		$aChoices = explode(',', $this->Get('scale_values'));
+		$aResults = array();
+		foreach($aChoices as $sValue)
+		{
+			$aResults[trim($sValue)] = 0;
+		}
+		while ($oAnswer = $oAnswerSet->Fetch())
+		{
+			$sAnswer = $oAnswer->Get('value');
+			// Note: the answer might be undefined if the question is optional
+			if (array_key_exists($sAnswer, $aResults))
+			{
+				$aResults[$sAnswer] += 1;
+			}
+		}
+
+		$oPage->add('<table style="border-collapse: collapse;">');
+		foreach($aChoices as $sValue)
+		{
+			$iPercentage = round(100 * $aResults[trim($sValue)] / $iTargetCount);
+			$this->DrawHtmlBar($oPage, $sValue, $iPercentage);
+		}
+		$oPage->add('</table>');	
+	}]]></code>
+        </method>
+        <method id="ValidateValue">
+          <comment>/**
+	 * Check that the value is an valid one for this question
+	 * @param string $sValue The value to check
+	 * @return string The value to store
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function ValidateValue($sValue)
+	{
+		$aChoices = explode(',', $this->Get('scale_values'));
+		// Check that the value is one of the possible values
+		foreach($aChoices as $sPossibleValue)
+		{
+			if (trim($sPossibleValue) == trim($sValue))
+			{
+				return trim($sValue);
+			}
+		}
+		// By default, store an empty string...
+		return '';
+	}]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <details>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="order">
+              <rank>20</rank>
+            </item>
+            <item id="finalclass">
+              <rank>30</rank>
+            </item>
+            <item id="title">
+              <rank>40</rank>
+            </item>
+            <item id="description">
+              <rank>50</rank>
+            </item>
+            <item id="mandatory">
+              <rank>60</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="order">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="QuizzFreeTextQuestion" _delta="define">
+      <php_parent>
+          <name>_QuizzFreeTextQuestion</name>
+      </php_parent>
+      <parent>cmdbAbstractObject</parent>
+      <properties>
+        <category>bizmodel,searchable,quizz</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_free_text</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s %2$s</format>
+          <attributes>
+            <attribute id="order"/>
+            <attribute id="title"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="quizz_id_friendlyname"/>
+            <attribute id="order"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields/>
+      <methods>
+        <method id="DisplayForm">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		$sTitle = $this->GetAsHtml('title');
+		$sDescription = $this->GetAsHtml('description');
+		$iQuestionId = $this->GetKey();
+		if ($this->Get('mandatory') == 'yes')
+		{
+			$oPage->add("<h3 class=\"question_title mandatory\">$sTitle <span class=\"mandatory_asterisk\" title=\"".Dict::S('Survey-MandatoryQuestion')."\">*</span></h3>");
+		}
+		else
+		{
+			$oPage->add("<h3 class=\"question_title\">$sTitle</h3>");
+		}
+		$sMandatory = ($this->Get('mandatory') == 'yes') ? 'true' : 'false';
+		$oPage->add("<div class=\"question_description\">$sDescription</div>");
+		$oPage->add('<TEXTAREA style="width:99%;" name="answer['.$iQuestionId.']" data-mandatory="'.$sMandatory.'">'.htmlentities($sCurrentValue, ENT_QUOTES, 'UTF-8').'</TEXTAREA>');
+	}]]></code>
+        </method>
+        <method id="DisplayResults">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
+	{
+		$oPage->add('<h2>'.$this->GetAsHtml('title').'</h2>');
+		$oPage->p($this->GetAsHtml('description'));
+		
+		$aValues = array();
+		$sAuthor = '';
+		while($oAnswer = $oAnswerSet->Fetch())
+		{
+			$sValue = $oAnswer->Get('value');
+			if (trim($sValue) != '')
+			{
+				$sAuthor = $oAnswer->Get('contact_name');
+				$aValues[] = array('text' => $sValue, 'author' => $oAnswer->Get('contact_name'));
+			}
+		}
+		$oPage->add('<div class="Collapsible"><span class="CollapsibleLabel">'.Dict::Format('Survey-results-X_NonEmptyValuesOutOf_N', count($aValues), $iTargetCount).'</span><div class="CollapsibleContent">');
+		foreach($aValues as $aAnswer)
+		{
+			$oPage->add('<div class="triangle-border"><div class="user_comment">'.htmlentities($aAnswer['text'], ENT_QUOTES, 'UTF-8').'</div></div>');
+			if (!$bAnonymous)
+			{
+				$oPage->add('<div class="author">'.htmlentities($aAnswer['author'], ENT_QUOTES, 'UTF-8').'</div>');
+			}
+		}
+		$oPage->add('</div>');
+		
+		if (!self::$bScriptOutput)
+		{
+			self::$bScriptOutput = true; // output this only once per page
+			if (!$bAnonymous)
+			{
+				$sBubbleSpeechStyle = 
+<<<EOF
+.triangle-border:after {
+    border-color: #FFFFFF transparent;
+    border-style: solid;
+    border-width: 9px 9px 0;
+    bottom: -9px;
+    content: "";
+    display: block;
+    left: 21px;
+    position: absolute;
+    width: 0;
+}
+.triangle-border:before {
+    border-color: #1C94C4 transparent;
+    border-style: solid;
+    border-width: 10px 10px 0;
+    bottom: -10px;
+    content: "";
+    display: block;
+    left: 20px;
+    position: absolute;
+    width: 0;
+}
+
+.user_comment {
+	white-space: pre-wrap;
+}
+
+.author {
+	font-size: small;
+}
+EOF
+				;
+			}
+			else
+			{
+				$sBubbleSpeechStyle = '';
+			}
+			$oPage->add_style(
+<<<EOF
+.CollapsibleContent {
+	display: none;
+}
+div.open div.CollapsibleContent {
+	display: block;
+	background: #eee;
+	padding: 0.25em;
+	margin: 0.25em;
+}
+.CollapsibleLabel {
+	padding-left: 16px;
+	background: url(../images/plus.gif) left no-repeat;
+	cursor: pointer;
+}
+div.open div.CollapsibleLabel {
+	background: url(../images/minus.gif) left no-repeat;
+}
+.triangle-border {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #1C94C4;
+    border-radius: 10px 10px 10px 10px;
+    color: #333333;
+    margin: 1em 0 0.5em;
+    padding: 0.5em;
+    position: relative;
+}
+$sBubbleSpeechStyle
+EOF
+			);
+			$oPage->add_ready_script(
+<<<EOF
+$('.CollapsibleLabel').click(function() { $(this).parent().toggleClass('open'); });
+EOF
+			);			
+		}
+	}]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <details>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="order">
+              <rank>20</rank>
+            </item>
+            <item id="finalclass">
+              <rank>30</rank>
+            </item>
+            <item id="title">
+              <rank>40</rank>
+            </item>
+            <item id="description">
+              <rank>50</rank>
+            </item>
+            <item id="mandatory">
+              <rank>60</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="order">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="QuizzNewPageElement" _delta="define">
+      <parent>QuizzElement</parent>
+      <properties>
+        <category>bizmodel,searchable,quizz</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_new_page</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s %2$s</format>
+          <attributes>
+            <attribute id="order"/>
+            <attribute id="title"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="quizz_id_friendlyname"/>
+            <attribute id="order"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields/>
+      <methods>
+        <method id="DisplayForm">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code>	public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		// Nothing to do here, handled directly by the QuizzWizardController
+	}</code>
+        </method>
+        <method id="DisplayResults">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
+	{
+		$oPage->add('<hr/>');
+		$oPage->add('<h2>'.$this->GetAsHtml('title').'</h2>');
+		$oPage->p($this->GetAsHtml('description'));
+	}]]></code>
+        </method>
+        <method id="HasValue">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code>	public function HasValue()
+	{
+		return false;
+	}</code>
+        </method>
+        <method id="IsNewPage">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code>	public function IsNewPage()
+	{
+		return true;
+	}</code>
+        </method>
+        <method id="GetAttributeFlags">
+          <comment>/**
+	 * Returns the set of flags (OPT_ATT_HIDDEN, OPT_ATT_READONLY, OPT_ATT_MANDATORY...)
+	 * for the given attribute in the current state of the object
+	 * @param $sAttCode string $sAttCode The code of the attribute
+	 * @param $aReasons array To store the reasons why the attribute is read-only (info about the synchro replicas)
+	 * @param $sTargetState string The target state in which to evalutate the flags, if empty the current state will be used
+	 * @return integer Flags: the binary combination of the flags applicable to this attribute
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-DBObject</type>
+          <code><![CDATA[	public function GetAttributeFlags($sAttCode, &$aReasons = array(), $sTargetState = '')
+	{
+		$iFlags = parent::GetAttributeFlags($sAttCode, $aReasons, $sTargetState);
+		
+		// The 'mandatory' flag is not editable, page breaks are always mandatory
+		if ($sAttCode == 'mandatory')
+		{
+			$iFlags |= OPT_ATT_READONLY;
+		}
+		return $iFlags;
+	}]]></code>
+        </method>
+        <method id="GetInitialStateAttributeFlags">
+          <comment>/**
+	 * Returns the set of flags (OPT_ATT_HIDDEN, OPT_ATT_READONLY, OPT_ATT_MANDATORY...)
+	 * for the given attribute for the current state of the object considered as an INITIAL state
+	 * @param string $sAttCode The code of the attribute
+	 * @return integer Flags: the binary combination of the flags applicable to this attribute
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-DBObject</type>
+          <code><![CDATA[	public function GetInitialStateAttributeFlags($sAttCode, &$aReasons = array())
+	{
+		$iFlags = parent::GetInitialStateAttributeFlags($sAttCode, $aReasons);
+
+		// The 'mandatory' flag is not editable, page breaks are always mandatory
+		if ($sAttCode == 'mandatory')
+		{
+			$iFlags |= OPT_ATT_READONLY;
+		}
+		return $iFlags;
+	}	]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <details>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="order">
+              <rank>20</rank>
+            </item>
+            <item id="finalclass">
+              <rank>30</rank>
+            </item>
+            <item id="title">
+              <rank>40</rank>
+            </item>
+            <item id="description">
+              <rank>50</rank>
+            </item>
+            <item id="mandatory">
+              <rank>60</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="order">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="QuizzValueQuestion" _delta="define">
+      <parent>QuizzElement</parent>
+      <properties>
+        <category>bizmodel,searchable,quizz</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_value_question</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s %2$s</format>
+          <attributes>
+            <attribute id="order"/>
+            <attribute id="title"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="quizz_id_friendlyname"/>
+            <attribute id="order"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields>
+        <field id="choices" xsi:type="AttributeText">
+          <sql>choices</sql>
+          <default_value/>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+      </fields>
+      <methods>
+        <method id="DisplayForm">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-DBObject</type>
+          <code><![CDATA[	public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		$aChoices = explode(',', $this->Get('choices'));
+		$this->DisplayChoices($oPage, $aChoices, $sCurrentValue);			
+	}]]></code>
+        </method>
+        <method id="DisplayResults">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-DBObject</type>
+          <code><![CDATA[	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
+	{
+		$oPage->add('<h2>'.$this->GetAsHtml('title').'</h2>');
+		$oPage->p($this->GetAsHtml('description'));
+		
+		$aChoices = explode(',', $this->Get('choices'));
+		$aResults = array();
+		foreach($aChoices as $sValue)
+		{
+			$aResults[trim($sValue)] = 0;
+		}
+		while ($oAnswer = $oAnswerSet->Fetch())
+		{
+			$sAnswer = $oAnswer->Get('value');
+			// Note: the answer might be undefined if the question is optional
+			if (array_key_exists($sAnswer, $aResults))
+			{
+				$aResults[$sAnswer] += 1;
+			}
+		}
+
+		$oPage->add('<table style="border-collapse: collapse;">');
+		foreach($aChoices as $sValue)
+		{
+			$iPercentage = round(100 * $aResults[trim($sValue)] / $iTargetCount);
+			$this->DrawHtmlBar($oPage, $sValue, $iPercentage);
+		}
+		$oPage->add('</table>');		
+	}]]></code>
+        </method>
+        <method id="ValidateValue">
+          <comment>/**
+	 * Check that the value is an valid one for this question
+	 * @param string $sValue The value to check
+	 * @return string The value to store
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-DBObject</type>
+          <code><![CDATA[	public function ValidateValue($sValue)
+	{
+		$aChoices = explode(',', $this->Get('choices'));
+		// Check that the value is one of the possible values
+		foreach($aChoices as $sPossibleValue)
+		{
+			if (trim($sPossibleValue) == trim($sValue))
+			{
+				return trim($sValue);
+			}
+		}
+		// By default, store an empty string...
+		return '';
+	}]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <details>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="order">
+              <rank>20</rank>
+            </item>
+            <item id="title">
+              <rank>30</rank>
+            </item>
+            <item id="description">
+              <rank>40</rank>
+            </item>
+            <item id="choices">
+              <rank>50</rank>
+            </item>
+            <item id="mandatory">
+              <rank>60</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="order">
+              <rank>10</rank>
+            </item>
+            <item id="title">
+              <rank>20</rank>
+            </item>
+            <item id="description">
+              <rank>30</rank>
+            </item>
+            <item id="mandatory">
+              <rank>40</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="Survey" _delta="define">
+      <parent>cmdbAbstractObject</parent>
+      <properties>
+        <comment>/**
+ *
+ * Survey: an instanciation of a quizz for a given set of persons
+ *
+ */</comment>
+        <category>bizmodel,searchable,survey</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_survey</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s %2$s</format>
+          <attributes>
+            <attribute id="quizz_id_friendlyname"/>
+            <attribute id="date_sent"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="quizz_id_friendlyname"/>
+            <attribute id="date_sent"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields>
+        <field id="quizz_id" xsi:type="AttributeExternalKey">
+          <sql>quizz_id</sql>
+          <target_class>Quizz</target_class>
+          <is_null_allowed>false</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="language" xsi:type="AttributeExternalField">
+          <extkey_attcode>quizz_id</extkey_attcode>
+          <target_attcode>language</target_attcode>
+        </field>
+        <field id="status" xsi:type="AttributeEnum">
+          <values>
+            <value>new</value>
+            <value>running</value>
+            <value>closed</value>
+          </values>
+          <sql>status</sql>
+          <default_value>new</default_value>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="date_sent" xsi:type="AttributeDateTime">
+          <sql>date_sent</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="on_behalf_of" xsi:type="AttributeExternalKey">
+          <sql>on_behalf_of</sql>
+          <target_class>Contact</target_class>
+          <is_null_allowed>false</is_null_allowed>
+          <on_target_delete>DEL_MANUAL</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="target_phrase_id" xsi:type="AttributeExternalKey">
+          <filter><![CDATA[SELECT QueryOQL WHERE (oql LIKE 'SELECT Person %') OR (oql LIKE 'SELECT Contact %')]]></filter>
+          <sql>target_phrase_id</sql>
+          <target_class>QueryOQL</target_class>
+          <is_null_allowed>true</is_null_allowed>
+          <on_target_delete>DEL_MANUAL</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="email_on_completion" xsi:type="AttributeEnum">
+          <values>
+            <value>yes</value>
+            <value>no</value>
+          </values>
+          <sql>email_on_completion</sql>
+          <default_value>no</default_value>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="email_subject" xsi:type="AttributeString">
+          <sql>email_subject</sql>
+          <default_value/>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="email_body" xsi:type="AttributeHTML">
+          <sql>email_body</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="survey_target_list" xsi:type="AttributeLinkedSetIndirect">
+          <linked_class>SurveyTarget</linked_class>
+          <ext_key_to_me>survey_id</ext_key_to_me>
+          <count_min>0</count_min>
+          <count_max>0</count_max>
+          <ext_key_to_remote>contact_id</ext_key_to_remote>
+        </field>
+        <field id="survey_target_answer_list" xsi:type="AttributeLinkedSet">
+          <linked_class>SurveyTargetAnswer</linked_class>
+          <ext_key_to_me>survey_id</ext_key_to_me>
+          <count_min>0</count_min>
+          <count_max>0</count_max>
+          <tracking_level>none</tracking_level>
+        </field>
+        <field id="on_behalf_of_finalclass_recall" xsi:type="AttributeExternalField">
+          <extkey_attcode>on_behalf_of</extkey_attcode>
+          <target_attcode>finalclass</target_attcode>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="on_behalf_of_obsolescence_flag" xsi:type="AttributeExternalField">
+          <extkey_attcode>on_behalf_of</extkey_attcode>
+          <target_attcode>obsolescence_flag</target_attcode>
+        </field>
+      </fields>
+      <lifecycle>
+        <attribute>status</attribute>
+        <stimuli>
+          <stimulus id="ev_start" xsi:type="StimulusUserAction"/>
+          <stimulus id="ev_close" xsi:type="StimulusUserAction"/>
+          <stimulus id="ev_test" xsi:type="StimulusUserAction"/>
+        </stimuli>
+        <states>
+          <state id="new">
+            <flags>
+              <attribute id="date_sent">
+                <hidden/>
+              </attribute>
+            </flags>
+            <transitions>
+              <transition>
+                <stimulus>ev_test</stimulus>
+                <target>new</target>
+                <actions>
+                  <action>
+                    <verb>SendPreview</verb>
+                  </action>
+                </actions>
+              </transition>
+              <transition>
+                <stimulus>ev_start</stimulus>
+                <target>running</target>
+                <actions>
+                  <action>
+                    <verb>SendQuizz</verb>
+                  </action>
+                </actions>
+              </transition>
+            </transitions>
+          </state>
+          <state id="running">
+            <flags>
+              <attribute id="quizz_id">
+                <read_only/>
+              </attribute>
+              <attribute id="date_sent">
+                <read_only/>
+              </attribute>
+              <attribute id="on_behalf_of">
+                <read_only/>
+              </attribute>
+              <attribute id="target_phrase_id">
+                <read_only/>
+              </attribute>
+              <attribute id="email_subject">
+                <read_only/>
+              </attribute>
+              <attribute id="email_body">
+                <read_only/>
+              </attribute>
+            </flags>
+            <transitions>
+              <transition>
+                <stimulus>ev_test</stimulus>
+                <target>running</target>
+                <actions>
+                  <action>
+                    <verb>SendPreview</verb>
+                  </action>
+                </actions>
+              </transition>
+              <transition>
+                <stimulus>ev_close</stimulus>
+                <target>closed</target>
+                <actions/>
+              </transition>
+            </transitions>
+          </state>
+          <state id="closed">
+            <flags>
+              <attribute id="quizz_id">
+                <read_only/>
+              </attribute>
+              <attribute id="date_sent">
+                <read_only/>
+              </attribute>
+              <attribute id="on_behalf_of">
+                <read_only/>
+              </attribute>
+              <attribute id="target_phrase_id">
+                <read_only/>
+              </attribute>
+              <attribute id="email_on_completion">
+                <read_only/>
+              </attribute>
+              <attribute id="email_subject">
+                <read_only/>
+              </attribute>
+              <attribute id="email_body">
+                <read_only/>
+              </attribute>
+              <attribute id="survey_target_list">
+                <read_only/>
+              </attribute>
+            </flags>
+            <transitions/>
+          </state>
+        </states>
+      </lifecycle>
+      <methods>
+        <method id="SendQuizz">
+          <static>false</static>
+          <access>public</access>
+          <type>LifecycleAction</type>
+          <code><![CDATA[	public function SendQuizz()
+	{
+		$this->Set('date_sent', time());
+
+		$aContacts = array();
+
+		$iQuery = $this->Get('target_phrase_id');
+		if ($iQuery != 0)
+		{
+			$oQuery = MetaModel::GetObject('QueryOQL', $iQuery, true, true /*allow all data*/);
+			$sQuery = $oQuery->Get('oql');
+			try
+			{
+				$oSearch = DBObjectSearch::FromOQL($sQuery);
+				if (MetaModel::IsParentClass('Contact', $oSearch->GetClass()))
+				{
+					$oSet = new DBObjectSet($oSearch);
+					while($oContact = $oSet->Fetch())
+					{
+						$this->SendQuizzToTargetContact($oContact);
+						$aContacts[$oContact->GetKey()] = true;
+					}
+				}
+				else
+				{
+					IssueLog::Error('customer-survey - send quizz, phrase not defining a set of Contacts: '.$oQuery->GetName().' #'.$oQuery->GetKey());
+				}
+			}
+			catch (OqlException $e)
+			{
+				IssueLog::Error('customer-survey - send quizz, OQL error: '.$e->getMessage());
+			}
+		}
+
+		$oTargetSet = $this->GetTargetsFromDB();
+		while($oTarget = $oTargetSet->Fetch())
+		{
+			if (!array_key_exists($oTarget->GetKey(), $aContacts))
+			{
+				$oContact = MetaModel::GetObject('Contact', $oTarget->Get('contact_id'), true, true /*allow all data*/);
+				$this->SendQuizzToTargetContact($oContact);
+			}
+		}
+		return true;
+	}]]></code>
+        </method>
+        <method id="IsAnonymous">
+          <static>false</static>
+          <access>public</access>
+          <type>LifecycleAction</type>
+          <code><![CDATA[	public function IsAnonymous()
+	{
+		$sModuleName = basename(dirname(__FILE__));
+		$bAnonymous = (bool)MetaModel::GetModuleSetting($sModuleName, 'anonymous_survey', false);
+		return $bAnonymous;
+	}]]></code>
+        </method>
+        <method id="SendPreview">
+          <comment>/**
+	 * Send a preview message (with a link to a preview of the quizz) to the current user 
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>LifecycleAction</type>
+          <code><![CDATA[	public function SendPreview()
+	{
+		$bRes = false;
+		if ($oCurrentUser = UserRights::GetUserObject())
+		{
+			if ($iCurrentContact = $oCurrentUser->Get('contactid'))
+			{
+				if ($oCurrentContact = MetaModel::GetObject('Contact', $iCurrentContact, false, true /*allow all data*/))
+				{
+					try
+					{
+						$this->SendQuizzToContactLocalized($oCurrentContact);
+						$bRes = true;
+					}
+					catch (Exception $e)
+					{
+						// $bRes remains false
+					}
+				}
+			}
+		}
+		return $bRes;
+	}]]></code>
+        </method>
+        <method id="GetTargetsFromDB">
+          <comment>/**
+	 * Helper to return the targets whatever the visibility of the current user 
+	 * @return object DBObjectSet
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>LifecycleAction</type>
+          <code><![CDATA[	public function GetTargetsFromDB()
+	{
+		// This is equivalent to returning
+		// $this->Get('survey_target_list');
+		// + Allow all data !
+		// TO BE IMPROVED AS A GENERIC WAY TO SPECIFY "UNTIL FURTHER NOTICE I NEED EVERYTHING"
+		
+		$oSearch = DBObjectSearch::FromOQL_AllData('SELECT SurveyTarget WHERE survey_id = '.$this->GetKey());
+		$oSet = new DBObjectSet($oSearch);
+		return $oSet;
+	}]]></code>
+        </method>
+        <method id="SendQuizzToTargetContact">
+          <comment>/**
+	 * For a given target contact, prepare the anonymous (or not) answer and send an email 
+	 * @param object $oContact Identifies the contact, then its email, etc.
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>protected</access>
+          <type>LifecycleAction</type>
+          <code><![CDATA[	protected function SendQuizzToTargetContact($oContact)
+	{
+		$oTargetAnswer = new SurveyTargetAnswer();
+		$oTargetAnswer->Set('survey_id', $this->GetKey());
+		$oTargetAnswer->Set('status', 'ongoing');
+		if (!$this->IsAnonymous())
+		{
+			$oTargetAnswer->Set('contact_id',  $oContact->GetKey());
+		}
+		$sToken = $oTargetAnswer->SetToken();
+
+		$oEvent = new SurveyNotification();
+		$oEvent->Set('userinfo', UserRights::GetUser());
+		$oEvent->Set('survey_id', $this->GetKey());
+		$oEvent->Set('contact_id', $oContact->GetKey());
+
+		$bRes = false;
+		try
+		{
+			$this->SendQuizzToContactLocalized($oContact, $sToken);
+			$oEvent->Set('message', Dict::S('Survey-email-ok'));
+			$bRes = true;
+		}
+		catch (Exception $e)
+		{
+			$oEvent->Set('message', $e->getMessage());
+		}
+
+		if ($bRes)
+		{
+			// Create the anonymous (or not) answer
+			$oTargetAnswer->Set('nb_notifications_sent', 1); // The first notification was sent successfully
+			$oTargetAnswer->DBInsert();
+		}
+
+		// Keep track of the notification
+		$oEvent->DBInsertNoReload();
+	}]]></code>
+        </method>
+        <method id="SendAgainQuizzToTargetContact">
+          <comment>/**
+	 * For a given target contact, send again an invitation to answer the quizz 
+	 * @param object $oSTA Identifies the survey target contact
+	 * @param $sSubject Alternate email subject
+	 * @param $sBody Alternate email body
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>LifecycleAction</type>
+          <code><![CDATA[	public function SendAgainQuizzToTargetContact(SurveyTargetAnswer $oTargetAnswer, $sSubject, $sBody)
+	{
+		$sToken = $oTargetAnswer->Get('token');
+
+		$oEvent = new SurveyNotification();
+		$oEvent->Set('userinfo', UserRights::GetUser());
+		$oEvent->Set('survey_id', $this->GetKey());
+		$oEvent->Set('contact_id', $oTargetAnswer->Get('contact_id'));
+
+		$bRes = false;
+		try
+		{
+			$oContact = MetaModel::GetObject('Contact', $oTargetAnswer->Get('contact_id'));
+			$this->SendQuizzToContactLocalized($oContact, $sToken, $sSubject, $sBody);
+			$oEvent->Set('message', Dict::S('Survey-email-ok'));
+			$oTargetAnswer->Set('nb_notifications_sent', 1 + (int)$oTargetAnswer->Get('nb_notifications_sent'));
+			$bRes = true;
+		}
+		catch (Exception $e)
+		{
+			$oEvent->Set('message', $e->getMessage());
+		}
+
+		if ($bRes)
+		{
+			// Create the anonymous (or not) answer
+			$oTargetAnswer->DBUpdate();
+		}
+
+		// Keep track of the notification
+		$oEvent->DBInsertNoReload();
+	}]]></code>
+        </method>
+        <method id="SendQuizzToContactLocalized">
+          <comment>/**
+	* Send the quizz and make sure the email and form are localized according to the language of the survey/quizz
+	* @param object $oContact Target recipient
+	* @param string $sToken Optional token; if omitted then the email and forms will be in preview mode		
+	* @param string $sEmailBody Alternate email body
+	* @param string $sEmailSubject Alternate email subject
+	* @return void
+	*/</comment>
+          <static>false</static>
+          <access>protected</access>
+          <type>LifecycleAction</type>
+          <code><![CDATA[	protected function SendQuizzToContactLocalized($oContact, $sToken = null, $sEmailSubject = null, $sEmailBody = null)
+	{
+		$oQuizz = MetaModel::GetObject('Quizz', $this->Get('quizz_id'), true, true /*allow all data*/);
+		$oQuizz->ChangeDictionnaryLanguage();		
+		try
+		{
+			$this->SendQuizzToContact($oQuizz, $oContact, $sToken, $sEmailSubject, $sEmailBody);
+		}
+		catch(Exception $e)
+		{
+			$oQuizz->RestoreDictionnaryLanguage();
+			throw $e;		
+		}
+		$oQuizz->RestoreDictionnaryLanguage();
+	}]]></code>
+        </method>
+        <method id="SendQuizzToContact">
+          <comment>/**
+	 * Prepare the email and send it
+	 * @param object $oQuizz The quizz
+	 * @param object $oContact The target contact
+	 * @param string $sToken The token identifying the recipient for the anonymous answer ; if omitted, this is a sample email
+	 * @param string $sEmailBody Alternate email body
+	 * @param string $sEmailSubject Alternate email subject
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>protected</access>
+          <type>LifecycleAction</type>
+          <code><![CDATA[	protected function SendQuizzToContact($oQuizz, $oContact, $sToken = null, $sEmailSubject = null, $sEmailBody = null)
+	{
+		$oEmail = new EMail();
+
+		$sQuizzUrl = $oQuizz->MakeFormUrl($sToken);
+
+		if ($sEmailBody != null)
+		{
+			$sBody = $sEmailBody;
+		}
+		else
+		{
+			$sBody = $this->Get('email_body');
+		}
+		$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
+
+		if ($sEmailSubject != null)
+		{
+			$sSubject = $sEmailSubject;
+		}
+		else
+		{
+			$sSubject = $this->Get('email_subject');
+		}
+		
+		if ($sToken)
+		{
+			$oEmail->SetSubject($sSubject);
+		}
+		else
+		{
+			$oEmail->SetSubject('['.Dict::S('Survey-email-preview').'] '.$sSubject);
+		}
+		$oEmail->SetBody($sBody);
+		$oEmail->SetRecipientTO($oContact->Get('email'));
+
+		$oSender = MetaModel::GetObject('Contact', $this->Get('on_behalf_of'), true, true /*allow all data*/);
+		$sFrom = $oSender->Get('email');
+		$oEmail->SetRecipientFrom($sFrom);
+		//$oEmail->SetRecipientReplyTo($sReplyTo);
+		//$oEmail->SetReferences();
+		//$oEmail->SetMessageId();
+
+		$iRes = $oEmail->Send($aErrors, false); // allow asynchronous mode
+		switch ($iRes)
+		{
+			case EMAIL_SEND_OK:
+				return;
+
+			case EMAIL_SEND_PENDING:
+				return;
+
+			case EMAIL_SEND_ERROR:
+				throw new Exception(Dict::S('Survey-email-notsent').': '.implode(', ', $aErrors));
+		}
+	}]]></code>
+        </method>
+        <method id="OnUpdate">
+          <comment>/**
+	 * In state running, detect new target contacts and align them to already existing contacts
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>protected</access>
+          <type>Overload-DBObject</type>
+          <code><![CDATA[	protected function OnUpdate()
+	{
+		if ($this->Get('status') == 'running')
+		{
+			// Detect new users and send them a notification
+			// A contact is considered as "new" if he/she was never
+			// sent a notification to participate in this survey
+			$oSearch = new DBObjectSearch('SurveyNotification');
+			$oSearch->AddCondition('survey_id', $this->GetKey());
+			$oNotificationsSent = new DBObjectSet($oSearch);
+			$aNotifs = array();
+			while($oNotification = $oNotificationsSent->Fetch())
+			{
+				//TODO: check if the notification was successful ?
+				//      so that we can retry in case of error...
+				$aNotifs[$oNotification->Get('contact_id')] = true;
+			}
+			 
+			$oNewTargetSet = $this->Get('survey_target_list');
+			$aNewSet = $oNewTargetSet->ToArray();
+
+			foreach($aNewSet as $iId => $oTarget)
+			{
+				if (!array_key_exists($oTarget->Get('contact_id'), $aNotifs))
+				{
+					$oContact = MetaModel::GetObject('Contact', $oTarget->Get('contact_id'));
+					$this->SendQuizzToTargetContact($oContact);
+				}
+			}			
+		}
+	}]]></code>
+        </method>
+        <method id="DisplayBareRelations">
+          <comment>/**
+	 * Add a tab with progress information, statistics and links to usefull queries for reporting
+	 * @param object $oPage Page
+	 * @param bool	$bEditMode True in edition, false in read-only mode
+	 * @return void
+	 */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	function DisplayBareRelations(WebPage $oPage, $bEditMode = false)
+	{
+		parent::DisplayBareRelations($oPage, $bEditMode);
+		if (!$bEditMode)
+		{
+			if ($this->Get('status') != 'new')
+			{
+				$this->DisplayProgressTab($oPage);
+				$this->DisplayResultsTab($oPage);
+			}		
+		}
+	}]]></code>
+        </method>
+        <method id="DisplayProgressTab">
+          <static>false</static>
+          <access>protected</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	protected function DisplayProgressTab($oPage)
+	{
+		$oTargetSet = $this->Get('survey_target_answer_list');
+		$iTargetCount = $oTargetSet->Count();
+
+		$oFilter = new DBObjectSearch('SurveyTargetAnswer');
+		$oFilter->AddCondition('survey_id', $this->GetKey());
+		$oFilter->AddCondition('status', 'finished');
+		$oFinishedSet = new DBObjectSet($oFilter);
+		$iAnswerCount = $oFinishedSet->Count();
+
+		$iAwaited = $iTargetCount - $iAnswerCount;
+
+		if ($iTargetCount > 0)
+		{
+			$iProgress = round(100 * $iAnswerCount / $iTargetCount);
+		}
+		else
+		{
+			$iProgress = 100;
+		}
+		$oPage->SetCurrentTab(Dict::S('Survey-tab-progress').' ('.$iProgress.' %)');
+		$oPage->p(Dict::S('Survey-awaited-answers').': '.$iAwaited);
+
+		if (!$this->IsAnonymous())
+		{
+			$oPage->add('<h1>'.Dict::S('Survey-progress-status').'</h1>');
+
+			$oFilter = new DBObjectSearch('SurveyTargetAnswer');
+			$oFilter->AddCondition('survey_id', $this->GetKey());
+			$oBlock = new DisplayBlock($oFilter, 'list');
+			
+			// mark all "finished" targets as non-selectable
+			$oFinishedFilter = new DBObjectSearch('SurveyTargetAnswer');
+			if($this->Get(MetaModel::GetStateAttributeCode('Survey')) !== 'closed')
+			{
+				$oFinishedFilter->AddCondition('survey_id', $this->GetKey());
+				$oFinishedFilter->AddCondition('status', 'finished');
+			}
+			$oSet = new DBObjectSet($oFinishedFilter);
+			$aSelectable = array();
+			while($oSTA = $oSet->Fetch())
+			{
+				$aSelectable[$oSTA->GetKey()] = false;
+			}
+			$aExtraParams = array(
+				'menu' => '0',
+				'table_id' => 'survey-progress-status',
+				'view_link' => false,
+				'zlist' => false,
+				'extra_fields' => 'contact_id,nb_notifications_sent,status,date_response',
+				'selection_mode' => 'multiple',
+				'selection_enabled' => $aSelectable,
+			);
+			$sBlockId = 'block_survey_progress_status';
+			$oBlock->Display($oPage, $sBlockId, $aExtraParams);
+
+			$sWithSelected = addslashes('<div>'.Dict::S('Survey-With-Selected').'<input type="button" id="survey_send_again" value="'.Dict::S('Survey-Resend-Button').'"></div>');
+
+			$sDialogId = "survey_resend_dialog";
+			$sDialogTitle = addslashes(Dict::S('Survey-Resend-Title'));
+			$sOkButtonLabel = addslashes(Dict::S('Survey-Resend-Ok'));
+			$sCancelButtonLabel = addslashes(Dict::S('Survey-Resend-Cancel'));
+
+			$oPage->add('<div id="'.$sDialogId.'" style="display: none;">');
+			$oForm = new DesignerForm();
+			$oField = new DesignerTextField('email_subject', Dict::S('Class:Survey/Attribute:email_subject'), $this->Get('email_subject'));
+			$oField->SetMandatory(true);
+			$oForm->AddField($oField);
+			$oField = new DesignerLongTextField('email_body', Dict::S('Class:Survey/Attribute:email_body'), $this->Get('email_body'));
+			$oField->SetMandatory(true);
+			$oForm->AddField($oField);
+			$oForm->Render($oPage);
+			$oPage->add('</div>');
+
+			$iSurveyId = $this->GetKey();
+			$sAjaxUrl = addslashes(utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php');
+
+			$oPage->add_ready_script(
+<<<EOF
+function SurveyRunDialogSendAgain()
+{
+	$('#$sDialogId textarea').ckeditor();
+	$('#$sDialogId input[type=text]').attr('size', 50);
+	$('#$sDialogId').dialog({
+		height: 'auto',
+		width: 'auto',
+		modal: true,
+		title: '$sDialogTitle',
+		buttons: [
+		{ text: "$sOkButtonLabel", click: function() {
+			if ($('#$sDialogId .ui-state-error').length == 0)
+			{
+				var aTargetsSelect = [];
+				$('#$sBlockId .datacontents .selectListblock_survey_progress_status:checked').each(function () {
+					aTargetsSelect.push($(this).val());
+				});
+				var aTargetsStored = [];
+				$('#$sBlockId :input[name^=storedSelection]').each(function () {
+					aTargetsStored.push($(this).val());
+				});
+				var sSelectionMode = $('#$sBlockId  input[name^=selectionMode]').val();
+
+				var sFilter = $('#datatable_$sBlockId').data('itopDatatable').options.sFilter
+				var sEmailSubject = $('#$sDialogId #attr_email_subject').val();
+				var sEmailBody = $('#$sDialogId #attr_email_body').val();
+				var oMap = {
+					operation: 'send_again',
+					survey_id: $iSurveyId,
+					email_subject: sEmailSubject,
+					email_body: sEmailBody,
+					selectObject: aTargetsSelect,
+					storedSelection: aTargetsStored,
+					selectionMode: sSelectionMode,
+					filter: sFilter,
+				};
+				$(this).dialog('close');
+				$('#SurveyEmailNotifications_indicator').html('<img src="../images/indicator.gif"/>')
+
+				var sUrl = '$sAjaxUrl';
+
+				$.post(sUrl, oMap, function(data) {
+					// Refresh the list of notifications
+					$('#SurveyEmailNotifications').html(data);
+				});
+
+			}
+		} },
+		{ text: "$sCancelButtonLabel", click: function() {
+			$(this).dialog( "close" );
+		} },
+		],
+	});
+}
+$('#$sBlockId .datacontents').append('$sWithSelected');
+$('#survey_send_again').prop('disabled', true);
+
+$('#$sBlockId').on('change', '.selectListblock_survey_progress_status', function (){
+	if ($('#$sBlockId .selectListblock_survey_progress_status:checked').length > 0)
+	{
+		$('#survey_send_again').prop('disabled', false);
+	}
+	else
+	{
+		$('#survey_send_again').prop('disabled', true);
+	}
+});
+
+$('#survey_send_again').click(function (){
+	SurveyRunDialogSendAgain();
+});
+EOF
+			);
+		}
+		$oPage->add('<div id="SurveyEmailNotifications">');
+		$this->DisplayNotifications($oPage);
+		$oPage->add('</div>');
+	}]]></code>
+        </method>
+        <method id="DisplayNotifications">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function DisplayNotifications(WebPage $oPage)
+	{
+		$oPage->add('<h1>'.Dict::S('Survey-progress-notifications').'&nbsp;<span id="SurveyEmailNotifications_indicator"></span></h1>');
+		$oFilter = new DBObjectSearch('SurveyNotification');
+		$oFilter->AddCondition('survey_id', $this->GetKey());
+		$oBlock = new DisplayBlock($oFilter, 'list');
+		$aExtraParams = array(
+			'menu' => '0',
+			'table_id' => 'survey-progress-notif',
+			'view_link' => false,
+			'zlist' => false,
+			'extra_fields' => 'contact_id,date,message'
+		);
+		$sBlockId = 'block_survey_progress_notif';
+		$oBlock->Display($oPage, $sBlockId, $aExtraParams);		
+	}]]></code>
+        </method>
+        <method id="DisplayResultsTab">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function DisplayResultsTab($oPage, $bPrintable = false, $aOrgIds = array(), $aContactIds = array())
+	{
+		if (!$bPrintable)
+		{
+			$oPage->SetCurrentTab(Dict::S('Survey-tab-results'));
+		}
+		
+		if (!$this->IsAnonymous() && !$bPrintable)
+		{
+			$sOQL = 'SELECT Organization AS O JOIN Contact AS C ON C.org_id = O.id JOIN SurveyTargetAnswer AS T ON T.contact_id = C.id WHERE T.survey_id = '.$this->GetKey();
+			$oSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL));
+			$aAllowedValues = array();
+			while($oOrg = $oSet->Fetch())
+			{
+				$aAllowedValues[$oOrg->GetKey()] = $oOrg->GetName();
+			}
+			$sHtml = $this->GetDropDownFilter('filter_stats_org_id', Dict::S('Survey-results-filter-organization'), $aAllowedValues,'org_id', '');
+			
+			$sHtml .= '<span id="filter_stats_contact_id_outer">'.$this->GetContactsFilter().'</span>';
+			$oPage->add('<fieldset><legend>'.Dict::S('Survey-results-fitlering').'</legend><div id="stats_filter">');
+			$oPage->add($sHtml);
+			$oPage->add('<button id="stats_filter_apply" type="button">'.Dict::S('Survey-results-apply-filter').'</button>&nbsp;<span id="stats_filter_indicator"></span>');
+			$oPage->add('</div></fieldset>');
+		}
+		
+		$oPage->add('<div id="survey_stats">');
+		$this->DisplayStatisticsAndExport($oPage, $bPrintable, $aOrgIds, $aContactIds);
+		$oPage->add('</div>');
+		$iSurveyId = $this->GetKey();
+		$sAjaxUrl = addslashes(utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php');
+		$oPage->add_ready_script(
+<<<EOF
+function SurveyFilterStats()
+{
+	$('#stats_filter button').prop('disabled', true);
+	$('#stats_filter_indicator').html('<img src="../images/indicator.gif"/>');
+	var oMap = {
+		operation: 'filter_stats',
+		survey_id: $iSurveyId,
+		org_id: $('#filter_stats_org_id').val(),
+		contact_id: $('#filter_stats_contact_id').val()
+	}
+	$.post('$sAjaxUrl', oMap, function(html) {
+	
+		$('#survey_stats').html(html);
+		$('#stats_filter_indicator').html('');
+		$('#stats_filter button').prop('disabled', false);
+	});
+}
+function RefreshContactsFilter()
+{
+	$('#stats_filter button').prop('disabled', true);
+	$('#stats_filter_indicator').html('<img src="../images/indicator.gif"/>');
+	var oMap = {
+		operation: 'refresh_contacts_filter',
+		survey_id: $iSurveyId,
+		org_id: $('#filter_stats_org_id').val()
+	};
+	$.post('$sAjaxUrl', oMap, function(html) {
+	
+		$('#filter_stats_contact_id_outer').html(html);
+		$('#stats_filter_indicator').html('');
+		$('#stats_filter button').prop('disabled', false);
+	});
+}
+
+$('#filter_stats_org_id').bind('change', RefreshContactsFilter);
+$('#stats_filter_apply').click(SurveyFilterStats);
+EOF
+		);
+		if ($bPrintable)
+		{
+			$oPage->add_style("body { overflow: auto; }");
+			$oPage->add_ready_script(
+<<<EOF
+$('div.Collapsible').toggleClass('open');
+EOF
+			);
+		}
+	}]]></code>
+        </method>
+        <method id="DisplayStatisticsAndExport">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function DisplayStatisticsAndExport(WebPage $oPage, $bPrintable = false, $aOrgIds = array(), $aContactIds = array())
+	{
+		$sFields = 'question_title,question_description,value';
+		$sOrgIdClause = '';
+		$sOrgUrl = '';
+		if (count($aOrgIds) > 0)
+		{
+			$sOrgIdClause = " AND T.org_id IN(".implode(',', $aOrgIds).")";
+			foreach($aOrgIds as $iOrgId)
+			{
+				$sOrgUrl .= '&o[]='.$iOrgId;
+			}
+		}
+		$sContactIdClause = '';
+		$sContactUrl = '';
+		if (count($aContactIds) > 0)
+		{
+			$sContactIdClause = " AND T.contact_id IN(".implode(',', $aContactIds).")";
+			foreach($aContactIds as $iContactId)
+			{
+				$sContactUrl .= '&c[]='.$iContactId;
+			}
+		}
+		if (!$this->IsAnonymous())
+		{
+			$sFields .= ',contact_name,org_name';
+		}
+		$sOQL = "SELECT SurveyTargetAnswer AS T WHERE T.survey_id = ".$this->GetKey();
+		$sOQL .= $sOrgIdClause.$sContactIdClause;
+		$oFilter = DBObjectSearch::FromOQL_AllData($sOQL);
+		$oTargetSet = new DBObjectSet($oFilter);
+		$iTargetCount = $oTargetSet->Count();
+		
+		$oPage->add('<div class="survey-stats">');
+		if ( (count($aContactIds) > 0) || (count($aOrgIds) > 0))
+		{
+			$sFieldsetLegend = Dict::S('Survey-results-statistics-filtered');
+		}
+		else
+		{
+			$sFieldsetLegend = Dict::S('Survey-results-statistics');
+		}
+		$oPage->add("<fieldset style=\"background: #FFFFFF;\"><legend>$sFieldsetLegend</legend>");
+		if (!$bPrintable)
+		{
+			$sUrl = utils::GetAbsoluteUrlModulePage('customer-survey', 'print.php');
+			$oPage->add('<div style="float:right"><form id="printable_version" method="post" target="_blank" action="'.$sUrl.'">');
+			$aVars = array('operation' => 'print_results', 'survey_id' => $this->GetKey(), 'org_id' => $aOrgIds, 'contact_id' => $aContactIds);
+			foreach($aVars as $sName => $value)
+			{
+				if (is_array($value))
+				{
+					foreach($value as $sVal)
+					{
+						$oPage->add('<input type="hidden" name="'.$sName.'[]" value="'.$sVal.'"/>');
+					}
+				}
+				else
+				{
+					$oPage->add('<input type="hidden" name="'.$sName.'" value="'.$value.'"/>');
+				}			
+			}
+			$oPage->add('<a href="#" onclick="$(\'#printable_version\').submit(); return false;">'.Dict::S('Survey-results-print').'</a></form></div>');
+		}
+
+		$sOQL = "SELECT SurveyTargetAnswer AS T WHERE T.status = 'finished' AND T.survey_id = ".$this->GetKey();
+		$sOQL .= $sOrgIdClause.$sContactIdClause;
+		$oFilter = DBObjectSearch::FromOQL_AllData($sOQL);
+		$oFinishedSet = new DBObjectSet($oFilter);
+
+		$iAnswerCount = $oFinishedSet->Count();
+		if ($iAnswerCount > 0)
+		{
+			$oPage->add(Dict::Format('Survey-results-completion_X_out_of_Y_Percent', $iAnswerCount, $iTargetCount, sprintf('%.2f', $iAnswerCount/$iTargetCount*100.0)));
+			
+			$sOQL = "SELECT QuizzElement AS QE JOIN Quizz AS Q ON QE.quizz_id = Q.id JOIN Survey AS S ON S.quizz_id = Q.id JOIN SurveyTargetAnswer AS T ON T.survey_id = S.id WHERE T.status = 'finished' AND S.id = ".$this->GetKey();
+			$sOQL .= $sOrgIdClause.$sContactIdClause;
+			$oQuestionSearch = DBObjectSearch::FromOQL_AllData($sOQL);
+			$oQuestionSet = new DBObjectSet($oQuestionSearch);
+			while ($oQuestion = $oQuestionSet->Fetch())
+			{
+				
+				$oPage->add('<div>');
+				
+				$sOQL = "SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.status = 'finished' AND A.question_id = ".$oQuestion->GetKey().' AND T.survey_id = '.$this->GetKey();
+				$sOQL .= $sOrgIdClause.$sContactIdClause;
+				$oAnswerSearch = DBObjectSearch::FromOQL_AllData($sOQL);
+				$oAnswerSet = new DBObjectSet($oAnswerSearch);
+				
+				$oQuestion->DisplayResults($oPage, $oAnswerSet, $iTargetCount, $this->IsAnonymous());						
+	
+				$oPage->add('</div>');
+				
+			}
+			$oPage->add('</div>');
+		}
+		else
+		{
+			$oPage->p(Dict::S('Survey-results-noanswer'));
+		}
+		$oPage->add('</fieldset>');
+		$oPage->add('</div>');
+	
+		if (!$bPrintable)
+		{
+			$oPage->add('<fieldset><legend>'.Dict::S('Survey-query-results-export').'</legend>');
+			$oPage->add('<table>');
+			$oPage->add('<tr>');
+			$oPage->add('<td>'.Dict::S('Survey-query-results').'</td>');
+	
+			$sAbsoluteUrl = utils::GetAbsoluteUrlModulesRoot();
+	
+			$sRunQueryUrl = $sAbsoluteUrl.'customer-survey/report.php?s='.$this->GetKey().$sOrgUrl.$sContactUrl;
+			$oPage->add('<td><a href="'.$sRunQueryUrl.'" target="_blank">'.Dict::S('Survey-results-excel').'</a></td>');
+	
+			$sRunQueryUrl .= '&f=csv';
+			$oPage->add('<td><a href="'.$sRunQueryUrl.'" target="_blank">'.Dict::S('Survey-results-csv').'</a></td>');
+	
+			$oPage->add('</tr>');
+
+			$oPage->add('</table>');
+			$oPage->add('</fieldset>');
+		}
+	}]]></code>
+        </method>
+        <method id="GetContactsFilter">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function GetContactsFilter($aOrganizations = array())
+	{
+		$sOQL = 'SELECT Contact AS C JOIN SurveyTargetAnswer AS T ON T.contact_id = C.id WHERE T.survey_id = '.$this->GetKey();
+		if (count($aOrganizations) > 0)
+		{
+			$sOQL .= ' AND C.org_id IN('.implode(',', $aOrganizations).')';
+		}
+		$oSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL));
+		$aAllowedValues = array();
+		while($oContact = $oSet->Fetch())
+		{
+			$aAllowedValues[$oContact->GetKey()] = $oContact->GetName();
+		}
+		return $this->GetDropDownFilter('filter_stats_contact_id', Dict::S('Survey-results-filter-contact'), $aAllowedValues,'contact_id', '');
+	}]]></code>
+        </method>
+        <method id="GetDropDownFilter">
+          <static>false</static>
+          <access>protected</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	protected function GetDropDownFilter($sId, $sLabel, $aAllowedValues, $sFilterCode, $sFilterValue = '')
+	{
+		//Enum field, display a multi-select combo
+		$sValue = "<select id=\"$sId\" class=\"multiselect\" size=\"1\" name=\"{$sFilterCode}[]\" multiple>\n";
+		foreach($aAllowedValues as $key => $value)
+		{
+			if (is_array($sFilterValue) && in_array($key, $sFilterValue))
+			{
+				$sSelected = ' selected';
+			}
+			else if ($sFilterValue == $key)
+			{
+				$sSelected = ' selected';
+			}
+			else
+			{
+				$sSelected = '';
+			}
+			$sValue .= "<option value=\"$key\"$sSelected>$value</option>\n";
+		}
+		$sValue .= "</select>\n";
+		return "<label>$sLabel:</label>&nbsp;$sValue\n";		
+	}]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <details>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="language">
+              <rank>20</rank>
+            </item>
+            <item id="status">
+              <rank>30</rank>
+            </item>
+            <item id="date_sent">
+              <rank>40</rank>
+            </item>
+            <item id="on_behalf_of">
+              <rank>50</rank>
+            </item>
+            <item id="email_on_completion">
+              <rank>60</rank>
+            </item>
+            <item id="email_subject">
+              <rank>70</rank>
+            </item>
+            <item id="email_body">
+              <rank>80</rank>
+            </item>
+            <item id="target_phrase_id">
+              <rank>90</rank>
+            </item>
+            <item id="survey_target_list">
+              <rank>100</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="quizz_id">
+              <rank>10</rank>
+            </item>
+            <item id="status">
+              <rank>20</rank>
+            </item>
+            <item id="date_sent">
+              <rank>30</rank>
+            </item>
+            <item id="language">
+              <rank>40</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="status">
+              <rank>10</rank>
+            </item>
+            <item id="date_sent">
+              <rank>20</rank>
+            </item>
+            <item id="language">
+              <rank>30</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="SurveyTarget" _delta="define">
+      <parent>cmdbAbstractObject</parent>
+      <properties>
+        <comment>/**
+ *
+ * SurveyTarget: a target of a survey
+ *
+ */</comment>
+        <is_link>1</is_link>
+        <category>bizmodel,searchable,survey</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_survey_target</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s</format>
+          <attributes>
+            <attribute id="contact_id_friendlyname"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="survey_id_friendlyname"/>
+            <attribute id="contact_id_friendlyname"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields>
+        <field id="survey_id" xsi:type="AttributeExternalKey">
+          <sql>survey_id</sql>
+          <target_class>Survey</target_class>
+          <is_null_allowed>false</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="contact_id" xsi:type="AttributeExternalKey">
+          <sql>contact_id</sql>
+          <target_class>Contact</target_class>
+          <is_null_allowed>false</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="contact_id_finalclass_recall" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>finalclass</target_attcode>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="contact_id_obsolescence_flag" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>obsolescence_flag</target_attcode>
+        </field>
+      </fields>
+      <methods/>
+      <presentation>
+        <details>
+          <items>
+            <item id="survey_id">
+              <rank>10</rank>
+            </item>
+            <item id="contact_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="survey_id">
+              <rank>10</rank>
+            </item>
+            <item id="contact_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="survey_id">
+              <rank>10</rank>
+            </item>
+            <item id="contact_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="SurveyTargetAnswer" _delta="define">
+      <parent>cmdbAbstractObject</parent>
+      <properties>
+        <comment>/**
+ *
+ * SurveyTargetAnswer: an anonymous target of a survey
+ *
+ */</comment>
+        <category>bizmodel,searchable,survey</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_survey_targetanswer</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s</format>
+          <attributes>
+            <attribute id="token"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="token"/>
+            <attribute id="survey_id_friendlyname"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields>
+        <field id="survey_id" xsi:type="AttributeExternalKey">
+          <sql>survey_id</sql>
+          <target_class>Survey</target_class>
+          <is_null_allowed>false</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="token" xsi:type="AttributeString">
+          <sql>token</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="date_response" xsi:type="AttributeDateTime">
+          <sql>date_response</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="contact_id" xsi:type="AttributeExternalKey">
+          <sql>contact_id</sql>
+          <target_class>Contact</target_class>
+          <is_null_allowed>true</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+          <field id="contact_name" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>friendlyname</target_attcode>
+        </field>
+        <field id="org_id" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>org_id</target_attcode>
+        </field>
+        <field id="org_name" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>org_name</target_attcode>
+        </field>
+        <field id="status" xsi:type="AttributeEnum">
+          <values>
+            <value>ongoing</value>
+            <value>finished</value>
+          </values>
+          <sql>status</sql>
+          <default_value>finished</default_value>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="nb_notifications_sent" xsi:type="AttributeInteger">
+          <sql>nb_notifications_sent</sql>
+          <default_value>0</default_value>
+          <is_null_allowed>false</is_null_allowed>
+        </field>
+        <field id="last_question_id" xsi:type="AttributeExternalKey">
+          <sql>last_question_id</sql>
+          <target_class>QuizzElement</target_class>
+          <is_null_allowed>true</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="contact_id_finalclass_recall" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>finalclass</target_attcode>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="contact_id_obsolescence_flag" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>obsolescence_flag</target_attcode>
+        </field>
+        <field id="org_id_obsolescence_flag" xsi:type="AttributeExternalField">
+          <extkey_attcode>contact_id</extkey_attcode>
+          <target_attcode>org_id_obsolescence_flag</target_attcode>
+        </field>
+        <field id="last_question_id_finalclass_recall" xsi:type="AttributeExternalField">
+          <extkey_attcode>last_question_id</extkey_attcode>
+          <target_attcode>finalclass</target_attcode>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+      </fields>
+      <methods>
+        <method id="SetToken">
+          <static>false</static>
+          <access>public</access>
+          <type>Overload-cmdbAbstractObject</type>
+          <code><![CDATA[	public function SetToken()
+	{
+		// Note: uniqid is based on the curent time + an internal counter that ensures a new value at each call
+		$sToken = $this->Get('survey_id').'-'.uniqid();
+		$this->Set('token', $sToken);
+		return $sToken;
+	}]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <details>
+          <items>
+            <item id="survey_id">
+              <rank>10</rank>
+            </item>
+            <item id="date_response">
+              <rank>20</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="survey_id">
+              <rank>10</rank>
+            </item>
+            <item id="date_response">
+              <rank>20</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="contact_id">
+              <rank>10</rank>
+            </item>
+            <item id="nb_notifications_sent">
+              <rank>20</rank>
+            </item>
+            <item id="status">
+              <rank>30</rank>
+            </item>
+            <item id="date_response">
+              <rank>40</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+    <class id="SurveyAnswer" _delta="define">
+      <parent>cmdbAbstractObject</parent>
+      <properties>
+        <comment>/**
+ *
+ * SurveyAnswer: the answer of one target to a given question of a survey
+ *
+ */</comment>
+        <category>bizmodel,searchable,survey</category>
+        <abstract>false</abstract>
+        <key_type>autoincrement</key_type>
+        <db_table>qz_survey_answer</db_table>
+        <db_key_field>id</db_key_field>
+        <db_final_class_field/>
+        <naming>
+          <format>%1$s %2$s</format>
+          <attributes>
+            <attribute id="survey_target_id_friendlyname"/>
+            <attribute id="question_id"/>
+          </attributes>
+        </naming>
+        <display_template/>
+        <icon/>
+        <reconciliation>
+          <attributes>
+            <attribute id="survey_target_id_friendlyname"/>
+            <attribute id="question_id"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields>
+        <field id="survey_target_id" xsi:type="AttributeExternalKey">
+          <sql>survey_target_id</sql>
+          <target_class>SurveyTargetAnswer</target_class>
+          <is_null_allowed>false</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="question_id" xsi:type="AttributeExternalKey">
+          <sql>question_id</sql>
+          <target_class>QuizzElement</target_class>
+          <is_null_allowed>false</is_null_allowed>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <jointype/>
+        </field>
+        <field id="question_title" xsi:type="AttributeExternalField">
+          <extkey_attcode>question_id</extkey_attcode>
+          <target_attcode>title</target_attcode>
+        </field>
+        <field id="question_description" xsi:type="AttributeExternalField">
+          <extkey_attcode>question_id</extkey_attcode>
+          <target_attcode>description</target_attcode>
+        </field>
+        <field id="contact_id" xsi:type="AttributeExternalField">
+          <extkey_attcode>survey_target_id</extkey_attcode>
+          <target_attcode>contact_id</target_attcode>
+        </field>
+        <field id="contact_name" xsi:type="AttributeExternalField">
+          <extkey_attcode>survey_target_id</extkey_attcode>
+          <target_attcode>contact_name</target_attcode>
+        </field>
+        <field id="org_id" xsi:type="AttributeExternalField">
+          <extkey_attcode>survey_target_id</extkey_attcode>
+          <target_attcode>org_id</target_attcode>
+        </field>
+        <field id="org_name" xsi:type="AttributeExternalField">
+          <extkey_attcode>survey_target_id</extkey_attcode>
+          <target_attcode>org_name</target_attcode>
+        </field>
+        <field id="value" xsi:type="AttributeText">
+          <sql>value</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="question_id_finalclass_recall" xsi:type="AttributeExternalField">
+          <extkey_attcode>question_id</extkey_attcode>
+          <target_attcode>finalclass</target_attcode>
+          <is_null_allowed>true</is_null_allowed>
+        </field>
+        <field id="contact_id_obsolescence_flag" xsi:type="AttributeExternalField">
+          <extkey_attcode>survey_target_id</extkey_attcode>
+          <target_attcode>contact_id_obsolescence_flag</target_attcode>
+        </field>
+        <field id="org_id_obsolescence_flag" xsi:type="AttributeExternalField">
+          <extkey_attcode>survey_target_id</extkey_attcode>
+          <target_attcode>org_id_obsolescence_flag</target_attcode>
+        </field>
+      </fields>
+      <methods/>
+      <presentation>
+        <details>
+          <items>
+            <item id="survey_target_id">
+              <rank>10</rank>
+            </item>
+            <item id="question_id">
+              <rank>20</rank>
+            </item>
+            <item id="value">
+              <rank>30</rank>
+            </item>
+          </items>
+        </details>
+        <search>
+          <items>
+            <item id="survey_target_id">
+              <rank>10</rank>
+            </item>
+            <item id="question_id">
+              <rank>20</rank>
+            </item>
+            <item id="value">
+              <rank>30</rank>
+            </item>
+          </items>
+        </search>
+        <list>
+          <items>
+            <item id="survey_target_id">
+              <rank>10</rank>
+            </item>
+            <item id="question_id">
+              <rank>20</rank>
+            </item>
+            <item id="value">
+              <rank>30</rank>
+            </item>
+          </items>
+        </list>
+      </presentation>
+    </class>
+  </classes>
+  <menus>
+    <menu id="CustomerSurvey" xsi:type="TemplateMenuNode" _delta="define">
+      <rank>50</rank>
+      <parent>RequestManagement</parent>
+      <template_file/>
+    </menu>
+    <menu id="Quizzes" xsi:type="OQLMenuNode" _delta="define">
+      <rank>1</rank>
+      <parent>CustomerSurvey</parent>
+      <oql>SELECT Quizz</oql>
+      <do_search/>
+    </menu>
+    <menu id="Surveys" xsi:type="OQLMenuNode" _delta="define">
+      <rank>2</rank>
+      <parent>CustomerSurvey</parent>
+      <oql>SELECT Survey</oql>
+      <do_search/>
+    </menu>
+  </menus>
+  <snippets>
+    <snippet id="_QuizzFreeTextQuestion" _delta="define">
+      <placement>module</placement>
+      <module>customer-survey</module>
+      <rank>-1</rank>
+      <content>
+        <![CDATA[
+        class _QuizzFreeTextQuestion extends QuizzElement
+{
+	static protected $bScriptOutput = false;
+    public function DisplayForm(WebPage $oPage, $sCurrentValue)
+	{
+		// TODO: Implement DisplayForm() method.
+	}
+
+	public function DisplayResults(WebPage $oPage, DBObjectSet $oAnswerSet, $iTargetCount, $bAnonymous = false)
+	{
+		// TODO: Implement DisplayResults() method.
+	}
+}
+        ]]>
+      </content>
+    </snippet>
+  </snippets>
+   <meta>
+    <classes>
+      <class id="QueryOQL" _delta="define_if_not_exists">
+        <parent>Query</parent>
+        <properties>
+          <category>core/cmdb,view_in_gui,application,grant_by_profile</category>
+        </properties>
+        <fields>
+          <field id="name" xsi:type="AttributeString"/>
+          <field id="description" xsi:type="AttributeText"/>
+          <field id="oql" xsi:type="AttributeOQL"/>
+          <field id="fields" xsi:type="AttributeText"/>
+        </fields>
+      </class>
+    </classes>
+  </meta>
+</itop_design>
