@@ -182,7 +182,7 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Survey-CompletionNotificationSubject_name_contact' => '%2$s hat an Befragung %1$s teilgenommen',
 	'Survey-CompletionNotificationBody_url_contact' => '%2$s hat die Befragung $1%s abgeschlossen',
 	'Survey-SurveyFinished' => 'Diese Befragung ist geschlossen. Antworten werden nicht mehr angenommen.',
-	'Survey-AnswerAlreadyCommitted' => 'Ihre Antworten wurden bereits gespeichert und können nicht mehr geändert werden. Sie können dieses Fenstereinfach schliessen.',
+	'Survey-AnswerAlreadyCommitted' => 'Ihre Antworten wurden bereits gespeichert und können nicht mehr geändert werden. Sie können dieses Fenster einfach schliessen.',
 	'Survey-DefaultTitle' => 'Befragung',
 	'Survey-SurveyCompleted-Title' => 'Befragung abgeschlossen',
 	'Survey-SurveyCompleted-Default-Text' => 'Danke, für die Teilnahme an dieser Befragung. Ihre Antworten wurden gespeichert. Sie können dieses Fenster nun schliessen.',
