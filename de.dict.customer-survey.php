@@ -182,7 +182,7 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Survey-CompletionNotificationSubject_name_contact' => '%2$s hat an Befragung %1$s teilgenommen',
 	'Survey-CompletionNotificationBody_url_contact' => '%2$s hat die Befragung $1%s abgeschlossen',
 	'Survey-SurveyFinished' => 'Diese Befragung ist geschlossen. Antworten werden nicht mehr angenommen.',
-	'Survey-AnswerAlreadyCommitted' => 'Ihre Antworten wurden bereits gespeichert und können nicht mehr geändert werden. Sie können dieses Fenster einfach schliessen.',
+	'Survey-AnswerAlreadyCommitted' => 'Ihre Antworten wurden bereits gespeichert und können nicht mehr geändert werden. Sie können dieses Fenstereinfach schliessen.',
 	'Survey-DefaultTitle' => 'Befragung',
 	'Survey-SurveyCompleted-Title' => 'Befragung abgeschlossen',
 	'Survey-SurveyCompleted-Default-Text' => 'Danke, für die Teilnahme an dieser Befragung. Ihre Antworten wurden gespeichert. Sie können dieses Fenster nun schliessen.',
@@ -200,32 +200,32 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 //
 
 Dict::Add('DE DE', 'German', 'Deutsch', array(
-	'Class:SurveyAnswer' => 'SurveyAnswer~~',
-	'Class:SurveyAnswer+' => '~~',
-	'Class:SurveyAnswer/Attribute:survey_target_id' => 'Survey target id~~',
+	'Class:SurveyAnswer' => 'Antwort der Befragung',
+	'Class:SurveyAnswer+' => 'Antworten der Befragungen',
+	'Class:SurveyAnswer/Attribute:survey_target_id' => 'Befragung',
 	'Class:SurveyAnswer/Attribute:survey_target_id+' => '~~',
-	'Class:SurveyAnswer/Attribute:question_id' => 'Question id~~',
-	'Class:SurveyAnswer/Attribute:question_id+' => '~~',
-	'Class:SurveyAnswer/Attribute:question_title' => 'Question title~~',
-	'Class:SurveyAnswer/Attribute:question_title+' => '~~',
-	'Class:SurveyAnswer/Attribute:question_description' => 'Question description~~',
-	'Class:SurveyAnswer/Attribute:question_description+' => '~~',
-	'Class:SurveyAnswer/Attribute:contact_id' => 'Contact id~~',
-	'Class:SurveyAnswer/Attribute:contact_id+' => '~~',
-	'Class:SurveyAnswer/Attribute:contact_name' => 'Contact name~~',
-	'Class:SurveyAnswer/Attribute:contact_name+' => '~~',
-	'Class:SurveyAnswer/Attribute:org_id' => 'Org id~~',
-	'Class:SurveyAnswer/Attribute:org_id+' => '~~',
-	'Class:SurveyAnswer/Attribute:org_name' => 'Org name~~',
-	'Class:SurveyAnswer/Attribute:org_name+' => '~~',
-	'Class:SurveyAnswer/Attribute:value' => 'Value~~',
-	'Class:SurveyAnswer/Attribute:value+' => '~~',
-	'Class:SurveyAnswer/Attribute:question_id_finalclass_recall' => 'Question id finalclass recall~~',
-	'Class:SurveyAnswer/Attribute:question_id_finalclass_recall+' => '~~',
-	'Class:SurveyAnswer/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
-	'Class:SurveyAnswer/Attribute:contact_id_obsolescence_flag+' => '~~',
-	'Class:SurveyAnswer/Attribute:org_id_obsolescence_flag' => 'Org id obsolescence flag~~',
-	'Class:SurveyAnswer/Attribute:org_id_obsolescence_flag+' => '~~',
+	'Class:SurveyAnswer/Attribute:question_id' => 'Frage',
+	'Class:SurveyAnswer/Attribute:question_id+' => 'Fragen',
+	'Class:SurveyAnswer/Attribute:question_title' => 'Frage',
+	'Class:SurveyAnswer/Attribute:question_title+' => 'Fragen',
+	'Class:SurveyAnswer/Attribute:question_description' => 'Beschreibung der Frage',
+	'Class:SurveyAnswer/Attribute:question_description+' => 'Beschreibungen der Fragen',
+	'Class:SurveyAnswer/Attribute:contact_id' => 'Kontakt',
+	'Class:SurveyAnswer/Attribute:contact_id+' => 'Kontakte',
+	'Class:SurveyAnswer/Attribute:contact_name' => 'Kontakt',
+	'Class:SurveyAnswer/Attribute:contact_name+' => 'Kontakte',
+	'Class:SurveyAnswer/Attribute:org_id' => 'Organisation',
+	'Class:SurveyAnswer/Attribute:org_id+' => 'Organisationen',
+	'Class:SurveyAnswer/Attribute:org_name' => 'Organisation',
+	'Class:SurveyAnswer/Attribute:org_name+' => 'Organisationen',
+	'Class:SurveyAnswer/Attribute:value' => 'Wert',
+	'Class:SurveyAnswer/Attribute:value+' => 'Werte',
+	'Class:SurveyAnswer/Attribute:question_id_finalclass_recall' => 'Klasse der Frage',
+	'Class:SurveyAnswer/Attribute:question_id_finalclass_recall+' => 'Klassen der Fragen',
+	'Class:SurveyAnswer/Attribute:contact_id_obsolescence_flag' => 'Obsoleszenzflag Kontakt',
+	'Class:SurveyAnswer/Attribute:contact_id_obsolescence_flag+' => 'Obsoleszenzflags Kontakte',
+	'Class:SurveyAnswer/Attribute:org_id_obsolescence_flag' => 'Obsoleszenzflag Organisation',
+	'Class:SurveyAnswer/Attribute:org_id_obsolescence_flag+' => 'Obsoleszenzflags Organisationen',
 ));
 
 //
@@ -233,33 +233,33 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 //
 
 Dict::Add('DE DE', 'German', 'Deutsch', array(
-	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)' => 'Brazilian (Brazilian)~~',
-	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)' => 'Hungarian (Magyar)~~',
+	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)' => 'Brasilianisch (Brazilian)',
+	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)+' => '',
+	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)' => 'Ungarisch (Magyar)',
 	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Chinese (简体中文)' => 'Chinese (简体中文)~~',
+	'Class:Quizz/Attribute:language/Value:Chinese (简体中文)' => 'Chinesisch (简体中文)',
 	'Class:Quizz/Attribute:language/Value:Chinese (简体中文)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Dutch (Nederlands)' => 'Dutch (Nederlands)~~',
+	'Class:Quizz/Attribute:language/Value:Dutch (Nederlands)' => 'Niederländisch (Nederlands)',
 	'Class:Quizz/Attribute:language/Value:Dutch (Nederlands)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:English (English)' => 'English (English)~~',
+	'Class:Quizz/Attribute:language/Value:English (English)' => 'Englisch (English)',
 	'Class:Quizz/Attribute:language/Value:English (English)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:German (Deutsch)' => 'German (Deutsch)~~',
+	'Class:Quizz/Attribute:language/Value:German (Deutsch)' => 'Deutsch (Deutsch)',
 	'Class:Quizz/Attribute:language/Value:German (Deutsch)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Russian (Русский)' => 'Russian (Русский)~~',
+	'Class:Quizz/Attribute:language/Value:Russian (Русский)' => 'Russsisch (Русский)',
 	'Class:Quizz/Attribute:language/Value:Russian (Русский)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)' => 'Spanish (Español, Castellaño)~~',
+	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)' => 'Spanisch (Español, Castellaño)',
 	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:French (Français)' => 'French (Français)~~',
+	'Class:Quizz/Attribute:language/Value:French (Français)' => 'Französisch (Français)',
 	'Class:Quizz/Attribute:language/Value:French (Français)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Japanese (日本語)' => 'Japanese (日本語)~~',
+	'Class:Quizz/Attribute:language/Value:Japanese (日本語)' => 'Japanisch (日本語)',
 	'Class:Quizz/Attribute:language/Value:Japanese (日本語)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Turkish (Türkçe)' => 'Turkish (Türkçe)~~',
+	'Class:Quizz/Attribute:language/Value:Turkish (Türkçe)' => 'Türkisch (Türkçe)',
 	'Class:Quizz/Attribute:language/Value:Turkish (Türkçe)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Danish (Dansk)' => 'Danish (Dansk)~~',
+	'Class:Quizz/Attribute:language/Value:Danish (Dansk)' => 'Dänisch (Dansk)',
 	'Class:Quizz/Attribute:language/Value:Danish (Dansk)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Czech (Čeština)' => 'Czech (Čeština)~~',
+	'Class:Quizz/Attribute:language/Value:Czech (Čeština)' => 'Tschechisch (Čeština)',
 	'Class:Quizz/Attribute:language/Value:Czech (Čeština)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Italian (Italiano)' => 'Italian (Italiano)~~',
+	'Class:Quizz/Attribute:language/Value:Italian (Italiano)' => 'Italienisch (Italiano)',
 	'Class:Quizz/Attribute:language/Value:Italian (Italiano)+' => '~~',
 ));
 
@@ -268,9 +268,9 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 //
 
 Dict::Add('DE DE', 'German', 'Deutsch', array(
-	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'Yes~~',
+	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'Ja',
 	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => '~~',
-	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'No~~',
+	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'Nein',
 	'Class:QuizzElement/Attribute:mandatory/Value:no+' => '~~',
 ));
 
@@ -279,7 +279,7 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 //
 
 Dict::Add('DE DE', 'German', 'Deutsch', array(
-	'Class:QuizzScaleQuestion/Attribute:scale_values' => 'Scale values~~',
+	'Class:QuizzScaleQuestion/Attribute:scale_values' => 'Skalierungswerte',
 	'Class:QuizzScaleQuestion/Attribute:scale_values+' => '~~',
 ));
 
@@ -288,15 +288,15 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 //
 
 Dict::Add('DE DE', 'German', 'Deutsch', array(
-	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'Yes~~',
+	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'Ja',
 	'Class:Survey/Attribute:email_on_completion/Value:yes+' => '~~',
-	'Class:Survey/Attribute:email_on_completion/Value:no' => 'No~~',
+	'Class:Survey/Attribute:email_on_completion/Value:no' => 'Nein',
 	'Class:Survey/Attribute:email_on_completion/Value:no+' => '~~',
-	'Class:Survey/Attribute:survey_target_answer_list' => 'Survey target answer list~~',
+	'Class:Survey/Attribute:survey_target_answer_list' => 'Antwortliste Befragung',
 	'Class:Survey/Attribute:survey_target_answer_list+' => '~~',
-	'Class:Survey/Attribute:on_behalf_of_finalclass_recall' => 'On behalf of finalclass recall~~',
+	'Class:Survey/Attribute:on_behalf_of_finalclass_recall' => 'Im Namen von',
 	'Class:Survey/Attribute:on_behalf_of_finalclass_recall+' => '~~',
-	'Class:Survey/Attribute:on_behalf_of_obsolescence_flag' => 'On behalf of obsolescence flag~~',
+	'Class:Survey/Attribute:on_behalf_of_obsolescence_flag' => 'Obsoleszenzflag für "Im Namen von"',
 	'Class:Survey/Attribute:on_behalf_of_obsolescence_flag+' => '~~',
 ));
 
@@ -305,9 +305,9 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 //
 
 Dict::Add('DE DE', 'German', 'Deutsch', array(
-	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
+	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall' => 'Kontaktart',
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall+' => '~~',
-	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
+	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag' => 'Obsoleszenzflag Kontakt',
 	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag+' => '~~',
 ));
 
@@ -316,12 +316,12 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 //
 
 Dict::Add('DE DE', 'German', 'Deutsch', array(
-	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
+	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall' => 'Kontaktart',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall+' => '~~',
-	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
+	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag' => 'Obsoleszenzflag Kontakt',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag+' => '~~',
-	'Class:SurveyTargetAnswer/Attribute:org_id_obsolescence_flag' => 'Org id obsolescence flag~~',
+	'Class:SurveyTargetAnswer/Attribute:org_id_obsolescence_flag' => 'Obsoleszenzflag Organisation',
 	'Class:SurveyTargetAnswer/Attribute:org_id_obsolescence_flag+' => '~~',
-	'Class:SurveyTargetAnswer/Attribute:last_question_id_finalclass_recall' => 'Last question id finalclass recall~~',
+	'Class:SurveyTargetAnswer/Attribute:last_question_id_finalclass_recall' => 'Fragenart letzte Frage',
 	'Class:SurveyTargetAnswer/Attribute:last_question_id_finalclass_recall+' => '~~',
 ));
