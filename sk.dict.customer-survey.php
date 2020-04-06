@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with iTop. If not, see <http://www.gnu.org/licenses/>
  */
-Dict::Add('IT IT', 'Italian', 'Italiano', array(
+Dict::Add('SK SK', 'Slovak', 'Slovenčina', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Customer Survey~~',
 	'Survey-Title-Draft' => 'iTop Customer Survey (preview mode)~~',
@@ -209,7 +209,7 @@ Dict::Add('IT IT', 'Italian', 'Italiano', array(
 // Class: SurveyAnswer
 //
 
-Dict::Add('IT IT', 'Italian', 'Italiano', array(
+Dict::Add('SK SK', 'Slovak', 'Slovenčina', array(
 	'Class:SurveyAnswer' => 'SurveyAnswer~~',
 	'Class:SurveyAnswer+' => '~~',
 	'Class:SurveyAnswer/Attribute:survey_target_id' => 'Survey target id~~',
@@ -242,7 +242,7 @@ Dict::Add('IT IT', 'Italian', 'Italiano', array(
 // Class: Quizz
 //
 
-Dict::Add('IT IT', 'Italian', 'Italiano', array(
+Dict::Add('SK SK', 'Slovak', 'Slovenčina', array(
 	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)' => 'Brazilian (Brazilian)~~',
 	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)' => 'Hungarian (Magyar)~~',
@@ -277,7 +277,7 @@ Dict::Add('IT IT', 'Italian', 'Italiano', array(
 // Class: QuizzElement
 //
 
-Dict::Add('IT IT', 'Italian', 'Italiano', array(
+Dict::Add('SK SK', 'Slovak', 'Slovenčina', array(
 	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'Yes~~',
 	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => '~~',
 	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'No~~',
@@ -288,7 +288,7 @@ Dict::Add('IT IT', 'Italian', 'Italiano', array(
 // Class: QuizzScaleQuestion
 //
 
-Dict::Add('IT IT', 'Italian', 'Italiano', array(
+Dict::Add('SK SK', 'Slovak', 'Slovenčina', array(
 	'Class:QuizzScaleQuestion/Attribute:scale_values' => 'Scale values~~',
 	'Class:QuizzScaleQuestion/Attribute:scale_values+' => '~~',
 ));
@@ -297,7 +297,7 @@ Dict::Add('IT IT', 'Italian', 'Italiano', array(
 // Class: Survey
 //
 
-Dict::Add('IT IT', 'Italian', 'Italiano', array(
+Dict::Add('SK SK', 'Slovak', 'Slovenčina', array(
 	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'Yes~~',
 	'Class:Survey/Attribute:email_on_completion/Value:yes+' => '~~',
 	'Class:Survey/Attribute:email_on_completion/Value:no' => 'No~~',
@@ -314,7 +314,7 @@ Dict::Add('IT IT', 'Italian', 'Italiano', array(
 // Class: SurveyTarget
 //
 
-Dict::Add('IT IT', 'Italian', 'Italiano', array(
+Dict::Add('SK SK', 'Slovak', 'Slovenčina', array(
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall+' => '~~',
 	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
@@ -325,7 +325,7 @@ Dict::Add('IT IT', 'Italian', 'Italiano', array(
 // Class: SurveyTargetAnswer
 //
 
-Dict::Add('IT IT', 'Italian', 'Italiano', array(
+Dict::Add('SK SK', 'Slovak', 'Slovenčina', array(
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall+' => '~~',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',

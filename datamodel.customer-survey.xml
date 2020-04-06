@@ -1330,10 +1330,6 @@ EOF
           <target_attcode>finalclass</target_attcode>
           <is_null_allowed>true</is_null_allowed>
         </field>
-        <field id="on_behalf_of_obsolescence_flag" xsi:type="AttributeExternalField">
-          <extkey_attcode>on_behalf_of</extkey_attcode>
-          <target_attcode>obsolescence_flag</target_attcode>
-        </field>
       </fields>
       <lifecycle>
         <attribute>status</attribute>
@@ -2369,10 +2365,6 @@ EOF
           <target_attcode>finalclass</target_attcode>
           <is_null_allowed>true</is_null_allowed>
         </field>
-        <field id="contact_id_obsolescence_flag" xsi:type="AttributeExternalField">
-          <extkey_attcode>contact_id</extkey_attcode>
-          <target_attcode>obsolescence_flag</target_attcode>
-        </field>
       </fields>
       <methods/>
       <presentation>
@@ -2499,14 +2491,6 @@ EOF
           <extkey_attcode>contact_id</extkey_attcode>
           <target_attcode>finalclass</target_attcode>
           <is_null_allowed>true</is_null_allowed>
-        </field>
-        <field id="contact_id_obsolescence_flag" xsi:type="AttributeExternalField">
-          <extkey_attcode>contact_id</extkey_attcode>
-          <target_attcode>obsolescence_flag</target_attcode>
-        </field>
-        <field id="org_id_obsolescence_flag" xsi:type="AttributeExternalField">
-          <extkey_attcode>contact_id</extkey_attcode>
-          <target_attcode>org_id_obsolescence_flag</target_attcode>
         </field>
         <field id="last_question_id_finalclass_recall" xsi:type="AttributeExternalField">
           <extkey_attcode>last_question_id</extkey_attcode>
@@ -2645,14 +2629,6 @@ EOF
           <extkey_attcode>question_id</extkey_attcode>
           <target_attcode>finalclass</target_attcode>
           <is_null_allowed>true</is_null_allowed>
-        </field>
-        <field id="contact_id_obsolescence_flag" xsi:type="AttributeExternalField">
-          <extkey_attcode>survey_target_id</extkey_attcode>
-          <target_attcode>contact_id_obsolescence_flag</target_attcode>
-        </field>
-        <field id="org_id_obsolescence_flag" xsi:type="AttributeExternalField">
-          <extkey_attcode>survey_target_id</extkey_attcode>
-          <target_attcode>org_id_obsolescence_flag</target_attcode>
         </field>
       </fields>
       <methods/>
