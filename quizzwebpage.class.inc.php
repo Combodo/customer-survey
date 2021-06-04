@@ -49,8 +49,7 @@ class QuizzWebPage extends NiceWebPage
 
 		$this->add_linked_stylesheet("../css/jquery.treeview.css");
 		$this->add_linked_stylesheet("../css/jquery.autocomplete.css");
-		$this->add_linked_stylesheet("../portal/portal.css");
-		$this->add_linked_stylesheet(utils::GetAbsoluteUrlModulesRoot()."customer-survey/css/quizz.css");
+		$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/quizz.scss');
 		$this->add_linked_script('../js/jquery.layout.min.js');
 		$this->add_linked_script('../js/jquery.ba-bbq.min.js');
 		$this->add_linked_script("../js/jquery.tablehover.js");
@@ -169,7 +168,6 @@ EOF
 	public function output()
 	{
 		$sMenu = '';
-		//$this->AddMenuButton('logoff', 'Portal:Disconnect', '../pages/logoff.php'); // This menu is always present and is the last one
 		foreach($this->m_aMenuButtons as $aMenuItem)
 		{
 			$sMenu .= "<a class=\"button\" id=\"{$aMenuItem['id']}\" href=\"{$aMenuItem['hyperlink']}\"><span>".Dict::S($aMenuItem['label'])."</span></a>";
