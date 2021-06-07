@@ -412,25 +412,15 @@
 
 		$sTDProps = "width=\"80px\" align=\"center\"";
 
-		$oPage->add("<table class=\"radio_buttons\">");
-
-		$oPage->add("<tr>");
+		$oPage->add("<div class='survey-list-response'>");
 		foreach($aChoices as $sValue)
 		{
 			$sValue = trim($sValue);
-			$oPage->add("<td $sTDProps>$sValue</td>");
-		}
-		$oPage->add("</tr>");
-		$oPage->add("<tr>");
-		foreach($aChoices as $sValue)
-		{
 			$sValue = trim($sValue);
 			$sChecked = ($sCurrentValue == $sValue) ? 'checked' : '';
 			$sMandatory = ($this->Get('mandatory') == 'yes') ? 'true' : 'false';
-			$oPage->add("<td $sTDProps><INPUT type=\"radio\" $sChecked name=\"answer[$iQuestionId]\" value=\"$sValue\" data-mandatory=\"$sMandatory\"></td>");
+			$oPage->add("<div class='survey-choice'><div class='survey-choice--label'>$sValue</div><div class='survey-choice--radio'><INPUT type=\"radio\" $sChecked name=\"answer[$iQuestionId]\" value=\"$sValue\" data-mandatory=\"$sMandatory\"></div></div>");
 		}
-		$oPage->add("</tr>");
-		$oPage->add("</table>");		
 	}]]></code>
         </method>
         <method id="DrawHtmlBar">

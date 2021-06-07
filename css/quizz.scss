@@ -97,3 +97,16 @@ div.question {
 .wizContainer table.radio_buttons td{
 	width: 120px;
 }
+.survey-list-response{
+  display: flex;
+  flex-direction: row;
+  flex-flow: wrap;
+}
+.survey-choice {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 10px 20px 10px 0px;
+  max-width:100px;
+  text-align: center;
+}
