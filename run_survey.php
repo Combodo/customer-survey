@@ -22,9 +22,10 @@
  * @author      Denis Flaven <denis.flaven@combodo.com>
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
+
 require_once('../../approot.inc.php');
 require_once(APPROOT.'/application/application.inc.php');
-require_once(APPROOT.'/application/nicewebpage.class.inc.php');
+require_once APPROOT.'setup/itopdesignformat.class.inc.php';
 
 /////////////////////////////
 //
@@ -34,6 +35,9 @@ require_once(APPROOT.'/application/nicewebpage.class.inc.php');
 
 try
 {
+	if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+		require_once(APPROOT.'/application/nicewebpage.class.inc.php');
+	}
 	require_once(APPROOT.'/application/startup.inc.php');
 	require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
 	require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
@@ -52,7 +56,11 @@ try
 		$sState = utils::ReadParam('step_state', '');
 		$sActionCode = utils::ReadParam('code', '');
 		$aParams = utils::ReadParam('params', array(), false, 'raw_data');
-		$oPage = new ajax_page('');
+		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
+			$oPage = new AjaxPage('');
+		} else {
+			$oPage = new ajax_page('');
+		}
 		if (is_subclass_of($sClass, 'WizardStep'))
 		{
 			$oDummyController = new QuizzController($sClass, 0, $iQuizz, $sToken);

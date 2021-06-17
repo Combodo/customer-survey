@@ -1,101 +1,36 @@
 @CHARSET "UTF-8";
-@import 'css-variables.scss';
 
-div#portal #banner {
-	height: auto;
-	max-width: 50%;
-	min-width: 600px;
-}
-div#portal #logo {
-	background: url("../../../images/itop-logo.png?v="+$version) 0 50% no-repeat;
-	margin-top:6px;
-	margin-bottom:6px;
-	margin-left:20px;
-	margin-right:20px;
+$ibo-banner-container--elements-padding-x: 36px !default;
+$ibo-banner-container--elements-padding-y: 16px !default;
+
+div#banner #survey-logo {
+	background: url("../../../images/itop-logo.png") 0 50% no-repeat;
 	height: 60px;
 	border: 0;
 	vertical-align: middle;
 	text-align: center;
 	display: block;
 	line-height: 116px;
-}
-#content {
-	max-width: 50%;
-	min-width: 600px;
-}
-.buttons_footer {
-	margin-left:auto;
-	margin-right:auto;
-}
-.buttons_footer button{
-	margin: 10px;
-	padding: 10px;
-	font-size: 12pt;
-	font-weight: bold;
-}
-.preview_watermark {
-	font-size: 40pt;
-	font-weight: bold;
-	color: red;
-	position: fixed;
-	top: 100px;
-	right: 20px;
-	z-index: 1000;
-	opacity: 0.20;
-	-webkit-transform: rotate(30deg);
-	-moz-transform: rotate(30deg);
-	-ms-transform: rotate(30deg);
-	-o-transform: rotate(30deg);
+  margin: $ibo-banner-container--elements-padding-y $ibo-banner-container--elements-padding-x;
 }
 
-h1 {
-  background: linear-gradient(#F8F8F8, #D4D4D4);
-  border-color: #C8C9CA #9E9E9E #9E9E9E #C8C9CA;
-  border-style: solid;
-  border-width: 1px;
-  color: #222222;
-  text-shadow: 1px 1px #FFFFFF;
-  padding: 5px;
-  margin-top: 5px;
+.survey-preview_watermark {
+  font-size: 40pt;
+  font-weight: bold;
+  color: red;
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  z-index: 1000;
+  opacity: 0.20;
+  -webkit-transform: rotate(30deg);
+  -moz-transform: rotate(30deg);
+  -ms-transform: rotate(30deg);
+  -o-transform: rotate(30deg);
 }
-
-h1.page_title {
-	font-size: 14pt;
-	font-weight: bold;
-}
-div.wizContainer {
-	background-color: #EEEEEE;
-  border: 1px solid #C8C9CA;
-  padding: 3px;
-}
-h3.mandatory {
-	border: 0;
-}
-h3.question_title {
-	font-size: 12pt;
-	font-weight: bold;
-	margin-top: 0px;
-	margin-right: 0px;
-	margin-left: 0px;
-	margin-bottom: 0px;
-}
-div.question {
-	padding: 5px;
-}
-.page_content {
-	text-align: left;	
-}
-.page_intro {
-	padding: 5px;
-}
-.mandatory_asterisk {
-	color: red;
-}
-.wizContainer table.radio_buttons {
-	table-layout: fixed;
-}
-.wizContainer table.radio_buttons td{
-	width: 120px;
+.survey-mandatory_asterisk {
+  color: red;
+  font-size: 20px;
 }
 .survey-list-response{
   display: flex;
@@ -104,9 +39,84 @@ div.question {
 }
 .survey-choice {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: row;
   margin: 10px 20px 10px 0px;
-  max-width:100px;
-  text-align: center;
+  max-width:200px;
+  width:200px;
+  text-align: left;
 }
+.survey-question .ibo-title  {
+  padding-top: 0px;
+}
+.survey-question .survey-question-description {
+  padding-bottom: 15px;
+  font-weight: var(--ibo-font-weight-300);
+}
+.survey-quizz_intro{
+  padding-bottom: 10px;
+}
+.survey-question > textarea{
+  width:100%;
+}
+
+/*for survey display in stantard screen*/
+.survey-stats .ibo-field{
+  margin-top:0;
+}
+.survey-stats .survey-question-description{
+  font-weight: var(--ibo-font-weight-300);
+}
+.survey-stats .ibo-field--label{
+  text-align: right;
+  font-weight: var(--ibo-font-weight-400);
+}
+.survey-stats .ibo-field--value{
+  border-left: 1px #1C94C4 solid;
+}
+.survey-stats  .ibo-collapsible-section .ibo-collapsible-section--title{
+font-size: var( --ibo-font-size-150);
+}
+.survey-stats  .ibo-collapsible-section .ibo-collapsible-section--body{
+  font-size:  var(--ibo-font-size-100);
+}
+
+.survey-triangle-border {
+  background: none repeat scroll 0 0 var(--ibo-color-grey-100);
+  border: 1px solid var(--ibo-color-grey-100);
+  border-radius: 10px 10px 10px 10px;
+  color: #333333;
+  margin: 1em 0 0.5em;
+  padding: 0.5em;
+  position: relative;
+}
+.survey-author{
+  font-size:  var(--ibo-font-size-50);
+  margin-left:30px;
+}
+
+ #stats_filter_apply {
+
+}
+#stats_filter {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: top;
+}
+
+.survey-filter{
+  padding-right: 15px;
+  padding-left: 15px;
+  display: flex;
+}
+.survey-filter label{
+  margin-top: 5px;
+  margin-right: 10px;
+}
+.survey-panel--filter .ibo-panel--body{
+  overflow: initial;
+  padding-bottom: 12px;
+}
+.survey-export .fas{
+  font-size: var(--ibo-font-size-200);
+}
+
