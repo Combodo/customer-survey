@@ -49,7 +49,7 @@ class QuizzWebPage extends NiceWebPage
 
 		$this->add_linked_stylesheet("../css/jquery.treeview.css");
 		$this->add_linked_stylesheet("../css/jquery.autocomplete.css");
-		$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/quizz.scss');
+		$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/style.scss');
 		$this->add_linked_script('../js/jquery.layout.min.js');
 		$this->add_linked_script('../js/jquery.ba-bbq.min.js');
 		$this->add_linked_script("../js/jquery.tablehover.js");
