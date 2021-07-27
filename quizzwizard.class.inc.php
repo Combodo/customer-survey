@@ -77,7 +77,7 @@ class QuizzController extends WizardController
 	protected function DisplayStep(WizardStep $oStep)
 	{
 		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-			return DisplayStepLegacy( $oStep);
+			return $this->DisplayStepLegacy( $oStep);
 		}
 		$oPage = new QuizzWebPage($oStep->GetTitle());
 
@@ -238,7 +238,7 @@ EOF
 			$oPage->add('<div class="preview_watermark">'.Dict::S('Survey-Preview Mode').'</div>');
 		}
 		$oPage->add('<div class="page_content"><form id="wiz_form" method="post">');
-		$oStep->DisplayLegacy($oPage);
+		$oStep->Display($oPage);
 
 		// Add the back / next buttons and the hidden form
 		// to store the parameters
@@ -515,7 +515,7 @@ class QuizzWizStepQuestions extends WizardStep
 		else
 		{
 			// Normal behavior, let's proceeed with the display if the form
-			$this->DisplayStepLegacy($oPage);
+			$this->DisplayStep($oPage);
 		}
 	}
 	/**
@@ -645,6 +645,9 @@ class QuizzWizStepQuestions extends WizardStep
 	}
 	protected function DisplayStep(WebPage $oPage)
 	{
+		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+			return $this->DisplayStepLegacy( $oPage);
+		}
 		$oPage->AddSubBlock($this->DisplayStepBlock($oPage));
 	}
 	protected function DisplayStepLegacy(WebPage $oPage)

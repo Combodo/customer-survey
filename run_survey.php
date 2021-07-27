@@ -74,70 +74,7 @@ try
 		default:		
 		$oWizard = new QuizzController('QuizzWizStepQuestions', 'start', $iQuizz, $sToken);
 		$oWizard->Run();
-	}	
-	
-/*
-	$sCSSFileSuffix = '/customer-survey/run_survey.css';
-	if (@file_exists(MODULESROOT.$sCSSFileSuffix))
-	{
-//		$oP = new QuizzWebPage(Dict::S('Survey-Title'), $sCSSFileSuffix);
-//		$oP->add($sCSSFileSuffix);
 	}
-	else
-	{
-//	$oP = new QuizzWebPage(Dict::S('Survey-Title'));
-	}
-	$oP = new QuizzWebPage('survey'); // title set later...
-
-	$sUrl = utils::GetAbsoluteUrlAppRoot();
-	$oP->set_base($sUrl.'pages/');
-
-	$oP->add("<style>
-.QuizzQuestion {
-	border: #f1f1f6 3px solid;
-	padding: 10px;
-}
-
-
-.QuizzMandatory {
-	border: #f1f1f6 3px solid;
-	color: red;
-	padding: 10px;
-}
-
-.QuizzQuestion h3 {
-	font-size: larger;
-	font-weight: bolder;
-}
-
-.mandatory_asterisk{
-	color: #FF0000;
-}
-
-textarea {
-	width: 100%;
-}
-</style>\n");
-
-	switch ($sOperation)
-	{
-	case 'submit_answers':
-		$sToken = ReadMandatoryParam('token', 'raw_data');
-		SubmitAnswers($oP, $sToken);
-		break;
-		
-	case 'test':
-		$iQuizz = ReadMandatoryParam('quizz_id');
-		ShowDraftQuizz($oP, $iQuizz);
-		break;
-
-	default:
-		$sToken = ReadMandatoryParam('token', 'raw_data');
-		ShowQuizz($oP, $sToken);
-	}
-
-	$oP->output();
-*/
 }
 catch(CoreException $e)
 {
