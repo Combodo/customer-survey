@@ -24,6 +24,8 @@
 
 require_once('../../approot.inc.php');
 require_once(APPROOT.'/application/application.inc.php');
+require_once(APPROOT.'/application/webpage.class.inc.php');
+require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
 
 
 try
@@ -31,8 +33,9 @@ try
 	require_once(APPROOT.'/application/startup.inc.php');
 	require_once(APPROOT.'/application/loginwebpage.class.inc.php');
 	LoginWebPage::DoLogin(false /* bMustBeAdmin */, false /* IsAllowedToPortalUsers */); // Check user rights and prompt if needed
-	$oPage = new AjaxPage("");
-	$oPage->no_cache();
+		$oPage = new ajax_page("");
+		$oPage->no_cache();
+
 
 	$sOperation = utils::ReadParam('operation', '');
 	$iSurveyId = (int)utils::ReadParam('survey_id', 0);
@@ -81,7 +84,7 @@ try
 		{
 			$aContactIds = array();
 		}
-			$oPage->AddSubBlock($oSurvey->DisplayStatisticsAndExport($oPage, false /* bPrintable */, $aOrgIds, $aContactIds));
+		$oSurvey->DisplayStatisticsAndExport($oPage, false /* bPrintable */, $aOrgIds, $aContactIds);
 		break;
 		
 		case 'refresh_contacts_filter':
@@ -92,7 +95,7 @@ try
 		{
 			$aOrgIds = array();
 		}
-		$oPage->AddSubBlock($oSurvey->GetContactsFilter($aOrgIds));
+		$oPage->add($oSurvey->GetContactsFilterLegacy($aOrgIds));
 		$oPage->add_ready_script("$('#filter_stats_contact_id').multiselect({header: false, noneSelectedText: '".addslashes(Dict::S('UI:SearchValue:Any'))."', selectedList: 1, selectedText:'".addslashes(Dict::S('UI:SearchValue:NbSelected'))."'});");
 		break;
 	}
