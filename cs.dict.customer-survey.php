@@ -22,8 +22,8 @@
  */
 Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	// Dictionary entries go here
-	'Survey-Title' => 'iTop Customer Survey~~',
-	'Survey-Title-Draft' => 'iTop Customer Survey (preview mode)~~',
+	'Survey-Title' => ITOP_APPLICATION_SHORT.' Customer Survey~~',
+	'Survey-Title-Draft' => ITOP_APPLICATION_SHORT.' Customer Survey (preview mode)~~',
 
 	'Menu:CustomerSurvey' => 'Customer surveys~~',
 	'Menu:Quizzes' => 'Quizzes~~',

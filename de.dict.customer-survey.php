@@ -12,8 +12,8 @@
  */
 Dict::Add('DE DE', 'German', 'Deutsch', array(
 	// Dictionary entries go here
-	'Survey-Title' => 'iTop Kundenbefragung',
-	'Survey-Title-Draft' => 'iTop Kundenbefragung (Vorschau)',
+	'Survey-Title' => ITOP_APPLICATION_SHORT.' Kundenbefragung',
+	'Survey-Title-Draft' => ITOP_APPLICATION_SHORT.' Kundenbefragung (Vorschau)',
 
 	'Menu:CustomerSurvey' => 'Kundenbefragungen',
 	'Menu:Quizzes' => 'Umfragen',

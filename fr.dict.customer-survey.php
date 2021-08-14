@@ -11,8 +11,8 @@
  */
 Dict::Add('FR FR', 'French', 'Français', array(
 	// Dictionary entries go here
-	'Survey-Title' => 'iTop Enquête client',
-	'Survey-Title-Draft' => 'iTop Enquête client (mode Prévisualisation)',
+	'Survey-Title' => ITOP_APPLICATION_SHORT.' Enquête client',
+	'Survey-Title-Draft' => ITOP_APPLICATION_SHORT.' Enquête client (mode Prévisualisation)',
 
 	'Menu:CustomerSurvey' => 'Enquêtes de satisfaction des clients',
 	'Menu:Quizzes' => 'Questionnaires',
