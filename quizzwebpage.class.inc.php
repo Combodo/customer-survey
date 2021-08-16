@@ -58,6 +58,9 @@ class QuizzWebPage extends NiceWebPage
 			$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/quizz.scss');
 		} else {
 			$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/quizz_legacy.scss');
+			if (file_exists(APPROOT."/js/swfobject.js")) {
+				$this->add_linked_script("../js/swfobject.js");
+			}
 		}
 		$this->add_linked_script('../js/jquery.layout.min.js');
 		$this->add_linked_script('../js/jquery.ba-bbq.min.js');
@@ -71,7 +74,6 @@ class QuizzWebPage extends NiceWebPage
 		$this->add_linked_script("../js/jquery.blockUI.js");
 		$this->add_linked_script("../js/utils.js");
 		$this->add_linked_script("../js/forms-json-utils.js");
-		$this->add_linked_script("../js/swfobject.js");
 		$this->add_ready_script(
 <<<EOF
 try
