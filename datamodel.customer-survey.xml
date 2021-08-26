@@ -832,7 +832,7 @@
 		$oDescription = \Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory::MakeStandard(null,["question_description"]);
 		$oBlock->AddSubBlock($oDescription);
 		$oDescription->AddSubBlock(new Combodo\iTop\Application\UI\Base\Component\Html\Html($sDescription));
-		$oTextArea = new \Combodo\iTop\Application\UI\Base\Component\Input\TextArea("answer[".$iQuestionId."]",htmlentities($sCurrentValue, ENT_QUOTES, 'UTF-8'),null,200,15);
+		$oTextArea = new \Combodo\iTop\Application\UI\Base\Component\Input\TextArea("answer[".$iQuestionId."]",$sCurrentValue,null,200,15);
 		$oTextArea->AddDataAttribute("mandatory",$sMandatory);
 		$oBlock->AddSubBlock($oTextArea);
 		return $oBlock;
@@ -2095,9 +2095,9 @@ EOF
 		$oTargetSet = $this->Get('survey_target_answer_list');
 		$iTargetCount = $oTargetSet->Count();
 
-		$oFilter = new DBObjectSearch('SurveyTargetAnswer');
-		$oFilter->AddCondition('survey_id', $this->GetKey());
-		$oFilter->AddCondition('status', 'finished');
+		$oFinishedFilter = new DBObjectSearch('SurveyTargetAnswer');
+		$oFinishedFilter->AddCondition('survey_id', $this->GetKey());
+		$oFinishedFilter->AddCondition('status', 'finished');
 		$oFinishedSet = new DBObjectSet($oFilter);
 		$iAnswerCount = $oFinishedSet->Count();
 
@@ -2126,15 +2126,7 @@ EOF
 			$oBlock = new DisplayBlock($oFilter, 'list');
 			
 			// mark all "finished" targets as non-selectable
-			$oFinishedFilter = new DBObjectSearch('SurveyTargetAnswer');
-			if($this->Get(MetaModel::GetStateAttributeCode('Survey')) !== 'closed')
-			{
-				$oFinishedFilter->AddCondition('survey_id', $this->GetKey());
-				$oFinishedFilter->AddCondition('status', 'finished');
-			}
-			$oSet = new DBObjectSet($oFinishedFilter);
-			$aSelectable = array();
-			while($oSTA = $oSet->Fetch())
+			while($oSTA = $oFinishedSet->Fetch())
 			{
 				$aSelectable[$oSTA->GetKey()] = false;
 			}
@@ -2150,6 +2142,7 @@ EOF
 			);
 			$sBlockId = 'block_survey_progress_status';
 			$oPage->AddSubBlock($oBlock->GetDisplay($oPage, $sBlockId, $aExtraParams));
+      $oPage->AddSubBlock(\Combodo\iTop\Application\UI\Base\Component\Input\InputUIBlockFactory::MakeForHidden("filter_$sBlockId",$oFilter->serialize(true),"filter_$sBlockId"));
 
 
 			$oPage->AddSubBlock(new \Combodo\iTop\Application\UI\Base\Component\Html\Html('<div style="display: inline-block;"><span style="float:left">&nbsp;&nbsp;&nbsp;<img src="../images/tv-item-last.gif">&nbsp;&nbsp;&nbsp;'.Dict::S('Survey-With-Selected').'<input type="button" id="survey_send_again" value="'.Dict::S('Survey-Resend-Button').'"></div>'));
@@ -2195,19 +2188,19 @@ function SurveyRunDialogSendAgain()
 			if ($('#$sDialogId .ui-state-error').length == 0)
 			{
 				var aTargetsSelect = [];
-				$('#$sBlockId .selectListdatatable_$sBlockId:checked').each(function () {
+				$('#datatable_$sBlockId .selectListdatatable_$sBlockId:checked').each(function () {
 					aTargetsSelect.push($(this).val());
 				});
-				console.warn(aTargetsSelect);
+
 				var aTargetsStored = [];
-				$('#$sBlockId :input[name^=storedSelection]').each(function () {
+				$('#atatable_$sBlockId :input[name^=storedSelection]').each(function () {
 					aTargetsStored.push($(this).val());
 				});
 				console.warn(aTargetsStored);
 				var aTargetsStored = [];
-				var sSelectionMode = $('#$sBlockId  input[name^=selectionMode]').val();
+				var sSelectionMode = $('#atatable_$sBlockId  input[name^=selectionMode]').val();
 
-				var sFilter = $('#datatable_$sBlockId').DataTable().ajax.params().filter
+				var sFilter = $('#filter_$sBlockId').val();
 				var sEmailSubject = $('#$sDialogId #attr_email_subject').val();
 				var sEmailBody = $('#$sDialogId #attr_email_body').val();
 				var oMap = {

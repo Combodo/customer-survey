@@ -623,7 +623,7 @@ class QuizzWizStepQuestions extends WizardStep
 					$bHasMandatoryQuestions = true;
 					$sMandatory = 'true';
 				}
-				$oBlockQuestion = UIContentBlockUIBlockFactory::MakeStandard(null,["survey-question"]);
+				$oBlockQuestion = UIContentBlockUIBlockFactory::MakeStandard(null,["survey-question","question"]);
 				$oBlockQuestion->AddDataAttribute("mandatory",$sMandatory);
 				$oBlockQuizz->AddSubBlock($oBlockQuestion);
 				$sSavedValue = '';
