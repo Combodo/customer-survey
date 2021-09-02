@@ -159,7 +159,11 @@ EOF
 		{
 			if ($this->oSurveyTargetAnswer != null)
 			{
-				$sNextButtons .= '<span id="suspend_indicator"></span><button id="btn_suspend" class="default btn btn-primary" type="button" name="suspend" value="suspend">'.htmlentities(Dict::S('Survey-SuspendButton'), ENT_QUOTES, 'UTF-8').'</button>';
+				if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') <0) {
+					$sNextButtons .= '<span id="suspend_indicator"><img src="../images/indicator.gif"/></span><button id="btn_suspend" type="button" name="suspend" value="suspend">'.htmlentities(Dict::S('Survey-SuspendButton'), ENT_QUOTES, 'UTF-8').'</button>';
+				} else {
+					$sNextButtons .= '<span id="suspend_indicator" class="fas fa-spinner fa-spin" style="display: none;"></span><button id="btn_suspend" class="default btn btn-secondary" type="button" name="suspend" value="suspend">'.htmlentities(Dict::S('Survey-SuspendButton'), ENT_QUOTES, 'UTF-8').'</button>';
+				}
 			}
 			$sNextButtons .= '<button id="btn_next" class="default btn btn-primary form_btn_submit" type="submit" name="operation" value="next" >'.htmlentities($oStep->GetNextButtonLabel(), ENT_QUOTES, 'UTF-8').'</button>';
 		}
@@ -169,6 +173,26 @@ EOF
 			$oPage->add('<td style="text-align: right">'.$sNextButtons.'</td>');
 			$oPage->add('</tr></table>');
 		} else {
+			$sTitle = addslashes(Dict::S('Survey-suspend-confirmation-title'));
+			$sOkButtonLabel = Dict::S('UI:Button:Ok');
+			$oPage->add(<<<HTML
+<div id="dlg_suspend" class="modal fade" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		    <h4 class="modal-title">$sTitle</h4>
+		  </div>
+		  <div class="modal-body">
+		  </div>
+		  <div class="modal-footer">
+		    <a href="#" class="btn btn-default" data-dismiss="modal" >$sOkButtonLabel</a>
+		  </div>
+	  </div>
+	</div>
+</div>
+HTML
+			);
 			$oPage->add('<div class="form_buttons"><div class="form_btn_regular">');
 			$oPage->add($sBackButton);
 			$oPage->add($sNextButtons);
@@ -181,7 +205,6 @@ EOF
 		// Hack to have the "Next >>" button, be the default button, since the first submit button in the form is the default one
 		$oPage->add_ready_script(
 			<<<EOF
-
 $('form').each(function () {
 	var thisform = $(this);
 		thisform.prepend(thisform.find('button.default').clone().removeAttr('id').prop('disabled', false).css({
@@ -678,61 +701,72 @@ class QuizzWizStepQuestions extends WizardStep
 		{
 			case 'suspend':
 			$oSurveyTargetAnswer = $this->oWizard->GetSurveyTargetAnswer();
-			if ($oSurveyTargetAnswer != null)
-			{
+			if ($oSurveyTargetAnswer != null) {
 				$iLastQuestionId = 0;
 				$aAnswers = array();
 				// Values from other pages (or previous values from the current page)
 				$aValues = json_decode(isset($aParameters['other_answers']) ? $aParameters['other_answers'] : '[]', true);
-				foreach($aValues as $sKey => $sValue)
-				{
+				foreach ($aValues as $sKey => $sValue) {
 					$iQuestionId = (int)$sKey;
 					$iLastQuestionId = max($iLastQuestionId, $iQuestionId);
 					$aAnswers[$iQuestionId] = trim($sValue);
 				}
-				
+
 				// Values from the current page
-				foreach($aParameters as $sKey => $sValue)
-				{
-					if (preg_match('/^answer\[([0-9]+)$/', $sKey, $aMatches))
-					{
+				foreach ($aParameters as $sKey => $sValue) {
+					if (preg_match('/^answer\[([0-9]+)$/', $sKey, $aMatches)) {
 						$iQuestionId = (int)$aMatches[1];
 						$iLastQuestionId = max($iLastQuestionId, $iQuestionId);
 						$aAnswers[$iQuestionId] = trim($sValue);
 					}
 				}
-				if ($iLastQuestionId > 0)
-				{
+				if ($iLastQuestionId > 0) {
 					// Save the current state but don't mark the survey answer as finished
 					$this->SubmitAnswers($oSurveyTargetAnswer, $aAnswers, false, $iLastQuestionId);
 				}
-				$sTitle = addslashes(Dict::S('Survey-suspend-confirmation-title'));
-				$sUrl = utils::GetAbsoluteUrlModulesRoot().'customer-survey/run_survey.php?token='.urlencode($oSurveyTargetAnswer->Get('token'));
-				$sHyperlink = '<a href="'.$sUrl.'">'.$sUrl.'</a>';
-				$sOkButtonLabel = Dict::S('UI:Button:Ok');
-				$sMessage = addslashes(Dict::Format('Survey-suspend-confirmation-message_hyperlink', $sHyperlink));
-				$oPage->add_ready_script(
-<<<EOF
-	$('#suspend_indicator').html('');
-	$('#btn_suspend').prop('disabled', false);
-	var oDlg = $('<div>$sMessage</div>');
-	oDlg.appendTo('body');
-	oDlg.dialog({
-		width: 400,
-		modal: true,
-		title: '$sTitle',
-		buttons: [
-		{ text: "$sOkButtonLabel", click: function() {
-				$(this).dialog( "close" );
-				$(this).remove();
-			}
-		} 
-		],
-		close: function() { $(this).remove(); }
-	});
-	ClearModified();
+				if (version_compare(ITOP_DESIGN_LATEST_VERSION, '3.0') < 0) {
+					$sTitle = addslashes(Dict::S('Survey-suspend-confirmation-title'));
+					$sUrl = utils::GetAbsoluteUrlModulesRoot().'customer-survey/run_survey.php?token='.urlencode($oSurveyTargetAnswer->Get('token'));
+					$sHyperlink = '<a href="'.$sUrl.'">'.$sUrl.'</a>';
+					$sOkButtonLabel = Dict::S('UI:Button:Ok');
+					$sMessage = addslashes(Dict::Format('Survey-suspend-confirmation-message_hyperlink', $sHyperlink));
+					$oPage->add_ready_script(
+						<<<EOF
+		$('#suspend_indicator').hide();
+		$('#btn_suspend').prop('disabled', false);
+		var oDlg = $('<div>$sMessage</div>');
+		oDlg.appendTo('body');
+		oDlg.dialog({
+			width: 400,
+			modal: true,
+			title: '$sTitle',
+			buttons: [
+			{ text: "$sOkButtonLabel", click: function() {
+					$(this).dialog( "close" );
+					$(this).remove();
+				}
+			} 
+			],
+			close: function() { $(this).remove(); }
+		});
+		ClearModified();
 EOF
-				);
+					);
+				} else {
+					$sUrl = utils::GetAbsoluteUrlModulesRoot().'customer-survey/run_survey.php?token='.urlencode($oSurveyTargetAnswer->Get('token'));
+					$sHyperlink = '<a href="'.$sUrl.'">'.$sUrl.'</a>';
+					$sMessage = addslashes(Dict::Format('Survey-suspend-confirmation-message_hyperlink', $sHyperlink));
+
+					$oPage->add_ready_script(
+						<<<EOF
+		$('#suspend_indicator').hide();
+		$('#btn_suspend').prop('disabled', false);
+		$("#dlg_suspend .modal-body").html('$sMessage');
+		$("#dlg_suspend").modal('show');
+		ClearModified();
+EOF
+					);
+				}
 			}
 		}
 	}

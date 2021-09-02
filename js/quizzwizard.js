@@ -89,7 +89,7 @@ function CheckMandatoryAnswers()
 function Suspend()
 {
 	var oParams = {};
-	$('#suspend_indicator').html('<img src="../images/indicator.gif"/>');
+	$('#suspend_indicator').show();
 	$('#btn_suspend').prop('disabled', true);
 	oParams.other_answers = $('#_params_answer').val(); // values from other pages
 	$('div.question').each(function() {
