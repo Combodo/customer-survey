@@ -54,13 +54,9 @@ class QuizzWebPage extends NiceWebPage
 
 		$this->add_linked_stylesheet("../css/jquery.treeview.css");
 		$this->add_linked_stylesheet("../css/jquery.autocomplete.css");
-		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
-			$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/quizz.scss');
-		} else {
-			$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/quizz_legacy.scss');
-			if (file_exists(APPROOT."/js/swfobject.js")) {
-				$this->add_linked_script("../js/swfobject.js");
-			}
+		$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/quizz_legacy.scss');
+		if (file_exists(APPROOT."/js/swfobject.js")) {
+			$this->add_linked_script("../js/swfobject.js");
 		}
 		$this->add_linked_script('../js/jquery.layout.min.js');
 		$this->add_linked_script('../js/jquery.ba-bbq.min.js');
@@ -178,24 +174,11 @@ EOF
 	
 	public function output()
 	{
-		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
-			$sMenu = '';
-			foreach ($this->m_aMenuButtons as $aMenuItem) {
-				$sMenu .= "<a class=\"button\" id=\"{$aMenuItem['id']}\" href=\"{$aMenuItem['hyperlink']}\"><span>".Dict::S($aMenuItem['label'])."</span></a>";
-			}
-			//$this->AddSubBlock(new Html('<div id="portal"><div id="banner"><div id="logo"></div>'.$sMenu.'</div><div id="content">'.$this->s_content.'</div></div>'));
-			$oLayout = \Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory::MakeStandard();
-			$oLayout->AddSubBlock(new Html('<div id="banner"><div id="survey-logo"></div>'.$sMenu.'</div>'));
-			$oLayout->AddSubBlock( $this->oContentLayout);
-			$this->oContentLayout = $oLayout;
-
-		} else {
 			$sMenu = '';
 			foreach ($this->m_aMenuButtons as $aMenuItem) {
 				$sMenu .= "<a class=\"button\" id=\"{$aMenuItem['id']}\" href=\"{$aMenuItem['hyperlink']}\"><span>".Dict::S($aMenuItem['label'])."</span></a>";
 			}
 			$this->s_content = '<div id="portal"><div id="banner"><div id="logo"></div>'.$sMenu.'</div><div id="content">'.$this->s_content.'</div></div>';
-		}
 		parent::output();
 	}
 }

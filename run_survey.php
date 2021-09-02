@@ -35,12 +35,12 @@ require_once APPROOT.'setup/itopdesignformat.class.inc.php';
 
 try
 {
-	if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-		require_once(APPROOT.'/application/nicewebpage.class.inc.php');
-	}
 	require_once(APPROOT.'/application/startup.inc.php');
-	require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
-	require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
+//if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+//		require_once(APPROOT.'/application/nicewebpage.class.inc.php');
+		require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
+//	}
+		require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
 	$sToken = utils::ReadParam('token', '', false, 'raw_data');
@@ -49,7 +49,6 @@ try
 	switch($sOperation)
 	{
 		case 'async_action':
-		require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
 		ini_set('max_execution_time', max(240, ini_get('max_execution_time')));
 				
 		$sClass = utils::ReadParam('step_class', '');
@@ -59,6 +58,7 @@ try
 		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
 			$oPage = new AjaxPage('');
 		} else {
+			require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
 			$oPage = new ajax_page('');
 		}
 		if (is_subclass_of($sClass, 'WizardStep'))

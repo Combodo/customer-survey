@@ -1,11 +1,4 @@
 <?php
-
-use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
-use Combodo\iTop\Application\UI\Base\Component\Form\FormUIBlockFactory;
-use Combodo\iTop\Application\UI\Base\Component\Html\Html;
-use Combodo\iTop\Application\UI\Base\Component\Toolbar\ToolbarUIBlockFactory;
-use Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory;
-
 require_once(APPROOT.'setup/wizardcontroller.class.inc.php');
 
 class UnknownTokenException extends Exception
@@ -77,130 +70,34 @@ class QuizzController extends WizardController
 	protected function DisplayStep(WizardStep $oStep)
 	{
 		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-			return $this->DisplayStepLegacy( $oStep);
-		}
-		$oPage = new QuizzWebPage($oStep->GetTitle());
-
-		$oPage->add_linked_script(utils::GetAbsoluteUrlModulesRoot().'customer-survey/js/quizzwizard.js');
-		$oPage->add_script("function CanMoveForward()\n{\n".$oStep->JSCanMoveForward()."\n}\n");
-		$oPage->add_script("function CanMoveBackward()\n{\n".$oStep->JSCanMoveBackward()."\n}\n");
-		$iQuizz = $this->GetQuizz()->GetKey();
-		$sToken = '';
-		if ($this->GetSurveyTargetAnswer())
-		{
-			$sToken = addslashes($this->GetSurveyTargetAnswer()->Get('token'));
-		}
-		$oPage->add_script(
-<<<EOF
-var iQuizz = $iQuizz;
-var sToken = '$sToken';
-
-EOF
-		);
-		$sConfirmationMessage = addslashes(Dict::S('Survey-exit-confirmation-message')); // The message is not displayed by all browsers
-		$oPage->add_ready_script(
-<<<EOF
-$('div.survey-question input[type=radio]').bind('click change', function() {  MarkAsModified(); WizardUpdateButtons(); });
-$('div.survey-question textarea').bind('keyup change', function() { MarkAsModified(); WizardUpdateButtons(); });
-window.onbeforeunload = function() {
-	if (!bInSubmit && IsModified())
+			$oPage = new QuizzWebPage($oStep->GetTitle());
+	} else {
+			$oPage = new UnauthenticatedWebPage($oStep->GetTitle());
+			$oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/style.scss');
+			$oPage->add_script(
+				<<<EOF
+	function CheckSelection(sMessage)
 	{
-		return '$sConfirmationMessage';	
-	}
-	// return nothing ! safer for IE
-};
-EOF
-		);
-		
-		if ($this->oSurveyTargetAnswer == null)
+		var bResult = ($('input:checked').length > 0);
+		if (!bResult)
 		{
-			$oPage->add('<div class="survey-preview_watermark">'.Dict::S('Survey-Preview Mode').'</div>');
+			alert(sMessage);
 		}
-		$oPageContent = UIContentBlockUIBlockFactory::MakeStandard("ibo-main-content", ["page_content"]);
-		$oPage->AddSubBlock($oPageContent);
-		$oForm = FormUIBlockFactory::MakeStandard("wiz_form");
-		$oPageContent->AddSubBlock($oForm);
-		$oForm->AddSubBlock($oStep->DisplayBlock($oPage));
-		
-		// Add the back / next buttons and the hidden form
-		// to store the parameters
-		$oForm->AddSubBlock(\Combodo\iTop\Application\UI\Base\Component\Input\InputUIBlockFactory::MakeForHidden("_class",get_class($oStep),"_class"));
-		$oForm->AddSubBlock(\Combodo\iTop\Application\UI\Base\Component\Input\InputUIBlockFactory::MakeForHidden("_state",$oStep->GetState(),"_state"));
-		$sModified = utils::ReadParam('_modified', '');
-		$oForm->AddSubBlock(\Combodo\iTop\Application\UI\Base\Component\Input\InputUIBlockFactory::MakeForHidden("_modified",$sModified,"_modified"));
-		foreach($this->aParameters as $sCode => $value)
-		{
-			$oForm->AddSubBlock(\Combodo\iTop\Application\UI\Base\Component\Input\InputUIBlockFactory::MakeForHidden('_params['.$sCode.']',htmlentities($value, ENT_QUOTES, 'UTF-8'),'_params_'.$sCode));
-		}
-
-		$oForm->AddSubBlock(\Combodo\iTop\Application\UI\Base\Component\Input\InputUIBlockFactory::MakeForHidden("_steps",htmlentities(json_encode($this->aSteps), ENT_QUOTES, 'UTF-8'),"_steps"));
-
-		// Prepare buttons
-		$oUIToolbar = ToolbarUIBlockFactory::MakeForButton(null, ['ibo-is-fullwidth']);
-		$oForm->AddSubBlock($oUIToolbar);
-
-		if ((count($this->aSteps) > 0) && ($oStep->CanMoveBackward()))
-		{
-			$oUICancelButton = ButtonUIBlockFactory::MakeForCancel(Dict::S('UI:Button:Back'),"operation" ,"back", true,"btn_back");
-			$oUIToolbar->AddSubBlock($oUICancelButton);
-		}
-		if ($oStep->CanMoveForward())
-		{	
-			if ($this->oSurveyTargetAnswer != null)
-			{
-				$oUINextButton = ButtonUIBlockFactory::MakeForSecondaryAction(Dict::S('Survey-SuspendButton'), 'suspend', 'suspend', true,"btn_suspend");
-				$oUIToolbar->AddSubBlock($oUINextButton);
-			}
-			$oUISubmitButton = ButtonUIBlockFactory::MakeForPrimaryAction($oStep->GetNextButtonLabel(), 'operation', 'next', true,"btn_next");
-			$oUIToolbar->AddSubBlock($oUISubmitButton);
-		}
-
-		$oPage->add('<div id="async_action" style="display:none;overflow:auto;max-height:100px;color:#F00;font-size:small;"></div>'); // The div may become visible in case of error
-
-		// Hack to have the "Next >>" button, be the default button, since the first submit button in the form is the default one
-		$oPage->add_ready_script(
-<<<EOF
-
-$('form').each(function () {
-	var thisform = $(this);
-		thisform.prepend(thisform.find('button.default').clone().removeAttr('id').prop('disabled', false).css({
-		position: 'absolute',
-		left: '-999px',
-		top: '-999px',
-		height: 0,
-		width: 0
-	}));
-});
-$('#btn_back').click(function() { $('#wiz_form').data('back', true); });
-$('#btn_suspend').click(function() { Suspend(); });
-
-$('#wiz_form').submit(function() {
-	bInSubmit = true;
-	if ($(this).data('back'))
-	{
-		return CanMoveBackward();
-	}
-	else
-	{
-		return CanMoveForward();
-	} 
-});
-
-$('#wiz_form').data('back', false);
-WizardUpdateButtons();
-
-EOF
-		);
-		$oPage->output();
+		return bResult;
 	}
 
-	/**
-	 * Displays the specified 'step' of the wizard
-	 * @param WizardStep $oStep The 'step' to display
-	 */
-	protected function DisplayStepLegacy(WizardStep $oStep)
+	function GoBack()
 	{
-		$oPage = new QuizzWebPage($oStep->GetTitle());
+		var form = $('#request_form');
+		var step = $('input[name=step]');
+
+		form.unbind('submit'); // De-activate validation
+		step.val(step.val() -2); // To go Back one step: next step is x, current step is x-1, previous step is x-2
+		form.submit(); // Go
+	}
+EOF
+			);
+		}
 
 		$oPage->add_linked_script(utils::GetAbsoluteUrlModulesRoot().'customer-survey/js/quizzwizard.js');
 		$oPage->add_script("function CanMoveForward()\n{\n".$oStep->JSCanMoveForward()."\n}\n");
@@ -255,21 +152,29 @@ EOF
 		$sBackButton = '';
 		if ((count($this->aSteps) > 0) && ($oStep->CanMoveBackward()))
 		{
-			$sBackButton = '<button id="btn_back" type="submit" name="operation" value="back">'.Dict::S('UI:Button:Back').'</button>';
+			$sBackButton = '<button id="btn_back" type="submit" name="operation" value="back" class="btn btn-default form_btn_cancel">'.Dict::S('UI:Button:Back').'</button>';
 		}
 		$sNextButtons = '';
 		if ($oStep->CanMoveForward())
 		{
 			if ($this->oSurveyTargetAnswer != null)
 			{
-				$sNextButtons .= '<span id="suspend_indicator"></span><button id="btn_suspend" class="default" type="button" name="suspend" value="suspend">'.htmlentities(Dict::S('Survey-SuspendButton'), ENT_QUOTES, 'UTF-8').'</button>';
+				$sNextButtons .= '<span id="suspend_indicator"></span><button id="btn_suspend" class="default btn btn-primary" type="button" name="suspend" value="suspend">'.htmlentities(Dict::S('Survey-SuspendButton'), ENT_QUOTES, 'UTF-8').'</button>';
 			}
-			$sNextButtons .= '<button id="btn_next" class="default" type="submit" name="operation" value="next">'.htmlentities($oStep->GetNextButtonLabel(), ENT_QUOTES, 'UTF-8').'</button>';
+			$sNextButtons .= '<button id="btn_next" class="default btn btn-primary form_btn_submit" type="submit" name="operation" value="next" >'.htmlentities($oStep->GetNextButtonLabel(), ENT_QUOTES, 'UTF-8').'</button>';
 		}
-		$oPage->add('<table class="buttons_footer"><tr>');
-		$oPage->add('<td style="text-align: left">'.$sBackButton.'</td>');
-		$oPage->add('<td style="text-align: right">'.$sNextButtons.'</td>');
-		$oPage->add('</tr></table>');
+		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') <0) {
+			$oPage->add('<table class="buttons_footer"><tr>');
+			$oPage->add('<td style="text-align: left">'.$sBackButton.'</td>');
+			$oPage->add('<td style="text-align: right">'.$sNextButtons.'</td>');
+			$oPage->add('</tr></table>');
+		} else {
+			$oPage->add('<div class="form_buttons"><div class="form_btn_regular">');
+			$oPage->add($sBackButton);
+			$oPage->add($sNextButtons);
+			$oPage->add('</div></div>');
+		}
+
 		$oPage->add("</form></div>");
 		$oPage->add('<div id="async_action" style="display:none;overflow:auto;max-height:100px;color:#F00;font-size:small;"></div>'); // The div may become visible in case of error
 
@@ -518,139 +423,12 @@ class QuizzWizStepQuestions extends WizardStep
 			$this->DisplayStep($oPage);
 		}
 	}
-	/**
-	 * Display a "step" of the wizard, according to its internal "state"
-	 * @since iTop 3.0
-	 * @param WebPage $oPage The page to use for displaying the form
-	 * @return uiBlock
-	 */
-	public function DisplayBlock(WebPage $oPage)
-	{
-		if ($this->bSurveyFinished)
-		{
-			// Too late the survey is 'closed' answers are no longer accepted
-			$oBlock = new Html(Dict::S('Survey-SurveyFinished'));
-			// Hide the buttons
-			$oPage->add_ready_script("$('#btn_suspend').hide(); $('#btn_next').hide();");
-		}
-		else if ($this->bAnswerCommitted)
-		{
-			// The user has already submitted her answers, no more modification allowed
-			$oBlock = new Html(Dict::S('Survey-AnswerAlreadyCommitted'));
-			// Hide the buttons
-			$oPage->add_ready_script("$('#btn_suspend').hide(); $('#btn_next').hide();");
-		}
-		else
-		{
-			// Normal behavior, let's proceeed with the display if the form
-			$oBlock = $this->DisplayStepBlock($oPage);
-		}
-		return $oBlock;
-	}
+
 	/**
 	 * Displays a "page" of the wizard, according to the current internal state
 	 * @param WebPage $oPage The page to use for displaying the form
-	 * @return \Combodo\iTop\Application\UI\Base\UIBlock
 	 */
-	protected function DisplayStepBlock(WebPage $oPage)
-	{
-		$index = $this->GetStepIndex();
-		$aQuestions = $this->GetStepQuestions($index);
-
-		// Check for any previous answer
-		$aPreviousAnswers = array();
-		$oSurveyTargetAnswer = $this->oWizard->GetSurveyTargetAnswer();
-		if ($oSurveyTargetAnswer != null)
-		{
-			$sOQL = "SELECT SurveyAnswer AS A WHERE A.survey_target_id = :id";
-			$oAnswerSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL, array('id' => $oSurveyTargetAnswer->GetKey())));
-			while($oAnswer = $oAnswerSet->Fetch())
-			{
-				$aPreviousAnswers[$oAnswer->Get('question_id')] = $oAnswer; 
-			}
-		}
-		
-		// Build the form
-		//
-		$question = $this->GetStepInfo($index);
-		$iNbPages = $this->GetPagesCount();
-		$oQuizz = UIContentBlockUIBlockFactory::MakeStandard(null);
-		$oBlockHeader = UIContentBlockUIBlockFactory::MakeStandard(null,["quizz_header"]);
-		$oQuizz->AddSubBlock($oBlockHeader);
-		if ($index == 0)
-		{
-			$sTitle = $this->oWizard->GetQuizz()->GetAsHtml('title');
-			$sDescription = $this->oWizard->GetQuizz()->GetAsHtml('introduction');
-			if (($question != 'default'))
-			{
-				$oTitle = \Combodo\iTop\Application\UI\Base\Component\Title\TitleUIBlockFactory::MakeStandard(new Combodo\iTop\Application\UI\Base\Component\Html\Html($sTitle));
-				$oBlockHeader->AddSubBlock($oTitle);
-				$oBlockHeader->AddSubBlock(new Html("<div class=\"survey-quizz_intro\">$sDescription</div>\n"));
-
-				// Additional "page" info on the first page
-				$sDescription = $question->GetAsHTML('description');
-				$oBlockHeader->AddSubBlock(new Html("<div class=\"page_intro\">$sDescription</div>\n"));
-			}
-			else
-			{
-				$oTitle = \Combodo\iTop\Application\UI\Base\Component\Title\TitleUIBlockFactory::MakeStandard(new Combodo\iTop\Application\UI\Base\Component\Html\Html(Dict::Format('Survey-Title-Page_X_of_Y', $sTitle, (1+$index), $iNbPages)),2);
-				$oBlockHeader->AddSubBlock($oTitle);
-				$oBlockHeader->AddSubBlock(new Html("<div class=\"survey-quizz_intro\">$sDescription</div>\n"));
-			}
-		}
-		else // Not on the first page
-		{
-			$sTitle = $question->GetAsHTML('title');
-			$sDescription = $question->GetAsHTML('description');
-			$oTitle = \Combodo\iTop\Application\UI\Base\Component\Title\TitleUIBlockFactory::MakeStandard(new Combodo\iTop\Application\UI\Base\Component\Html\Html(Dict::Format('Survey-Title-Page_X_of_Y', $sTitle, (1+$index), $iNbPages)),2);
-			$oBlockHeader->AddSubBlock($oTitle);
-			$oBlockHeader->AddSubBlock(new Html("<div class=\"page_intro\">$sDescription</div>\n"));
-		}
-		
-		//UIContentBlockUIBlockFactory::MakeStandard(null,["quizz_questions"]);
-		//$oQuizz->AddSubBlock($oBlockQuizz);
-		$bHasMandatoryQuestions = false;
-		if (count($aQuestions) > 0)
-		{
-			$aAnswers = json_decode($this->oWizard->GetParameter('answer'), true);
-			foreach($aQuestions as $oQuestion)
-			{
-				$oBlockQuizz = \Combodo\iTop\Application\UI\Base\Component\Panel\PanelUIBlockFactory::MakeNeutral("");
-				$oQuizz->AddSubBlock($oBlockQuizz);
-				$sMandatory = 'false';
-				if ($oQuestion->Get('mandatory') == 'yes')
-				{
-					$bHasMandatoryQuestions = true;
-					$sMandatory = 'true';
-				}
-				$oBlockQuestion = UIContentBlockUIBlockFactory::MakeStandard(null,["survey-question","question"]);
-				$oBlockQuestion->AddDataAttribute("mandatory",$sMandatory);
-				$oBlockQuizz->AddSubBlock($oBlockQuestion);
-				$sSavedValue = '';
-				if (isset($aPreviousAnswers[$oQuestion->GetKey()]))
-				{
-					// Retrieve the previously saved values (via the "suspend" function)
-					$sSavedValue = $aPreviousAnswers[$oQuestion->GetKey()]->Get('value');
-				}
-				$sAnswer = isset($aAnswers[$oQuestion->GetKey()]) ? $aAnswers[$oQuestion->GetKey()] : $sSavedValue;
-				$oBlockQuestion->AddSubBlock($oQuestion->DisplayForm($oPage, $sAnswer));
-			}
-		}
-		
-		if ($bHasMandatoryQuestions)
-		{
-			$oQuizz->AddSubBlock(new Html("<div class=\"mandatory_footer\"><span class=\"survey-mandatory_asterisk\">*</span> ".Dict::S('Survey-MandatoryQuestion').'</div>'));
-		}
-		return $oQuizz;
-	}
 	protected function DisplayStep(WebPage $oPage)
-	{
-		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-			return $this->DisplayStepLegacy( $oPage);
-		}
-		$oPage->AddSubBlock($this->DisplayStepBlock($oPage));
-	}
-	protected function DisplayStepLegacy(WebPage $oPage)
 	{
 		$index = $this->GetStepIndex();
 		$aQuestions = $this->GetStepQuestions($index);
@@ -673,22 +451,26 @@ class QuizzWizStepQuestions extends WizardStep
 		$question = $this->GetStepInfo($index);
 		$iNbPages = $this->GetPagesCount();
 		$oPage->add("<div class=\"quizz_header\">\n");
+		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+			$sTitleTag='h1';
+		} else {
+			$sTitleTag='h4';
+		}
 		if ($index == 0)
 		{
 			$sTitle = $this->oWizard->GetQuizz()->GetAsHtml('title');
 			$sDescription = $this->oWizard->GetQuizz()->GetAsHtml('introduction');
 			if (($question != 'default'))
 			{
-				$oPage->add("<h1 class=\"quizz_title\">$sTitle</h1>\n");
+				$oPage->add("<$sTitleTag class=\"quizz_title\">$sTitle</$sTitleTag>\n");
 				$oPage->add("<div class=\"quizz_intro\">$sDescription</div>\n");
 				// Additional "page" info on the first page
-				$sTitle = $question->GetAsHTML('title');
 				$sDescription = $question->GetAsHTML('description');
 				$oPage->add("<div class=\"page_intro\">$sDescription</div>\n");
 			}
 			else
 			{
-				$oPage->add("<h1 class=\"page_title\">".Dict::Format('Survey-Title-Page_X_of_Y', $sTitle, (1+$index), $iNbPages)."</h1>\n");
+				$oPage->add("<$sTitleTag class=\"page_title\">".Dict::Format('Survey-Title-Page_X_of_Y', $sTitle, (1+$index), $iNbPages)."</$sTitleTag>\n");
 				$oPage->add("<div class=\"quizz_intro\">$sDescription</div>\n");
 			}
 		}
@@ -696,7 +478,7 @@ class QuizzWizStepQuestions extends WizardStep
 		{
 			$sTitle = $question->GetAsHTML('title');
 			$sDescription = $question->GetAsHTML('description');
-			$oPage->add("<h1 class=\"page_title\">".Dict::Format('Survey-Title-Page_X_of_Y', $sTitle, (1+$index), $iNbPages)."</h1>\n");
+			$oPage->add("<$sTitleTag class=\"page_title\">".Dict::Format('Survey-Title-Page_X_of_Y', $sTitle, (1+$index), $iNbPages)."</$sTitleTag>\n");
 			$oPage->add("<div class=\"page_intro\">$sDescription</div>\n");
 		}
 		$oPage->add("</div>\n");
@@ -715,6 +497,9 @@ class QuizzWizStepQuestions extends WizardStep
 					$bHasMandatoryQuestions = true;
 					$sMandatory = 'true';
 				}
+				if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
+					$oPage->add('<fieldset>');
+				}
 				$oPage->add('<div class="question" data-mandatory="'.$sMandatory.'">');
 				$sSavedValue = '';
 				if (isset($aPreviousAnswers[$oQuestion->GetKey()]))
@@ -723,8 +508,11 @@ class QuizzWizStepQuestions extends WizardStep
 					$sSavedValue = $aPreviousAnswers[$oQuestion->GetKey()]->Get('value');
 				}
 				$sAnswer = isset($aAnswers[$oQuestion->GetKey()]) ? $aAnswers[$oQuestion->GetKey()] : $sSavedValue;
-				$oQuestion->DisplayFormLegacy($oPage, $sAnswer);
+				$oQuestion->DisplayForm($oPage, $sAnswer);
 				$oPage->add('</div>');
+				if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
+					$oPage->add('</fieldset>');
+				}
 			}
 			$oPage->add("</div>");
 		}
@@ -972,7 +760,6 @@ class QuizzWizStepDone extends WizardStep
 		// Do nothing...
 	}
 
-	//legacy method used before iTop 3.0
 	public function Display(WebPage $oPage)
 	{
 		// Display either the quizz specific message or a default
@@ -987,25 +774,6 @@ class QuizzWizStepDone extends WizardStep
 		$oPage->add_ready_script("ClearModified();"); // Values were saved anyhow... except in preview mode where we don't care
 	}
 
-	/*
-	 * @since 3.0.0
-	 */
-	public function DisplayBlock(WebPage $oPage)
-	{
-		// Display either the quizz specific message or a default
-		// one taken from the dictionary
-		$oQuizz = $this->oWizard->GetQuizz();
-		$sConclusion = $oQuizz->GetAsHtml('conclusion');
-		if ($sConclusion == '')
-		{
-			$sConclusion = Dict::S('Survey-SurveyCompleted-Default-Text');
-		}
-		$oBlock = new Html($sConclusion);
-		$oPage->add_ready_script("ClearModified();"); // Values were saved anyhow... except in preview mode where we don't care
-		return $oBlock;
-	}
-
-	
 	public function CanMoveForward()
 	{
 		return false;
