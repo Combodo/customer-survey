@@ -2076,7 +2076,7 @@ EOF
 
 			$iSurveyId = $this->GetKey();
 			$sAjaxUrl = addslashes(utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php');
-
+      Combodo\iTop\Application\Helper\WebResourcesHelper::EnableCKEditorToWebPage($oPage);
 			$oPage->add_ready_script(
 <<<EOF
 function SurveyRunDialogSendAgain()
