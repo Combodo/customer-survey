@@ -453,7 +453,7 @@
 			// Draw a bar with a border around the colored area so that it gets printed (browers usually don't print the background colors)
 			$sBar = '<div style="width:'.$iWidth.'px; display: inline-block; background: #1C94C4; border: 1px #1C94C4 solid;">&nbsp;</div>';
 		}
-		$oValue = new Combodo\iTop\Application\UI\Base\Component\Html\Html($sBar.'&nbsp;'.$iPercentage);
+		$oValue = new Combodo\iTop\Application\UI\Base\Component\Html\Html($sBar.'&nbsp;'.$iPercentage.' %');
 		$oField = \Combodo\iTop\Application\UI\Base\Component\Field\FieldUIBlockFactory::MakeStandard($sLabel);
 		$oBlock->AddSubBlock($oField);
 		$oField->AddSubBlock($oValue);
@@ -809,7 +809,7 @@
 
 		foreach($aValues as $aAnswer)
 		{
-			$oComment = \Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory::MakeStandard(null, ["survey-triangle-border","survey-user_comment"]);
+			$oComment = \Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory::MakeStandard(null, ["survey-triangle-border","survey-user-comment"]);
 		  $oCollapsible->AddSubBlock($oComment);
 		  $oComment->AddSubBlock(new \Combodo\iTop\Application\UI\Base\Component\Html\Html(trim($aAnswer['text'])));
 			if (!$bAnonymous)
@@ -839,7 +839,7 @@
     width: 0;
 }
 
-.survey-user_comment {
+.survey-user-comment {
 	white-space: pre-wrap;
 }
 
@@ -2616,7 +2616,6 @@ EOF
 			$sUrl = utils::GetAbsoluteUrlModulePage('customer-survey', 'print.php');
 			$oForm = \Combodo\iTop\Application\UI\Base\Component\Form\FormUIBlockFactory::MakeStandard("printable_version");
 			$oForm->SetAction($sUrl);
-		//	$oPage->add('<div style="float:right"><form id="printable_version" method="post" target="_blank" action="'.$sUrl.'">');
 			$oFieldSetStat->AddToolbarBlock($oForm);
 			$aVars = array('operation' => 'print_results', 'survey_id' => $this->GetKey(), 'org_id' => $aOrgIds, 'contact_id' => $aContactIds);
 			foreach($aVars as $sName => $value)
@@ -2682,11 +2681,11 @@ EOF
 
 			$sAbsoluteUrl = utils::GetAbsoluteUrlModulesRoot();
 			$sRunQueryUrl = $sAbsoluteUrl.'customer-survey/report.php?s='.$this->GetKey().$sOrgUrl.$sContactUrl;
-			$oButtonExcel = \Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory::MakeIconLink('fas fa-file-excel', Dict::S('Survey-results-excel',"_blank"), $sRunQueryUrl);
+			$oButtonExcel = \Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory::MakeIconLink('fas fa-file-excel', Dict::S('Survey-results-excel'), $sRunQueryUrl,"_blank");
 			$oField->AddSubBlock($oButtonExcel);
 
 			$sRunQueryUrl .= '&f=csv';
-			$oButtonCsv = \Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory::MakeIconLink('fas fa-file-csv', Dict::S('Survey-results-csv',"_blank"), $sRunQueryUrl);
+			$oButtonCsv = \Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory::MakeIconLink('fas fa-file-csv', Dict::S('Survey-results-csv'), $sRunQueryUrl,"_blank");
 			$oField->AddSubBlock($oButtonCsv);
 		}
 		return $oStatisticsAndExport;

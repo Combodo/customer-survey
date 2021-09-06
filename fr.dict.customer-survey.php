@@ -177,7 +177,7 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Survey-NextButton' => 'Suite >>',
 	'Survey-SuspendButton' => 'Suspendre',
 	'Survey-CompletionNotificationSubject_name' => 'Il y a une nouvelle réponse (anonyme) à l\'enquête %1$s',
-	'Survey-CompletionNotificationBody_url' => 'L\'enquête anonyme $1%s a reçu une réponse supplémentaire',
+	'Survey-CompletionNotificationBody_url' => 'L\'enquête anonyme %1$s a reçu une réponse supplémentaire',
 	'Survey-CompletionNotificationSubject_name_contact' => '%2$s vient de répondre à l\'enquête %1$s',
 	'Survey-CompletionNotificationBody_url_contact' => '%2$s a terminé de répondre à l\'enquête: %1$s',
 	'Survey-SurveyFinished' => 'Nous sommes désolés, cette enquête est terminée. Les réponses ne sont plus acceptées.',
