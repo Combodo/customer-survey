@@ -162,7 +162,7 @@ EOF
 				if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') <0) {
 					$sNextButtons .= '<span id="suspend_indicator" style="display: none;"><img src="../images/indicator.gif"/></span><button id="btn_suspend" type="button" name="suspend" value="suspend">'.htmlentities(Dict::S('Survey-SuspendButton'), ENT_QUOTES, 'UTF-8').'</button>';
 				} else {
-					$sNextButtons .= '<span id="suspend_indicator" class="fas fa-spinner fa-spin" style="display: none;"></span><button id="btn_suspend" class="default btn btn-secondary" type="button" name="suspend" value="suspend">'.htmlentities(Dict::S('Survey-SuspendButton'), ENT_QUOTES, 'UTF-8').'</button>';
+					$sNextButtons .= '<span id="suspend_indicator" class="fas fa-sync-alt fa-spin" style="display: none;"></span><button id="btn_suspend" class="default btn btn-secondary" type="button" name="suspend" value="suspend">'.htmlentities(Dict::S('Survey-SuspendButton'), ENT_QUOTES, 'UTF-8').'</button>';
 				}
 			}
 			$sNextButtons .= '<button id="btn_next" class="default btn btn-primary form_btn_submit" type="submit" name="operation" value="next" >'.htmlentities($oStep->GetNextButtonLabel(), ENT_QUOTES, 'UTF-8').'</button>';
