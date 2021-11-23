@@ -9,7 +9,7 @@
  * @author      Denis Flaven <denis.flaven@combodo.com>
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
-Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
+Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'Encuesta a Cliente',
 	'Survey-Title-Draft' => 'Encuesta a Cliente (vista preliminar)',
@@ -198,7 +198,7 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
 // Class: SurveyAnswer
 //
 
-Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
+Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:SurveyAnswer' => 'SurveyAnswer~~',
 	'Class:SurveyAnswer+' => '~~',
 	'Class:SurveyAnswer/Attribute:survey_target_id' => 'Survey target id~~',
@@ -231,7 +231,7 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
 // Class: Quizz
 //
 
-Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
+Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)' => 'Brazilian (Brazilian)~~',
 	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)' => 'Hungarian (Magyar)~~',
@@ -246,8 +246,8 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
 	'Class:Quizz/Attribute:language/Value:German (Deutsch)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:Russian (Русский)' => 'Russian (Русский)~~',
 	'Class:Quizz/Attribute:language/Value:Russian (Русский)+' => '~~',
-	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)' => 'Spanish (Español, Castellaño)~~',
-	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellano)' => 'Spanish (Español, Castellano)~~',
+	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellano)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:French (Français)' => 'French (Français)~~',
 	'Class:Quizz/Attribute:language/Value:French (Français)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:Japanese (日本語)' => 'Japanese (日本語)~~',
@@ -266,7 +266,7 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
 // Class: QuizzElement
 //
 
-Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
+Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'Yes~~',
 	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => '~~',
 	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'No~~',
@@ -277,7 +277,7 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
 // Class: QuizzScaleQuestion
 //
 
-Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
+Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:QuizzScaleQuestion/Attribute:scale_values' => 'Scale values~~',
 	'Class:QuizzScaleQuestion/Attribute:scale_values+' => '~~',
 ));
@@ -286,7 +286,7 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
 // Class: Survey
 //
 
-Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
+Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'Yes~~',
 	'Class:Survey/Attribute:email_on_completion/Value:yes+' => '~~',
 	'Class:Survey/Attribute:email_on_completion/Value:no' => 'No~~',
@@ -303,7 +303,7 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
 // Class: SurveyTarget
 //
 
-Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
+Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall+' => '~~',
 	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
@@ -314,7 +314,7 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
 // Class: SurveyTargetAnswer
 //
 
-Dict::Add('ES CR', 'Spanish', 'Español, Castellaño', array(
+Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall+' => '~~',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
