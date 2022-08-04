@@ -2387,8 +2387,8 @@ EOF
 
 		if (!$this->IsAnonymous() && !$bPrintable)
 		{
-			$oFieldSetFilterStat = \ Combodo\iTop\Application\UI\Base\Component\Panel\PanelUIBlockFactory::MakeNeutral(Dict::S('Survey-results-fitlering'));
-      $oFieldSetFilterStat->AddCSSClass("survey-panel--filter");
+			$oFieldSetFilterStat = \Combodo\iTop\Application\UI\Base\Component\Panel\PanelUIBlockFactory::MakeNeutral(Dict::S('Survey-results-fitlering'));
+            $oFieldSetFilterStat->AddCSSClass("survey-panel--filter");
 			$oPage->AddSubBlock($oFieldSetFilterStat);
 			$oFilterBlock = \Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory::MakeStandard("stats_filter",["ibo-is-visible"]);
 			$oFieldSetFilterStat->AddSubBlock($oFilterBlock);
