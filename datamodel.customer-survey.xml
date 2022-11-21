@@ -1880,8 +1880,22 @@ EOF
 		{
 			$sBody = $this->Get('email_body');
 		}
-		$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
-
+		
+	
+		$aParams = [];
+		$aParams['recipient->object()'] = $oContact;
+		$aParams['quiz_url'] = $sQuizzUrl;
+		$aParams['this->object()'] = $this;
+		
+		// Email body contains a place holder?
+		$bAppendLink = !preg_match('/\$quiz_url\$/', $sBody);
+		
+		$sBody = MetaModel::ApplyParams($sBody, $aParams);
+		
+		if($bAppendLink == true) {
+			$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
+		}
+		
 		if ($sEmailSubject != null)
 		{
 			$sSubject = $sEmailSubject;
@@ -1890,6 +1904,8 @@ EOF
 		{
 			$sSubject = $this->Get('email_subject');
 		}
+		
+		$sSubject = MetaModel::ApplyParams($sSubject, $aParams);
 		
 		if ($sToken)
 		{
