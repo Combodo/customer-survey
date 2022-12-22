@@ -1969,8 +1969,14 @@ EOF
     if (is_null($sQuizzUrl)) {
         return $sContent;
     }
-    $bIsContentContainsQuizUrlPlaceholder = !preg_match('/\$quiz_url\$/', $sContent);
-    if (false === $bIsContentContainsQuizUrlPlaceholder) {
+
+    $quizzUrlPatternsFound = preg_match('/\$quiz_url\$/', $sContent);
+    if ($quizzUrlPatternsFound === 1) {
+      $bIsContentContainsQuizUrlPlaceholder = true;
+    } else {
+      $bIsContentContainsQuizUrlPlaceholder = false;
+    }
+    if ($bIsContentContainsQuizUrlPlaceholder) {
         return $sContent;
     }
 

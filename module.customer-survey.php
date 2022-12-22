@@ -23,6 +23,7 @@ SetupWebPage::AddModule(
 		// Components
 		//
 		'datamodel' => array(
+			'vendor/autoload.php',
 			'main.customer-survey.php',
 			'model.customer-survey.php',
 		),
