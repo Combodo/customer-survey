@@ -1880,21 +1880,8 @@ EOF
 		{
 			$sBody = $this->Get('email_body');
 		}
-		
-	
-		$aParams = [];
-		$aParams['recipient->object()'] = $oContact;
-		$aParams['quiz_url'] = $sQuizzUrl;
-		$aParams['this->object()'] = $this;
-		
-		// Email body contains a place holder?
-		$bAppendLink = !preg_match('/\$quiz_url\$/', $sBody);
-		
-		$sBody = MetaModel::ApplyParams($sBody, $aParams);
-		
-		if($bAppendLink == true) {
-			$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
-		}
+
+		$sBody = $this->ApplyParamsToContent($sBody, $oContact, $sQuizzUrl);
 		
 		if ($sEmailSubject != null)
 		{
@@ -1905,7 +1892,7 @@ EOF
 			$sSubject = $this->Get('email_subject');
 		}
 		
-		$sSubject = MetaModel::ApplyParams($sSubject, $aParams);
+		$sSubject = $this->ApplyParamsToContent($sSubject, $oContact, null);
 		
 		if ($sToken)
 		{
@@ -1938,6 +1925,58 @@ EOF
 				throw new Exception(Dict::S('Survey-email-notsent').': '.implode(', ', $aErrors));
 		}
 	}]]></code>
+        </method>
+        <method id="ApplyParamsToContent">
+          <comment>/**
+	 * @param string $sContent
+	 * @param Contact $oContact
+	 * @param ?string $sQuizzUrl
+	 *
+	 * @return string Content with placeholders replaced.
+	 */</comment>
+          <static>false</static>
+          <access>protected</access>
+          <type>Custom</type>
+          <code><![CDATA[	protected function ApplyParamsToContent($sContent, $oContact, $sQuizzUrl)
+{
+  $aParams = [];
+  $aParams['recipient->object()'] = $oContact;
+  if (false === is_null($sQuizzUrl)){
+    $aParams['quiz_url'] = $sQuizzUrl;
+  }
+  $aParams['this->object()'] = $this;
+
+  $sContent = MetaModel::ApplyParams($sContent, $aParams);
+
+  $this->AppendLinkToContent($sContent, $sQuizzUrl);
+
+  return $sContent;
+}
+]]></code>
+        </method>
+        <method id="AppendLinkToContent">
+          <comment>/**
+	 * @param string $sContent
+	 * @param ?string $sQuizzUrl
+	 *
+	 * @return string If content contains a quiz_url placeholder, and url param set then Content with link appended, otherwise unchanged content
+*/</comment>
+          <static>true</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public static function AppendLinkToContent($sContent, $sQuizzUrl)
+{
+    if (is_null($sQuizzUrl)) {
+        return $sContent;
+    }
+    $bIsContentContainsQuizUrlPlaceholder = !preg_match('/\$quiz_url\$/', $sContent);
+    if (false === $bIsContentContainsQuizUrlPlaceholder) {
+        return $sContent;
+    }
+
+    return $sContent . '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
+}
+]]></code>
         </method>
         <method id="OnUpdate">
           <comment>/**
