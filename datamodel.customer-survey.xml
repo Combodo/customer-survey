@@ -1930,25 +1930,25 @@ EOF
           <comment>/**
 	 * @param string $sContent
 	 * @param Contact $oContact
-	 * @param ?string $sQuizzUrl
+	 * @param ?string $sQuizUrl
 	 *
 	 * @return string Content with placeholders replaced.
 	 */</comment>
           <static>false</static>
           <access>protected</access>
           <type>Custom</type>
-          <code><![CDATA[	protected function ApplyParamsToContent($sContent, $oContact, $sQuizzUrl)
+          <code><![CDATA[	protected function ApplyParamsToContent($sContent, $oContact, $sQuizUrl)
 {
   $aParams = [];
   $aParams['recipient->object()'] = $oContact;
-  if (false === is_null($sQuizzUrl)){
-    $aParams['quiz_url'] = $sQuizzUrl;
+  if (false === is_null($sQuizUrl)){
+    $aParams['quiz_url'] = $sQuizUrl;
   }
   $aParams['this->object()'] = $this;
 
   $sContent = MetaModel::ApplyParams($sContent, $aParams);
 
-  $this->AppendLinkToContent($sContent, $sQuizzUrl);
+  $this->AppendLinkToContent($sContent, $sQuizUrl);
 
   return $sContent;
 }
@@ -1957,21 +1957,21 @@ EOF
         <method id="AppendLinkToContent">
           <comment>/**
 	 * @param string $sContent
-	 * @param ?string $sQuizzUrl
+	 * @param ?string $sQuizUrl
 	 *
 	 * @return string If content contains a quiz_url placeholder, and url param set then Content with link appended, otherwise unchanged content
 */</comment>
           <static>true</static>
           <access>public</access>
           <type>Custom</type>
-          <code><![CDATA[	public static function AppendLinkToContent($sContent, $sQuizzUrl)
+          <code><![CDATA[	public static function AppendLinkToContent($sContent, $sQuizUrl)
 {
-    if (is_null($sQuizzUrl)) {
+    if (is_null($sQuizUrl)) {
         return $sContent;
     }
 
-    $quizzUrlPatternsFound = preg_match('/\$quiz_url\$/', $sContent);
-    if ($quizzUrlPatternsFound === 1) {
+    $quizUrlPatternsFound = preg_match('/\$quiz_url\$/', $sContent);
+    if ($quizUrlPatternsFound === 1) {
       $bIsContentContainsQuizUrlPlaceholder = true;
     } else {
       $bIsContentContainsQuizUrlPlaceholder = false;
@@ -1980,7 +1980,7 @@ EOF
         return $sContent;
     }
 
-    return $sContent . '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
+    return $sContent . '<br/><a href="'.$sQuizUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
 }
 ]]></code>
         </method>
