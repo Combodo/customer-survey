@@ -1970,14 +1970,9 @@ EOF
         return $sContent;
     }
 
-    $quizUrlPatternsFound = preg_match('/\$quiz_url\$/', $sContent);
-    if ($quizUrlPatternsFound === 1) {
-      $bIsContentContainsQuizUrlPlaceholder = true;
-    } else {
-      $bIsContentContainsQuizUrlPlaceholder = false;
-    }
-    if ($bIsContentContainsQuizUrlPlaceholder) {
-        return $sContent;
+    $quizUrlPatternFound = preg_match('/\$quiz_url\$/', $sContent);
+    if ($quizUrlPatternFound === 1) {
+      return $sContent;
     }
 
     return $sContent . '<br/><a href="'.$sQuizUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
