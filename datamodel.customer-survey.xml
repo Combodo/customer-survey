@@ -1930,7 +1930,7 @@ EOF
           <comment>/**
 	 * @param string $sContent
 	 * @param Contact $oContact
-	 * @param ?string $sQuizUrl
+	 * @param string $sQuizUrl
 	 * @param boolean $bAutoAppendLink see corresponding param in {@see AppendLinkToContent}
 	 *
 	 * @return string Content with placeholders replaced.
