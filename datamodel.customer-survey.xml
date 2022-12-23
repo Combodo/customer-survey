@@ -1945,9 +1945,9 @@ EOF
   $aParams['quiz_url'] = $sQuizUrl;
   $aParams['this->object()'] = $this;
 
-  $sContent = MetaModel::ApplyParams($sContent, $aParams);
+  $sContent = $this->AppendLinkToContent($bAutoAppendLink, $sContent, $sQuizUrl);
 
-  $this->AppendLinkToContent($bAutoAppendLink, $sContent, $sQuizUrl);
+  $sContent = MetaModel::ApplyParams($sContent, $aParams);
 
   return $sContent;
 }

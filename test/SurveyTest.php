@@ -47,21 +47,33 @@ class SurveyTest extends ItopDataTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider ApplyParamsToContentProvider
-	 */
-	public function testApplyParamsToContent($sInitialContent, $aParams, $sExpectedContent, $bShouldLinkBeAppended)
+	public function testApplyParamsToContent()
 	{
 		$oSurvey = new Survey();
+		$sApplyParamsMethodName = 'ApplyParamsToContent';
 
-		$sActualContent = $this->InvokeNonPublicMethod(Survey::class, 'ApplyParamsToContent', $oSurvey, [$sInitialContent, $aParams, 'URL']);
+		$oContact = $this->CreatePerson(0, 1);
 
-		$this->assertSame($sExpectedContent, $sActualContent);
-	}
+		$sNoPlaceholderContent = 'No placeholder';
+		$sUrl = 'URL';
+		$sQuizLink = '<br/><a href="'.$sUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
+		$sWithPlaceholderContent = 'My superb quizz URL : $quiz_url$. Fantastic !';
+		$sWithPlaceholderContentReplaced = 'My superb quizz URL : '.$sUrl.'. Fantastic !';
 
-	public function ApplyParamsToContentProvider() {
-		return [
-			'No placeholder' => ['No placeholder', [], 'No placeholder', true],
-		];
+		$this->assertSame(
+			$sNoPlaceholderContent,
+			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey, [$sNoPlaceholderContent, $oContact, $sUrl, false]),
+			'AppendLink false, No Placeholder'
+		);
+		$this->assertSame(
+			$sNoPlaceholderContent.$sQuizLink,
+			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey, [$sNoPlaceholderContent, $oContact, $sUrl, true]),
+			'AppendLink true, No Placeholder'
+		);
+		$this->assertSame(
+			$sWithPlaceholderContentReplaced,
+			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey, [$sWithPlaceholderContent, $oContact, $sUrl, true]),
+			'AppendLink true, With Placeholder'
+		);
 	}
 }
