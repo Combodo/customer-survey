@@ -22,28 +22,28 @@ class SurveyTest extends ItopDataTestCase
 	public function testAppendLinkToContent() {
 		$sNoPlaceholderContent = 'No placeholder';
 		$sUrl = 'URL';
-		$sQuizzLink = '<br/><a href="'.$sUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
+		$sQuizLink = '<br/><a href="'.$sUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
 		$sWithPlaceholderContent = 'My superb quizz URL : $quiz_url$. Fantastic !';
 
 		$this->assertSame(
 			$sNoPlaceholderContent,
-			Survey::AppendLinkToContent($sNoPlaceholderContent, null),
-			'No Placeholder, No URL'
+			Survey::AppendLinkToContent(false, $sNoPlaceholderContent, $sUrl),
+			'AppendLink false, No Placeholder'
 		);
 		$this->assertSame(
-			$sNoPlaceholderContent.$sQuizzLink,
-			Survey::AppendLinkToContent($sNoPlaceholderContent, $sUrl),
-			'No Placeholder, With URL'
-		);
-		$this->assertSame(
-			$sWithPlaceholderContent,
-			Survey::AppendLinkToContent($sWithPlaceholderContent, null),
-			'With Placeholder, No URL'
+			$sNoPlaceholderContent.$sQuizLink,
+			Survey::AppendLinkToContent(true, $sNoPlaceholderContent, $sUrl),
+			'AppendLink true, No Placeholder'
 		);
 		$this->assertSame(
 			$sWithPlaceholderContent,
-			Survey::AppendLinkToContent($sWithPlaceholderContent, $sUrl),
-			'With Placeholder, With URL'
+			Survey::AppendLinkToContent(false, $sWithPlaceholderContent, $sUrl),
+			'AppendLink false, With Placeholder'
+		);
+		$this->assertSame(
+			$sWithPlaceholderContent,
+			Survey::AppendLinkToContent(true, $sWithPlaceholderContent, $sUrl),
+			'AppendLink true, With Placeholder'
 		);
 	}
 

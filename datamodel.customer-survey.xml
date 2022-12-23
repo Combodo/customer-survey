@@ -1881,7 +1881,7 @@ EOF
 			$sBody = $this->Get('email_body');
 		}
 
-		$sBody = $this->ApplyParamsToContent($sBody, $oContact, $sQuizzUrl);
+		$sBody = $this->ApplyParamsToContent($sBody, $oContact, $sQuizzUrl, true);
 		
 		if ($sEmailSubject != null)
 		{
@@ -1892,7 +1892,7 @@ EOF
 			$sSubject = $this->Get('email_subject');
 		}
 		
-		$sSubject = $this->ApplyParamsToContent($sSubject, $oContact, null);
+		$sSubject = $this->ApplyParamsToContent($sSubject, $oContact, $sQuizzUrl, false);
 		
 		if ($sToken)
 		{
@@ -1931,24 +1931,23 @@ EOF
 	 * @param string $sContent
 	 * @param Contact $oContact
 	 * @param ?string $sQuizUrl
+	 * @param boolean $bAutoAppendLink see corresponding param in {@see AppendLinkToContent}
 	 *
 	 * @return string Content with placeholders replaced.
 	 */</comment>
           <static>false</static>
           <access>protected</access>
           <type>Custom</type>
-          <code><![CDATA[	protected function ApplyParamsToContent($sContent, $oContact, $sQuizUrl)
+          <code><![CDATA[	protected function ApplyParamsToContent($sContent, $oContact, $sQuizUrl, $bAutoAppendLink)
 {
   $aParams = [];
   $aParams['recipient->object()'] = $oContact;
-  if (false === is_null($sQuizUrl)){
-    $aParams['quiz_url'] = $sQuizUrl;
-  }
+  $aParams['quiz_url'] = $sQuizUrl;
   $aParams['this->object()'] = $this;
 
   $sContent = MetaModel::ApplyParams($sContent, $aParams);
 
-  $this->AppendLinkToContent($sContent, $sQuizUrl);
+  $this->AppendLinkToContent($bAutoAppendLink, $sContent, $sQuizUrl);
 
   return $sContent;
 }
@@ -1956,17 +1955,18 @@ EOF
         </method>
         <method id="AppendLinkToContent">
           <comment>/**
+	 * @param boolean $bAutoAppendLink if false will always return the content, otherwise will append a quiz link if no url placeholder found in content
 	 * @param string $sContent
 	 * @param ?string $sQuizUrl
 	 *
-	 * @return string If content contains a quiz_url placeholder, and url param set then Content with link appended, otherwise unchanged content
+	 * @return string
 */</comment>
           <static>true</static>
           <access>public</access>
           <type>Custom</type>
-          <code><![CDATA[	public static function AppendLinkToContent($sContent, $sQuizUrl)
+          <code><![CDATA[	public static function AppendLinkToContent($bAutoAppendLink, $sContent, $sQuizUrl)
 {
-    if (is_null($sQuizUrl)) {
+    if (false === $bAutoAppendLink) {
         return $sContent;
     }
 
