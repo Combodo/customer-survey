@@ -6,4 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Combodo\\iTop\\CustomerSurvey\\Test' => array($baseDir . '/test'),
 );
