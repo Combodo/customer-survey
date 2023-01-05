@@ -1928,13 +1928,13 @@ EOF
         </method>
         <method id="ApplyParamsToContent">
           <comment>/**
-	 * @param string $sContent
-	 * @param Contact $oContact
-	 * @param string $sQuizUrl
-	 * @param boolean $bAutoAppendLink see corresponding param in {@see AppendLinkToContent}
-	 *
-	 * @return string Content with placeholders replaced.
-	 */</comment>
+            * @param string $sContent
+            * @param Contact $oContact
+            * @param string $sQuizUrl
+            * @param boolean $bAutoAppendLink if true will call {@see AppendLinkToContent}
+            *
+            * @return string Content with placeholders replaced.
+            */</comment>
           <static>false</static>
           <access>protected</access>
           <type>Custom</type>
@@ -1945,7 +1945,9 @@ EOF
   $aParams['quiz_url'] = $sQuizUrl;
   $aParams['this->object()'] = $this;
 
-  $sContent = $this->AppendLinkToContent($bAutoAppendLink, $sContent, $sQuizUrl);
+  if ($bAutoAppendLink){
+    $sContent = $this->AppendLinkToContent($sContent, $sQuizUrl);
+  }
 
   $sContent = MetaModel::ApplyParams($sContent, $aParams);
 
@@ -1955,21 +1957,16 @@ EOF
         </method>
         <method id="AppendLinkToContent">
           <comment>/**
-	 * @param boolean $bAutoAppendLink if false will always return the content, otherwise will append a quiz link if no url placeholder found in content
-	 * @param string $sContent
-	 * @param ?string $sQuizUrl
-	 *
-	 * @return string
-*/</comment>
+            * @param string $sContent
+            * @param string $sQuizUrl
+            *
+            * @return string If a placeholder is found in $sContent returns $sContent, otherwise $sContent with a quizz link appended
+            */</comment>
           <static>true</static>
           <access>public</access>
           <type>Custom</type>
-          <code><![CDATA[	public static function AppendLinkToContent($bAutoAppendLink, $sContent, $sQuizUrl)
+          <code><![CDATA[	public static function AppendLinkToContent($sContent, $sQuizUrl)
 {
-    if (false === $bAutoAppendLink) {
-        return $sContent;
-    }
-
     $quizUrlPatternFound = preg_match('/\$quiz_url\$/', $sContent);
     if ($quizUrlPatternFound === 1) {
       return $sContent;

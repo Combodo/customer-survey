@@ -9,7 +9,7 @@ namespace Combodo\iTop\CustomerSurvey\Test;
 
 
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
-use \Dict;
+use Dict;
 use Survey;
 
 /**
@@ -26,24 +26,14 @@ class SurveyTest extends ItopDataTestCase
 		$sWithPlaceholderContent = 'My superb quizz URL : $quiz_url$. Fantastic !';
 
 		$this->assertSame(
-			$sNoPlaceholderContent,
-			Survey::AppendLinkToContent(false, $sNoPlaceholderContent, $sUrl),
-			'AppendLink false, No Placeholder'
-		);
-		$this->assertSame(
 			$sNoPlaceholderContent.$sQuizLink,
-			Survey::AppendLinkToContent(true, $sNoPlaceholderContent, $sUrl),
-			'AppendLink true, No Placeholder'
+			Survey::AppendLinkToContent($sNoPlaceholderContent, $sUrl),
+			'No Placeholder'
 		);
 		$this->assertSame(
 			$sWithPlaceholderContent,
-			Survey::AppendLinkToContent(false, $sWithPlaceholderContent, $sUrl),
-			'AppendLink false, With Placeholder'
-		);
-		$this->assertSame(
-			$sWithPlaceholderContent,
-			Survey::AppendLinkToContent(true, $sWithPlaceholderContent, $sUrl),
-			'AppendLink true, With Placeholder'
+			Survey::AppendLinkToContent($sWithPlaceholderContent, $sUrl),
+			'With Placeholder'
 		);
 	}
 
@@ -62,17 +52,26 @@ class SurveyTest extends ItopDataTestCase
 
 		$this->assertSame(
 			$sNoPlaceholderContent,
-			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey, [$sNoPlaceholderContent, $oContact, $sUrl, false]),
+			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
+				[$sNoPlaceholderContent, $oContact, $sUrl, false]),
 			'AppendLink false, No Placeholder'
 		);
 		$this->assertSame(
+			$sWithPlaceholderContentReplaced,
+			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
+				[$sWithPlaceholderContent, $oContact, $sUrl, false]),
+			'AppendLink false, With Placeholder'
+		);
+		$this->assertSame(
 			$sNoPlaceholderContent.$sQuizLink,
-			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey, [$sNoPlaceholderContent, $oContact, $sUrl, true]),
+			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
+				[$sNoPlaceholderContent, $oContact, $sUrl, true]),
 			'AppendLink true, No Placeholder'
 		);
 		$this->assertSame(
 			$sWithPlaceholderContentReplaced,
-			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey, [$sWithPlaceholderContent, $oContact, $sUrl, true]),
+			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
+				[$sWithPlaceholderContent, $oContact, $sUrl, true]),
 			'AppendLink true, With Placeholder'
 		);
 	}
