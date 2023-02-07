@@ -1880,8 +1880,9 @@ EOF
 		{
 			$sBody = $this->Get('email_body');
 		}
-		$sBody .= '<br/><a href="'.$sQuizzUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
 
+		$sBody = $this->ApplyParamsToContent($sBody, $oContact, $sQuizzUrl, true);
+		
 		if ($sEmailSubject != null)
 		{
 			$sSubject = $sEmailSubject;
@@ -1890,6 +1891,8 @@ EOF
 		{
 			$sSubject = $this->Get('email_subject');
 		}
+		
+		$sSubject = $this->ApplyParamsToContent($sSubject, $oContact, $sQuizzUrl, false);
 		
 		if ($sToken)
 		{
@@ -1922,6 +1925,56 @@ EOF
 				throw new Exception(Dict::S('Survey-email-notsent').': '.implode(', ', $aErrors));
 		}
 	}]]></code>
+        </method>
+        <method id="ApplyParamsToContent">
+          <comment>/**
+            * @param string $sContent
+            * @param Contact $oContact
+            * @param string $sQuizUrl
+            * @param boolean $bAutoAppendLink if true will call {@see AppendLinkToContent}
+            *
+            * @return string Content with placeholders replaced.
+            */</comment>
+          <static>false</static>
+          <access>protected</access>
+          <type>Custom</type>
+          <code><![CDATA[	protected function ApplyParamsToContent($sContent, $oContact, $sQuizUrl, $bAutoAppendLink)
+{
+  $aParams = [];
+  $aParams['recipient->object()'] = $oContact;
+  $aParams['quiz_url'] = $sQuizUrl;
+  $aParams['this->object()'] = $this;
+
+  if ($bAutoAppendLink){
+    $sContent = $this->AppendLinkToContent($sContent, $sQuizUrl);
+  }
+
+  $sContent = MetaModel::ApplyParams($sContent, $aParams);
+
+  return $sContent;
+}
+]]></code>
+        </method>
+        <method id="AppendLinkToContent">
+          <comment>/**
+            * @param string $sContent
+            * @param string $sQuizUrl
+            *
+            * @return string If a placeholder is found in $sContent returns $sContent, otherwise $sContent with a quizz link appended
+            */</comment>
+          <static>true</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public static function AppendLinkToContent($sContent, $sQuizUrl)
+{
+    $quizUrlPatternFound = preg_match('/\$quiz_url\$/', $sContent);
+    if ($quizUrlPatternFound === 1) {
+      return $sContent;
+    }
+
+    return $sContent . '<br/><a href="'.$sQuizUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
+}
+]]></code>
         </method>
         <method id="OnUpdate">
           <comment>/**

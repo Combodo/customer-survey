@@ -1,0 +1,10 @@
+{
+  "name" : "combodo/customer-survey",
+  "description" : "Customer Survey",
+  "license": "AGPL-3.0-only",
+  "autoload-dev": {
+    "psr-4": {
+      "Combodo\\iTop\\CustomerSurvey\\Test": "test/"
+    }
+  }
+}
