@@ -16,7 +16,6 @@
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s</format>
           <attributes>
             <attribute id="name"/>
           </attributes>
@@ -282,7 +281,6 @@
         <db_key_field>id</db_key_field>
         <db_final_class_field>finalclass</db_final_class_field>
         <naming>
-          <format>%1$s - %2$s</format>
           <attributes>
             <attribute id="order"/>
             <attribute id="title"/>
@@ -548,7 +546,6 @@
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s %2$s</format>
           <attributes>
             <attribute id="order"/>
             <attribute id="title"/>
@@ -742,7 +739,6 @@
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s %2$s</format>
           <attributes>
             <attribute id="order"/>
             <attribute id="title"/>
@@ -1041,7 +1037,6 @@ EOF
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s %2$s</format>
           <attributes>
             <attribute id="order"/>
             <attribute id="title"/>
@@ -1221,7 +1216,6 @@ EOF
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s %2$s</format>
           <attributes>
             <attribute id="order"/>
             <attribute id="title"/>
@@ -1419,7 +1413,6 @@ EOF
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s %2$s</format>
           <attributes>
             <attribute id="quizz_id_friendlyname"/>
             <attribute id="date_sent"/>
@@ -3021,10 +3014,10 @@ EOF
       <parent>cmdbAbstractObject</parent>
       <properties>
         <comment>/**
- *
- * SurveyTarget: a target of a survey
- *
- */</comment>
+          *
+          * SurveyTarget: a contact target of a survey
+          *
+          */</comment>
         <is_link>1</is_link>
         <category>bizmodel,searchable,survey</category>
         <abstract>false</abstract>
@@ -3033,9 +3026,9 @@ EOF
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s</format>
           <attributes>
             <attribute id="contact_id_friendlyname"/>
+            <attribute id="survey_id_friendlyname"/>
           </attributes>
         </naming>
         <display_template/>
@@ -3046,6 +3039,17 @@ EOF
             <attribute id="contact_id_friendlyname"/>
           </attributes>
         </reconciliation>
+        <uniqueness_rules>
+          <rule id="no_duplicate">
+            <attributes>
+              <attribute id="survey_id"/>
+              <attribute id="contact_id"/>
+            </attributes>
+            <filter><![CDATA[]]></filter>
+            <disabled>false</disabled>
+            <is_blocking>true</is_blocking>
+          </rule>
+        </uniqueness_rules>
       </properties>
       <fields>
         <field id="survey_id" xsi:type="AttributeExternalKey">
@@ -3117,7 +3121,6 @@ EOF
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s</format>
           <attributes>
             <attribute id="token"/>
           </attributes>
@@ -3268,7 +3271,6 @@ EOF
         <db_key_field>id</db_key_field>
         <db_final_class_field/>
         <naming>
-          <format>%1$s %2$s</format>
           <attributes>
             <attribute id="survey_target_id_friendlyname"/>
             <attribute id="question_id"/>

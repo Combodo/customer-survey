@@ -139,8 +139,9 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:Survey/Attribute:target_phrase_id' => 'Recipients of the Survey',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Define the recipients of the survey based on a query stored in the Phrasebook',
 
-	'Class:SurveyTarget' => 'Target contact',
+	'Class:SurveyTarget' => 'Surveyed contact',
 	'Class:SurveyTarget+' => '',
+    'class:SurveyTarget/Name' => '%1$s / %2$s',
 	'Class:SurveyTarget/Attribute:survey_id' => 'Survey',
 	'Class:SurveyTarget/Attribute:survey_id+' => '',
 	'Class:SurveyTarget/Attribute:contact_id' => 'Contact',
