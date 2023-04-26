@@ -99,19 +99,26 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:QuizzElement/Attribute:mandatory+' => '',
 	'Class:QuizzElement/Attribute:finalclass' => 'Question Type',
 
-	'Class:QuizzValueQuestion' => 'Specific choices',
+	'Class:QuizzValueQuestion' => 'Specific choices question',
 	'Class:QuizzValueQuestion+' => 'Pick one choice among a list of values (specific for this question)',
-	'Class:QuizzScaleQuestion' => 'Predefined choices',
-	'Class:QuizzScaleQuestion+' => 'Pick one choice among a list of values (predefined for the whole quizz)',
-	'Class:QuizzFreeTextQuestion' => 'Free text',
-	'Class:QuizzFreeTextQuestion+' => 'Free text field',
-	'Class:QuizzNewPageElement' => 'Page break',
-	'Class:QuizzNewPageElement+' => 'Start a new page for the quizz',
+    'Class:QuizzValueQuestion/Name' => '%1$s) %2$s',
+    'Class:QuizzValueQuestion/Attribute:choices' => 'Choices (comma separated list)',
 
-	'Class:QuizzValueQuestion/Attribute:choices' => 'Choices (comma separated list)',
+	'Class:QuizzScaleQuestion' => 'Predefined choices question',
+	'Class:QuizzScaleQuestion+' => 'Pick one choice among a list of values (predefined for the whole quizz)',
+    'Class:QuizzScaleQuestion/Name' => '%1$s) %2$s',
+
+	'Class:QuizzFreeTextQuestion' => 'Free question',
+	'Class:QuizzFreeTextQuestion+' => 'Free text field',
+    'Class:QuizzFreeTextQuestion/Name' => '%1$s) %2$s',
+
+	'Class:QuizzNewPageElement' => 'Page break in quizz',
+	'Class:QuizzNewPageElement+' => 'Start a new page for the quizz',
+    'Class:QuizzNewPageElement/Name' => '%1$s) %2$s',
 
 	'Class:Survey' => 'Survey',
 	'Class:Survey+' => '',
+    'class:Survey/Name' => '%1$s / %2$s',
 	'Class:Survey/Attribute:quizz_id' => 'Quizz',
 	'Class:Survey/Attribute:quizz_id+' => '',
 	'Class:Survey/Attribute:status' => 'Status',
@@ -141,12 +148,10 @@ Dict::Add('EN US', 'English', 'English', array(
 
 	'Class:SurveyTarget' => 'Surveyed contact',
 	'Class:SurveyTarget+' => '',
-    'class:SurveyTarget/Name' => '%1$s / %2$s',
 	'Class:SurveyTarget/Attribute:survey_id' => 'Survey',
 	'Class:SurveyTarget/Attribute:survey_id+' => '',
 	'Class:SurveyTarget/Attribute:contact_id' => 'Contact',
 	'Class:SurveyTarget/Attribute:contact_id+' => '',
-
 	'Class:SurveyTargetAnswer' => 'Survey Target Answer',
 	'Class:SurveyTargetAnswer+' => '',
 	'Class:SurveyTargetAnswer/Attribute:contact_id' => 'Recipient',
