@@ -118,7 +118,7 @@ Dict::Add('EN US', 'English', 'English', array(
 
 	'Class:Survey' => 'Survey',
 	'Class:Survey+' => '',
-    'class:Survey/Name' => '%1$s / %2$s',
+    'Class:Survey/Name' => '%1$s / %2$s',
 	'Class:Survey/Attribute:quizz_id' => 'Quizz',
 	'Class:Survey/Attribute:quizz_id+' => '',
 	'Class:Survey/Attribute:status' => 'Status',
