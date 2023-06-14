@@ -20,7 +20,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with iTop. If not, see <http://www.gnu.org/licenses/>
  */
-Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
+
+Dict::Add('PL PL', 'Polish', 'Polski', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Customer Survey~~',
 	'Survey-Title-Draft' => 'iTop Customer Survey (preview mode)~~',
@@ -88,17 +89,17 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 	'Class:QuizzElement/Attribute:mandatory' => 'Mandatory~~',
 	'Class:QuizzElement/Attribute:mandatory+' => '~~',
 	'Class:QuizzElement/Attribute:finalclass' => 'Question Type~~',
-	'Class:QuizzValueQuestion' => 'Specific choices~~',
+	'Class:QuizzValueQuestion' => 'Specific choices question~~',
 	'Class:QuizzValueQuestion+' => 'Pick one choice among a list of values (specific for this question)~~',
 	'Class:QuizzValueQuestion/Name' => '%1$s) %2$s~~',
 	'Class:QuizzValueQuestion/Attribute:choices' => 'Choices (comma separated list)~~',
-	'Class:QuizzScaleQuestion' => 'Predefined choices~~',
+	'Class:QuizzScaleQuestion' => 'Predefined choices question~~',
 	'Class:QuizzScaleQuestion+' => 'Pick one choice among a list of values (predefined for the whole quizz)~~',
 	'Class:QuizzScaleQuestion/Name' => '%1$s) %2$s~~',
-	'Class:QuizzFreeTextQuestion' => 'Free text~~',
+	'Class:QuizzFreeTextQuestion' => 'Free question~~',
 	'Class:QuizzFreeTextQuestion+' => 'Free text field~~',
 	'Class:QuizzFreeTextQuestion/Name' => '%1$s) %2$s~~',
-	'Class:QuizzNewPageElement' => 'Page break~~',
+	'Class:QuizzNewPageElement' => 'Page break in quizz~~',
 	'Class:QuizzNewPageElement+' => 'Start a new page for the quizz~~',
 	'Class:QuizzNewPageElement/Name' => '%1$s) %2$s~~',
 	'Class:Survey' => 'Survey~~',
@@ -130,7 +131,7 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 	'Class:Survey/Attribute:email_on_completion?' => 'Send an email to the emitter of the survey when someone completes the survey.~~',
 	'Class:Survey/Attribute:target_phrase_id' => 'Recipients of the Survey~~',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Define the recipients of the survey based on a query stored in the Phrasebook~~',
-	'Class:SurveyTarget' => 'Target contact~~',
+	'Class:SurveyTarget' => 'Surveyed contact~~',
 	'Class:SurveyTarget+' => '~~',
 	'Class:SurveyTarget/Attribute:survey_id' => 'Survey~~',
 	'Class:SurveyTarget/Attribute:survey_id+' => '~~',
@@ -196,7 +197,7 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 // Class: SurveyAnswer
 //
 
-Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
+Dict::Add('PL PL', 'Polish', 'Polski', array(
 	'Class:SurveyAnswer' => 'SurveyAnswer~~',
 	'Class:SurveyAnswer+' => '~~',
 	'Class:SurveyAnswer/Attribute:survey_target_id' => 'Survey target id~~',
@@ -229,7 +230,7 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 // Class: Quizz
 //
 
-Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
+Dict::Add('PL PL', 'Polish', 'Polski', array(
 	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)' => 'Brazilian (Brazilian)~~',
 	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)' => 'Hungarian (Magyar)~~',
@@ -264,7 +265,7 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 // Class: QuizzElement
 //
 
-Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
+Dict::Add('PL PL', 'Polish', 'Polski', array(
 	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'Yes~~',
 	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => '~~',
 	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'No~~',
@@ -275,7 +276,7 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 // Class: QuizzScaleQuestion
 //
 
-Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
+Dict::Add('PL PL', 'Polish', 'Polski', array(
 	'Class:QuizzScaleQuestion/Attribute:scale_values' => 'Scale values~~',
 	'Class:QuizzScaleQuestion/Attribute:scale_values+' => '~~',
 ));
@@ -284,7 +285,7 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 // Class: Survey
 //
 
-Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
+Dict::Add('PL PL', 'Polish', 'Polski', array(
 	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'Yes~~',
 	'Class:Survey/Attribute:email_on_completion/Value:yes+' => '~~',
 	'Class:Survey/Attribute:email_on_completion/Value:no' => 'No~~',
@@ -301,7 +302,7 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 // Class: SurveyTarget
 //
 
-Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
+Dict::Add('PL PL', 'Polish', 'Polski', array(
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall+' => '~~',
 	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',
@@ -312,7 +313,7 @@ Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
 // Class: SurveyTargetAnswer
 //
 
-Dict::Add('HU HU', 'Hungarian', 'Magyar', array(
+Dict::Add('PL PL', 'Polish', 'Polski', array(
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall~~',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall+' => '~~',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag~~',

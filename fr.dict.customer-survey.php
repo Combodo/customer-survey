@@ -13,32 +13,26 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Enquête client',
 	'Survey-Title-Draft' => 'iTop Enquête client (mode Prévisualisation)',
-
 	'Menu:CustomerSurvey' => 'Enquêtes de satisfaction des clients',
 	'Menu:Quizzes' => 'Questionnaires',
 	'Menu:Quizzes+' => 'Questionnaires',
 	'Menu:Surveys' => 'Enquêtes',
 	'Menu:Surveys+' => 'Enquêtes de satisfaction des clients',
-
 	'Survey-quizz-overview' => 'Prévisualisation',
 	'Survey-quizz-shortcuttoquizz' => 'Cliquez sur le lien pour prévisualiser le formulaire',
 	'Survey-quizz-shortcutlabel' => 'questionnaire',
-
 	'Survey-MandatoryQuestion' => 'Cette question est obligatoire',
 	'Survey-missing-answers' => 'Veuillez donner une réponse pour toute question marquée d\'un astérisque',
 	'Survey-tab-progress' => 'Avancement',
 	'Survey-awaited-answers' => 'Réponses en attente',
 	'Survey-progress-status' => 'Réponses, par cible (client)',
 	'Survey-progress-notifications' => 'Notifications envoyées',
-
 	'Survey-With-Selected' => 'Avec les éléments sélectionnés...',
 	'Survey-Resend-Button' => 'Relancer...',
 	'Survey-Resend-Title' => 'Relance',
 	'Survey-Resend-Ok' => 'Relancer!',
 	'Survey-Resend-Cancel' => 'Annuler',
-
 	'Survey-tab-results' => 'Résultats',
-
 	'Survey-notif-linktoquizz' => 'Veuillez suivre ce lien pour répondre au questionnaire',
 	'Survey-form-alreadydone' => 'Vous avez déjà répondu en date du %1$s',
 	'Survey-form-closed' => 'Nous sommes désolés, le sondage est terminé.',
@@ -46,11 +40,9 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Survey-form-submit' => 'Enregistrer vos réponses',
 	'Survey-form-done' => 'Vos réponses ont été enregistrées.',
 	'Survey-form-thankyou' => 'Merci pour votre participation.',
-
 	'Survey-email-preview' => 'Prévisualisation',
 	'Survey-email-notsent' => 'Echec de l\\envoi de l\\email :',
 	'Survey-email-ok' => 'Email envoyé',
-
 	'Class:Quizz' => 'Questionnaire',
 	'Class:Quizz+' => '',
 	'Class:Quizz/Attribute:name' => 'Nom',
@@ -71,7 +63,6 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:Quizz/Attribute:survey_list+' => 'Enquêtes basées sur ce questionnaire',
 	'Class:Quizz/Attribute:question_list' => 'Questions',
 	'Class:Quizz/Attribute:question_list+' => '',
-
 	'Class:QuizzElement' => 'Question',
 	'Class:QuizzElement+' => '',
 	'Class:QuizzElement/Name' => '%1$s - %2$s',
@@ -86,20 +77,22 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:QuizzElement/Attribute:mandatory' => 'Obligatoire',
 	'Class:QuizzElement/Attribute:mandatory+' => '',
 	'Class:QuizzElement/Attribute:finalclass' => 'Type de question',
-
 	'Class:QuizzValueQuestion' => 'Question avec choix spécifiques',
 	'Class:QuizzValueQuestion+' => 'Choix d\'une valeur dans une liste spécifique à cette question',
+	'Class:QuizzValueQuestion/Name' => '%1$s) %2$s',
+	'Class:QuizzValueQuestion/Attribute:choices' => 'Choix possibles (séparés par des virgules)',
 	'Class:QuizzScaleQuestion' => 'Question avec choix prédéfinies',
 	'Class:QuizzScaleQuestion+' => 'Choix d\'une valeur dans la liste des réponses prédéfinies du questionnaire)',
+	'Class:QuizzScaleQuestion/Name' => '%1$s) %2$s',
 	'Class:QuizzFreeTextQuestion' => 'Question libre',
 	'Class:QuizzFreeTextQuestion+' => 'Champ de texte libre',
+	'Class:QuizzFreeTextQuestion/Name' => '%1$s) %2$s',
 	'Class:QuizzNewPageElement' => 'Saut de page dans le questionnaire',
 	'Class:QuizzNewPageElement+' => 'Démarre une nouvelle page pour le questionnaire',
-
-	'Class:QuizzValueQuestion/Attribute:choices' => 'Choix possibles (séparés par des virgules)',
-
+	'Class:QuizzNewPageElement/Name' => '%1$s) %2$s',
 	'Class:Survey' => 'Enquête',
 	'Class:Survey+' => '',
+	'Class:Survey/Name' => '%1$s / %2$s',
 	'Class:Survey/Attribute:quizz_id' => 'Questionnaire',
 	'Class:Survey/Attribute:quizz_id+' => '',
 	'Class:Survey/Attribute:status' => 'Etat',
@@ -126,14 +119,12 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:Survey/Attribute:email_on_completion?' => 'Envoyer un email à l\'auteur de l\'enquête pour chaque réponse au questionnaire',
 	'Class:Survey/Attribute:target_phrase_id' => 'Destinaires',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Définit la liste des destinaires à partir d\'une entrée du livre des requêtes',
-
 	'Class:SurveyTarget' => 'Destinaire d\'enquête',
 	'Class:SurveyTarget+' => '',
 	'Class:SurveyTarget/Attribute:survey_id' => 'Enquête',
 	'Class:SurveyTarget/Attribute:survey_id+' => '',
 	'Class:SurveyTarget/Attribute:contact_id' => 'Contact',
 	'Class:SurveyTarget/Attribute:contact_id+' => '',
-
 	'Class:SurveyTargetAnswer' => 'Réponse d\'un destinataire',
 	'Class:SurveyTargetAnswer+' => '',
 	'Class:SurveyTargetAnswer/Attribute:contact_id' => 'Destinataire',
@@ -148,14 +139,12 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:SurveyTargetAnswer/Attribute:token' => 'Jeton d\'anonymisation',
 	'Class:SurveyTargetAnswer/Attribute:survey_id' => 'Enquête',
 	'Class:SurveyTargetAnswer/Attribute:last_question_id' => 'Dernière réponse soumise',
-
 	'Class:SurveyNotification' => 'Email de participation à une enquête',
 	'Class:SurveyNotification+' => 'Email de participation à une enquête',
 	'Class:SurveyNotification/Attribute:survey_id' => 'Enquête',
 	'Class:SurveyNotification/Attribute:survey_id+' => '',
 	'Class:SurveyNotification/Attribute:contact_id' => 'Destinataire',
 	'Class:SurveyNotification/Attribute:contact_id+' => '',
-
 	'Survey-results-fitlering' => 'Filtrage',
 	'Survey-results-filter-organization' => 'Organisations',
 	'Survey-results-filter-contact' => 'Contacts',
@@ -170,7 +159,6 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Survey-results-completion_X_out_of_Y_Percent' => '%1$d personne(s) sur %2$d ont répondu (Taux de réponse: %3$s %%)',
 	'Survey-query-results-export' => 'Export',
 	'Survey-results-print' => 'Version imprimable',
-
 	'Survey-Title-Page_X_of_Y' => '%1$s, page %2$d sur %3$d',
 	'Survey-Preview Mode' => 'Mode aperçu',
 	'Survey-FinishButton' => 'Terminer',
@@ -188,7 +176,6 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Survey-suspend-confirmation-title' => 'Réponses enregistrées...',
 	'Survey-suspend-confirmation-message_hyperlink' => '<p>Vos réponses ont été enregistrées mais vous n\'avez pas terminé de répondre à cette enquête. Vous pouvez revenir à cette enquête à tout moment en suivant le lien ci-dessous:</p><p>%1$s</p>',
 	'Survey-exit-confirmation-message' => 'Etes-vous sûr(e) de vouloir quitter cette page ? (Vos réponses ne seront PAS enregistrées)',
-
 	'Survey-quizz-frame-definition' => 'Définition du questionnaire',
 	'Survey-quizz-frame-description' => 'En-tête du formulaire',
 	'Survey-quizz-last-page' => 'Dernière page',
@@ -200,7 +187,7 @@ Dict::Add('FR FR', 'French', 'Français', array(
 
 Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:SurveyAnswer' => 'SurveyAnswer~~',
-	'Class:SurveyAnswer+' => '~~',
+	'Class:SurveyAnswer+' => '',
 	'Class:SurveyAnswer/Attribute:survey_target_id' => 'Survey target id~~',
 	'Class:SurveyAnswer/Attribute:survey_target_id+' => '~~',
 	'Class:SurveyAnswer/Attribute:question_id' => 'Question id~~',

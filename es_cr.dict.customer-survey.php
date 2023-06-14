@@ -13,32 +13,26 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'Encuesta a Cliente',
 	'Survey-Title-Draft' => 'Encuesta a Cliente (vista preliminar)',
-
 	'Menu:CustomerSurvey' => 'Encuestas  a Cliente',
 	'Menu:Quizzes' => 'Evaluaciones',
 	'Menu:Quizzes+' => 'Evaluaciones',
 	'Menu:Surveys' => 'Encuestas',
 	'Menu:Surveys+' => 'Encuestas',
-
 	'Survey-quizz-overview' => 'Vista preliminar',
 	'Survey-quizz-shortcuttoquizz' => 'Click aquí para vista preliminar de Evaluación',
 	'Survey-quizz-shortcutlabel' => 'Evaluación',
-
 	'Survey-MandatoryQuestion' => 'Esta pregunta es obligatoria',
 	'Survey-missing-answers' => 'Por favor, dr una respuesta a tods las preguntas marcadas con un asterisco.',
 	'Survey-tab-progress' => 'Progreso',
 	'Survey-awaited-answers' => 'Respuestas en espera',
 	'Survey-progress-status' => 'Estatus de Progreso',
 	'Survey-progress-notifications' => 'Notificaciones enviadas hasta el momento',
-
 	'Survey-With-Selected' => 'Seleccionadas...',
 	'Survey-Resend-Button' => 'Enviar nuevamente...',
 	'Survey-Resend-Title' => 'Enviar encuesta nuevamente',
 	'Survey-Resend-Ok' => 'Enviar',
 	'Survey-Resend-Cancel' => 'Cancelar',
-
 	'Survey-tab-results' => 'Resultados',
-
 	'Survey-notif-linktoquizz' => 'Click aquí para iniciar Evaluación',
 	'Survey-form-alreadydone' => 'Ya ha contestado (%1$s)',
 	'Survey-form-closed' => 'Lo siento, la encuesta ha sido cerrada',
@@ -46,11 +40,9 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Survey-form-submit' => 'Registre sus respuestas',
 	'Survey-form-done' => 'Sus respuestas han sido registradas.',
 	'Survey-form-thankyou' => 'Gracias por su participación.',
-
 	'Survey-email-preview' => 'Vista Preliminar',
 	'Survey-email-notsent' => 'Falló en envio de correo:',
 	'Survey-email-ok' => 'Mensaje enviado',
-
 	'Class:Quizz' => 'Evaluación',
 	'Class:Quizz+' => '',
 	'Class:Quizz/Attribute:name' => 'Nombre',
@@ -71,7 +63,6 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:Quizz/Attribute:survey_list+' => 'Encuesta basada en esta evaluación',
 	'Class:Quizz/Attribute:question_list' => 'Preguntas',
 	'Class:Quizz/Attribute:question_list+' => '',
-
 	'Class:QuizzElement' => 'Elemento de Evaluación',
 	'Class:QuizzElement+' => '',
 	'Class:QuizzElement/Name' => '%1$s - %2$s',
@@ -86,20 +77,22 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:QuizzElement/Attribute:mandatory' => 'Obligatorio',
 	'Class:QuizzElement/Attribute:mandatory+' => '',
 	'Class:QuizzElement/Attribute:finalclass' => 'Tipo de Pregunta',
-
 	'Class:QuizzValueQuestion' => 'Opciones Específicas',
 	'Class:QuizzValueQuestion+' => 'Seleccione una opcion de la lista de valores (específicos para esta pregunta)',
+	'Class:QuizzValueQuestion/Name' => '%1$s) %2$s~~',
+	'Class:QuizzValueQuestion/Attribute:choices' => 'Opciones (lista separada por comas)',
 	'Class:QuizzScaleQuestion' => 'Opciones Predefinidas',
 	'Class:QuizzScaleQuestion+' => 'Seleccione una opcion de la lista de valores (predefinidos para toda la Evaluación)',
+	'Class:QuizzScaleQuestion/Name' => '%1$s) %2$s~~',
 	'Class:QuizzFreeTextQuestion' => 'Texto Libre',
 	'Class:QuizzFreeTextQuestion+' => 'Campo de texto libre',
+	'Class:QuizzFreeTextQuestion/Name' => '%1$s) %2$s~~',
 	'Class:QuizzNewPageElement' => 'Salto de Página',
 	'Class:QuizzNewPageElement+' => 'Iniciar una nueve página para esta Evaluación',
-
-	'Class:QuizzValueQuestion/Attribute:choices' => 'Opciones (lista separada por comas)',
-
+	'Class:QuizzNewPageElement/Name' => '%1$s) %2$s~~',
 	'Class:Survey' => 'Encuesta',
 	'Class:Survey+' => '',
+	'Class:Survey/Name' => '%1$s / %2$s~~',
 	'Class:Survey/Attribute:quizz_id' => 'Evaluación',
 	'Class:Survey/Attribute:quizz_id+' => '',
 	'Class:Survey/Attribute:status' => 'Estatus',
@@ -126,14 +119,12 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:Survey/Attribute:email_on_completion?' => 'Enviar correo al encuestador cuando alguien complete la encuesta.',
 	'Class:Survey/Attribute:target_phrase_id' => 'Destinatarios de la Encuestra',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Defina los destinatarios de la encuesta basado en consulta almacenada en Libreta de Consultas',
-
 	'Class:SurveyTarget' => 'Contacto Destino',
 	'Class:SurveyTarget+' => '',
 	'Class:SurveyTarget/Attribute:survey_id' => 'Encuesta',
 	'Class:SurveyTarget/Attribute:survey_id+' => '',
 	'Class:SurveyTarget/Attribute:contact_id' => 'Contacto',
 	'Class:SurveyTarget/Attribute:contact_id+' => '',
-
 	'Class:SurveyTargetAnswer' => 'Respuesta de Encuesta',
 	'Class:SurveyTargetAnswer+' => '',
 	'Class:SurveyTargetAnswer/Attribute:contact_id' => 'Destinatario',
@@ -148,14 +139,12 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:SurveyTargetAnswer/Attribute:token' => 'Token Anónimo',
 	'Class:SurveyTargetAnswer/Attribute:survey_id' => 'Encuesta',
 	'Class:SurveyTargetAnswer/Attribute:last_question_id' => 'Última pregunta respondida',
-
 	'Class:SurveyNotification' => 'Correo de Encuesta',
 	'Class:SurveyNotification+' => 'Correo de Encuesta',
 	'Class:SurveyNotification/Attribute:survey_id' => 'Encuesta',
 	'Class:SurveyNotification/Attribute:survey_id+' => '',
 	'Class:SurveyNotification/Attribute:contact_id' => 'Destinatario',
 	'Class:SurveyNotification/Attribute:contact_id+' => '',
-
 	'Survey-results-fitlering' => 'Filtrado',
 	'Survey-results-filter-organization' => 'Organizaciones',
 	'Survey-results-filter-contact' => 'Contactos',
@@ -170,7 +159,6 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Survey-results-completion_X_out_of_Y_Percent' => '%1$d personas de %2$d respondieron (%3$s %% completado)',
 	'Survey-query-results-export' => 'Exportar',
 	'Survey-results-print' => 'Versión Imprimible',
-
 	'Survey-Title-Page_X_of_Y' => '%1$s, página %2$d de %3$d',
 	'Survey-Preview Mode' => 'Modo Vista Preliminar',
 	'Survey-FinishButton' => 'Finalizar',
@@ -188,7 +176,6 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Survey-suspend-confirmation-title' => 'Respuestas guardadas...',
 	'Survey-suspend-confirmation-message_hyperlink' => '<p>Sus respuestas han sido guardadas, pero la encuesta no está completa. Puede cerrar la ventana y regresar después y terminar la encuesta usando esta liga:</p><p>%1$s</p>',
 	'Survey-exit-confirmation-message' => 'Está seguro de querer abandonoar está página? (Sus respuestas NO serán guardadas)',
-
 	'Survey-quizz-frame-definition' => 'Definición de Encuesta',
 	'Survey-quizz-frame-description' => 'Primer Página',
 	'Survey-quizz-last-page' => 'Página de Cierre',
@@ -248,6 +235,8 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:Quizz/Attribute:language/Value:Russian (Русский)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellano)' => 'Spanish (Español, Castellano)~~',
 	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellano)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)' => 'Spanish (Español, Castellaño)~~',
+	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:French (Français)' => 'French (Français)~~',
 	'Class:Quizz/Attribute:language/Value:French (Français)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:Japanese (日本語)' => 'Japanese (日本語)~~',

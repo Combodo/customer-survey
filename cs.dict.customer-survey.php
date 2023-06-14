@@ -24,32 +24,26 @@ Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Customer Survey~~',
 	'Survey-Title-Draft' => 'iTop Customer Survey (preview mode)~~',
-
 	'Menu:CustomerSurvey' => 'Customer surveys~~',
 	'Menu:Quizzes' => 'Quizzes~~',
 	'Menu:Quizzes+' => 'Quizzes~~',
 	'Menu:Surveys' => 'Surveys~~',
 	'Menu:Surveys+' => 'Surveys~~',
-
 	'Survey-quizz-overview' => 'Preview~~',
 	'Survey-quizz-shortcuttoquizz' => 'Click here to preview the Quizz~~',
 	'Survey-quizz-shortcutlabel' => 'quizz~~',
-
 	'Survey-MandatoryQuestion' => 'This question is mandatory~~',
 	'Survey-missing-answers' => 'Please, give an answer to all of the questions marked with an asterisk.~~',
 	'Survey-tab-progress' => 'Progress~~',
 	'Survey-awaited-answers' => 'Answers still awaited~~',
 	'Survey-progress-status' => 'Progress by target~~',
 	'Survey-progress-notifications' => 'Notifications sent so far~~',
-
 	'Survey-With-Selected' => 'With selected...~~',
 	'Survey-Resend-Button' => 'Send again...~~',
 	'Survey-Resend-Title' => 'Send the survey again~~',
 	'Survey-Resend-Ok' => 'Send!~~',
 	'Survey-Resend-Cancel' => 'Cancel~~',
-
 	'Survey-tab-results' => 'Results~~',
-
 	'Survey-notif-linktoquizz' => 'Click here to start the Quizz~~',
 	'Survey-form-alreadydone' => 'You have already answered (%1$s)~~',
 	'Survey-form-closed' => 'Sorry, the survey has been closed~~',
@@ -57,11 +51,9 @@ Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	'Survey-form-submit' => 'Record your answers~~',
 	'Survey-form-done' => 'Your answers have been recorded.~~',
 	'Survey-form-thankyou' => 'Thank you for your participation.~~',
-
 	'Survey-email-preview' => 'Preview~~',
 	'Survey-email-notsent' => 'Failed to send the email:~~',
 	'Survey-email-ok' => 'Email sent~~',
-
 	'Class:Quizz' => 'Quizz~~',
 	'Class:Quizz+' => '~~',
 	'Class:Quizz/Attribute:name' => 'Name~~',
@@ -82,7 +74,6 @@ Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	'Class:Quizz/Attribute:survey_list+' => 'Surveys based on this quizz~~',
 	'Class:Quizz/Attribute:question_list' => 'Questions~~',
 	'Class:Quizz/Attribute:question_list+' => '~~',
-
 	'Class:QuizzElement' => 'Quizz element~~',
 	'Class:QuizzElement+' => '~~',
 	'Class:QuizzElement/Name' => '%1$s - %2$s~~',
@@ -97,20 +88,22 @@ Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	'Class:QuizzElement/Attribute:mandatory' => 'Mandatory~~',
 	'Class:QuizzElement/Attribute:mandatory+' => '~~',
 	'Class:QuizzElement/Attribute:finalclass' => 'Question Type~~',
-
 	'Class:QuizzValueQuestion' => 'Specific choices~~',
 	'Class:QuizzValueQuestion+' => 'Pick one choice among a list of values (specific for this question)~~',
+	'Class:QuizzValueQuestion/Name' => '%1$s) %2$s~~',
+	'Class:QuizzValueQuestion/Attribute:choices' => 'Choices (comma separated list)~~',
 	'Class:QuizzScaleQuestion' => 'Predefined choices~~',
 	'Class:QuizzScaleQuestion+' => 'Pick one choice among a list of values (predefined for the whole quizz)~~',
+	'Class:QuizzScaleQuestion/Name' => '%1$s) %2$s~~',
 	'Class:QuizzFreeTextQuestion' => 'Free text~~',
 	'Class:QuizzFreeTextQuestion+' => 'Free text field~~',
+	'Class:QuizzFreeTextQuestion/Name' => '%1$s) %2$s~~',
 	'Class:QuizzNewPageElement' => 'Page break~~',
 	'Class:QuizzNewPageElement+' => 'Start a new page for the quizz~~',
-
-	'Class:QuizzValueQuestion/Attribute:choices' => 'Choices (comma separated list)~~',
-
+	'Class:QuizzNewPageElement/Name' => '%1$s) %2$s~~',
 	'Class:Survey' => 'Survey~~',
 	'Class:Survey+' => '~~',
+	'Class:Survey/Name' => '%1$s / %2$s~~',
 	'Class:Survey/Attribute:quizz_id' => 'Quizz~~',
 	'Class:Survey/Attribute:quizz_id+' => '~~',
 	'Class:Survey/Attribute:status' => 'Status~~',
@@ -137,14 +130,12 @@ Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	'Class:Survey/Attribute:email_on_completion?' => 'Send an email to the emitter of the survey when someone completes the survey.~~',
 	'Class:Survey/Attribute:target_phrase_id' => 'Recipients of the Survey~~',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Define the recipients of the survey based on a query stored in the Phrasebook~~',
-
 	'Class:SurveyTarget' => 'Target contact~~',
 	'Class:SurveyTarget+' => '~~',
 	'Class:SurveyTarget/Attribute:survey_id' => 'Survey~~',
 	'Class:SurveyTarget/Attribute:survey_id+' => '~~',
 	'Class:SurveyTarget/Attribute:contact_id' => 'Contact~~',
 	'Class:SurveyTarget/Attribute:contact_id+' => '~~',
-
 	'Class:SurveyTargetAnswer' => 'Survey Target Answer~~',
 	'Class:SurveyTargetAnswer+' => '~~',
 	'Class:SurveyTargetAnswer/Attribute:contact_id' => 'Recipient~~',
@@ -159,14 +150,12 @@ Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	'Class:SurveyTargetAnswer/Attribute:token' => 'Anonymization Token~~',
 	'Class:SurveyTargetAnswer/Attribute:survey_id' => 'Survey~~',
 	'Class:SurveyTargetAnswer/Attribute:last_question_id' => 'Last question answered~~',
-
 	'Class:SurveyNotification' => 'Survey Email~~',
 	'Class:SurveyNotification+' => 'Survey Email~~',
 	'Class:SurveyNotification/Attribute:survey_id' => 'Survey~~',
 	'Class:SurveyNotification/Attribute:survey_id+' => '~~',
 	'Class:SurveyNotification/Attribute:contact_id' => 'Target contact~~',
 	'Class:SurveyNotification/Attribute:contact_id+' => '~~',
-
 	'Survey-results-fitlering' => 'Filtering~~',
 	'Survey-results-filter-organization' => 'Organizations~~',
 	'Survey-results-filter-contact' => 'Contacts~~',
@@ -181,7 +170,6 @@ Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	'Survey-results-completion_X_out_of_Y_Percent' => '%1$d persons out of %2$d answered (%3$s %% completion)~~',
 	'Survey-query-results-export' => 'Export~~',
 	'Survey-results-print' => 'Printable version~~',
-
 	'Survey-Title-Page_X_of_Y' => '%1$s, page %2$d of %3$d~~',
 	'Survey-Preview Mode' => 'Preview mode~~',
 	'Survey-FinishButton' => 'Finish~~',
@@ -199,7 +187,6 @@ Dict::Add('CS CZ', 'Czech', 'Čeština', array(
 	'Survey-suspend-confirmation-title' => 'Answers saved...~~',
 	'Survey-suspend-confirmation-message_hyperlink' => '<p>Your answers have been saved, but the survey is not complete. You can close your browser and come back later to complete the survey using this link:</p><p>%1$s</p>~~',
 	'Survey-exit-confirmation-message' => 'Are you sure you want to leave the page? (Your answers will NOT be saved)~~',
-
 	'Survey-quizz-frame-definition' => 'Survey Definition~~',
 	'Survey-quizz-frame-description' => 'First Page~~',
 	'Survey-quizz-last-page' => 'Closing Page~~',

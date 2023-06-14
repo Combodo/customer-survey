@@ -14,32 +14,26 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Kundenbefragung',
 	'Survey-Title-Draft' => 'iTop Kundenbefragung (Vorschau)',
-
 	'Menu:CustomerSurvey' => 'Kundenbefragungen',
 	'Menu:Quizzes' => 'Umfragen',
 	'Menu:Quizzes+' => 'Umfragen',
 	'Menu:Surveys' => 'Befragung',
 	'Menu:Surveys+' => 'Befragung',
-
 	'Survey-quizz-overview' => 'Vorschau',
 	'Survey-quizz-shortcuttoquizz' => 'Hier klicken, für eine Vorschau auf die Umfrage.',
 	'Survey-quizz-shortcutlabel' => 'Umfrage',
-
 	'Survey-MandatoryQuestion' => 'Diese Frage muss beantwortet werden',
 	'Survey-missing-answers' => 'Bitte beantworten sie alle Fragen, die mit einem Sternchen markiert sind.',
 	'Survey-tab-progress' => 'Fortschritt',
 	'Survey-awaited-answers' => 'Antworten werden erwartet',
 	'Survey-progress-status' => 'Fortschritt je Ziel',
 	'Survey-progress-notifications' => 'Bisher versandte Benachrichtigungen',
-
 	'Survey-With-Selected' => 'Mit ausgewählten ...',
 	'Survey-Resend-Button' => 'Nochmal senden ...',
 	'Survey-Resend-Title' => 'Die Umfrage noch einmal versenden',
 	'Survey-Resend-Ok' => 'Senden!',
 	'Survey-Resend-Cancel' => 'Abbrechen',
-
 	'Survey-tab-results' => 'Ergebnisse',
-
 	'Survey-notif-linktoquizz' => 'Hier klicken um die Umfrage zu starten',
 	'Survey-form-alreadydone' => 'Sie haben (%1$s) bereits beantwortet',
 	'Survey-form-closed' => 'Die Umfrage wurde abgeschlossen',
@@ -47,11 +41,9 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Survey-form-submit' => 'Antworten speichern',
 	'Survey-form-done' => 'Ihre Antworten wurden gespeichert.',
 	'Survey-form-thankyou' => 'Danke für ihre Teilnahme!',
-
 	'Survey-email-preview' => 'Vorschau',
 	'Survey-email-notsent' => 'EMail konnte nicht gesendet werden:',
 	'Survey-email-ok' => 'EMail gesendet',
-
 	'Class:Quizz' => 'Umfrage',
 	'Class:Quizz+' => '',
 	'Class:Quizz/Attribute:name' => 'Name',
@@ -72,7 +64,6 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Class:Quizz/Attribute:survey_list+' => 'Befragungen, die auf dieser Umfrage basieren',
 	'Class:Quizz/Attribute:question_list' => 'Fragen',
 	'Class:Quizz/Attribute:question_list+' => '',
-
 	'Class:QuizzElement' => 'Umfrageelement',
 	'Class:QuizzElement+' => '',
 	'Class:QuizzElement/Name' => '%1$s - %2$s',
@@ -87,20 +78,22 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Class:QuizzElement/Attribute:mandatory' => 'Notwendig',
 	'Class:QuizzElement/Attribute:mandatory+' => '',
 	'Class:QuizzElement/Attribute:finalclass' => 'Typ der Frage',
-
 	'Class:QuizzValueQuestion' => 'Spezifische Auswahl',
 	'Class:QuizzValueQuestion+' => 'Auswahl einer Antwort aus einer Liste von Antworten (spezifisch für diese Frage)',
+	'Class:QuizzValueQuestion/Name' => '%1$s) %2$s~~',
+	'Class:QuizzValueQuestion/Attribute:choices' => 'Auswahlmöglichkeiten (Komma separierte Liste)',
 	'Class:QuizzScaleQuestion' => 'Vordefiniert Auswahl',
 	'Class:QuizzScaleQuestion+' => 'Auswahl einer Antwort auch einer Liste von Werten (vordefiniert für die ganze Umfrage)',
+	'Class:QuizzScaleQuestion/Name' => '%1$s) %2$s~~',
 	'Class:QuizzFreeTextQuestion' => 'Freitext',
 	'Class:QuizzFreeTextQuestion+' => 'Freitextfeld',
+	'Class:QuizzFreeTextQuestion/Name' => '%1$s) %2$s~~',
 	'Class:QuizzNewPageElement' => 'Seitenumbruch',
 	'Class:QuizzNewPageElement+' => 'Startet eine neue Umfrageseite',
-
-	'Class:QuizzValueQuestion/Attribute:choices' => 'Auswahlmöglichkeiten (Komma separierte Liste)',
-
+	'Class:QuizzNewPageElement/Name' => '%1$s) %2$s~~',
 	'Class:Survey' => 'Befragung',
 	'Class:Survey+' => '',
+	'Class:Survey/Name' => '%1$s / %2$s~~',
 	'Class:Survey/Attribute:quizz_id' => 'Umfrage',
 	'Class:Survey/Attribute:quizz_id+' => '',
 	'Class:Survey/Attribute:status' => 'Status',
@@ -127,14 +120,12 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Class:Survey/Attribute:email_on_completion?' => 'EMail an den Herausgeber der Umfrage senden, wenn sie von jemandem abgeschlossen wurde.',
 	'Class:Survey/Attribute:target_phrase_id' => 'Empfänger der Befragung',
 	'Class:Survey/Attribute:target_phrase_id?' => 'Definition der Empfänger der Befragung, basierend auf einer Abfrage die im Phrasebook gespeichert ist.',
-
 	'Class:SurveyTarget' => 'Zielkontakt',
 	'Class:SurveyTarget+' => '',
 	'Class:SurveyTarget/Attribute:survey_id' => 'Befragung',
 	'Class:SurveyTarget/Attribute:survey_id+' => '',
 	'Class:SurveyTarget/Attribute:contact_id' => 'Kontakt',
 	'Class:SurveyTarget/Attribute:contact_id+' => '',
-
 	'Class:SurveyTargetAnswer' => 'Befragungsziel Antwort',
 	'Class:SurveyTargetAnswer+' => '',
 	'Class:SurveyTargetAnswer/Attribute:contact_id' => 'Empfänger',
@@ -149,14 +140,12 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Class:SurveyTargetAnswer/Attribute:token' => 'Anonymisierungs Token',
 	'Class:SurveyTargetAnswer/Attribute:survey_id' => 'Befragung',
 	'Class:SurveyTargetAnswer/Attribute:last_question_id' => 'Letzte beantwortete Frage',
-
 	'Class:SurveyNotification' => 'Befragungs-Email',
 	'Class:SurveyNotification+' => 'Befragungs-Email',
 	'Class:SurveyNotification/Attribute:survey_id' => 'Befragung',
 	'Class:SurveyNotification/Attribute:survey_id+' => '',
 	'Class:SurveyNotification/Attribute:contact_id' => 'Zielkontakt',
 	'Class:SurveyNotification/Attribute:contact_id+' => '',
-
 	'Survey-results-fitlering' => 'Filtern',
 	'Survey-results-filter-organization' => 'Organisationen',
 	'Survey-results-filter-contact' => 'Kontakte',
@@ -171,7 +160,6 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Survey-results-completion_X_out_of_Y_Percent' => '%1$d von %2$d Personen haben geantwortet (%3$s %% abgeschlossen)',
 	'Survey-query-results-export' => 'Export',
 	'Survey-results-print' => 'Druckbare Version',
-
 	'Survey-Title-Page_X_of_Y' => '%1$s, Seite %2$d von %3$d',
 	'Survey-Preview Mode' => 'Vorschau',
 	'Survey-FinishButton' => 'Ende',
@@ -189,7 +177,6 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Survey-suspend-confirmation-title' => 'Antworten gespeichert ...',
 	'Survey-suspend-confirmation-message_hyperlink' => '<p>Ihre Antworten wurden gespeichert aber die Befragung wurde nicht abgeschlossen. Sie können den Browser schliessen und die Befragung unter folgendem Link fortsetzen: </p><p>%1$s</p>',
 	'Survey-exit-confirmation-message' => 'Sind sie sicher, dass sie diese Seite verlassen wollen? (Ihre Antworten werden NICHT gespeichert)',
-
 	'Survey-quizz-frame-definition' => 'Definition der Befragung',
 	'Survey-quizz-frame-description' => 'Erste Seite',
 	'Survey-quizz-last-page' => 'Abschlussseite',
