@@ -248,7 +248,7 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 	'Class:Quizz/Attribute:language/Value:Czech (Čeština)' => 'Czech (Čeština)~~',
 	'Class:Quizz/Attribute:language/Value:Czech (Čeština)+' => '~~',
 	'Class:Quizz/Attribute:language/Value:Italian (Italiano)' => 'Italian (Italiano)~~',
-	'Class:Quizz/Attribute:language/Value:Italian (Italiano)+' => '~~',
+	'Class:Quizz/Attribute:language/Value:Italian (Italiano)+' => '~~'
 ));
 
 //
