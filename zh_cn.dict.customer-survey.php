@@ -276,7 +276,7 @@ Dict::Add('ZH CN', 'Chinese', '简体中文', array(
 //
 
 Dict::Add('ZH CN', 'Chinese', '简体中文', array(
-	'Class:QuizzScaleQuestion/Attribute:scale_values' => '范围值',
+	'Class:QuizzScaleQuestion/Attribute:scale_values' => '定义值',
 	'Class:QuizzScaleQuestion/Attribute:scale_values+' => '~~',
 ));
 
