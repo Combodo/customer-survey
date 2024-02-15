@@ -167,7 +167,7 @@ Dict::Add('ZH CN', 'Chinese', '简体中文', array(
 	'Survey-results-statistics-filtered' => '统计 (已筛选)',
 	'Survey-results-noanswer' => '当前尚无答卷.',
 	'Survey-results-X_NonEmptyValuesOutOf_N' => '总计%2$d中的%1$d个非空答卷',
-	'Survey-results-completion_X_out_of_Y_Percent' => '总计%2$d中的%1$d个人员已答卷 (%3$s %% 完成)~~',
+	'Survey-results-completion_X_out_of_Y_Percent' => '总计%2$d中的%1$d个人员已答卷 (%3$s %% 完成)',
 	'Survey-query-results-export' => '导出',
 	'Survey-results-print' => '打印版本',
 	'Survey-Title-Page_X_of_Y' => '%1$s, 第%2$d页, 共%3$d页',
