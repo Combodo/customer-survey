@@ -33,7 +33,7 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Menu:Surveys+' => 'Surveys',
 
 	'Survey-quizz-overview' => 'Preview',
-	'Survey-quizz-shortcuttoquizz' => 'Click here to preview the Quizz',
+	'Survey-quizz-shortcuttoquizz' => 'Click here to preview the Quiz',
 	'Survey-quizz-shortcutlabel' => 'quizz',
 
 	'Survey-MandatoryQuestion' => 'This question is mandatory',
@@ -51,7 +51,7 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 
 	'Survey-tab-results' => 'Results',
 
-	'Survey-notif-linktoquizz' => 'Click here to start the Quizz',
+	'Survey-notif-linktoquizz' => 'Click here to start the Quiz',
 	'Survey-form-alreadydone' => 'You have already answered (%1$s)',
 	'Survey-form-closed' => 'Sorry, the survey has been closed',
 	'Survey-form-comments' => 'Free comments and suggestions',
@@ -75,12 +75,12 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:Quizz/Attribute:title+' => '',
 	'Class:Quizz/Attribute:introduction' => 'Introduction',
 	'Class:Quizz/Attribute:introduction+' => '',
-	'Class:Quizz/Attribute:scale_values' => 'Default Quizz Choices',
+	'Class:Quizz/Attribute:scale_values' => 'Default Quiz Choices',
 	'Class:Quizz/Attribute:conclusion?' => 'Comma separated list of values',
 	'Class:Quizz/Attribute:conclusion' => 'Conclusion message',
-	'Class:Quizz/Attribute:conclusion+' => 'Message displayed on the last page of the quizz',
+	'Class:Quizz/Attribute:conclusion+' => 'Message displayed on the last page of the quiz',
 	'Class:Quizz/Attribute:survey_list' => 'Surveys',
-	'Class:Quizz/Attribute:survey_list+' => 'Surveys based on this quizz',
+	'Class:Quizz/Attribute:survey_list+' => 'Surveys based on this quiz',
 	'Class:Quizz/Attribute:question_list' => 'Questions',
 	'Class:Quizz/Attribute:question_list+' => '',
 
@@ -105,15 +105,15 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:QuizzValueQuestion/Attribute:choices' => 'Choices (comma separated list)',
 
 	'Class:QuizzScaleQuestion' => 'Predefined choices question',
-	'Class:QuizzScaleQuestion+' => 'Pick one choice among a list of values (predefined for the whole quizz)',
+	'Class:QuizzScaleQuestion+' => 'Pick one choice among a list of values (predefined for the whole quiz)',
 	'Class:QuizzScaleQuestion/Name' => '%1$s) %2$s',
 
 	'Class:QuizzFreeTextQuestion' => 'Free question',
 	'Class:QuizzFreeTextQuestion+' => 'Free text field',
 	'Class:QuizzFreeTextQuestion/Name' => '%1$s) %2$s',
 
-	'Class:QuizzNewPageElement' => 'Page break in quizz',
-	'Class:QuizzNewPageElement+' => 'Start a new page for the quizz',
+	'Class:QuizzNewPageElement' => 'Page break in quiz',
+	'Class:QuizzNewPageElement+' => 'Start a new page for the quiz',
 	'Class:QuizzNewPageElement/Name' => '%1$s) %2$s',
 
 	'Class:Survey' => 'Survey',
@@ -156,14 +156,14 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:SurveyTargetAnswer+' => '',
 	'Class:SurveyTargetAnswer/Attribute:contact_id' => 'Recipient',
 	'Class:SurveyTargetAnswer/Attribute:contact_name' => 'Recipient',
-	'Class:SurveyTargetAnswer/Attribute:org_id' => 'Recipient Organization',
-	'Class:SurveyTargetAnswer/Attribute:org_name' => 'Recipient Organization',
+	'Class:SurveyTargetAnswer/Attribute:org_id' => 'Recipient Organisation',
+	'Class:SurveyTargetAnswer/Attribute:org_name' => 'Recipient Organisation',
 	'Class:SurveyTargetAnswer/Attribute:nb_notifications_sent' => 'Number of notifications',
 	'Class:SurveyTargetAnswer/Attribute:status' => 'Status',
 	'Class:SurveyTargetAnswer/Attribute:status/Value:ongoing' => 'On going',
 	'Class:SurveyTargetAnswer/Attribute:status/Value:finished' => 'Finished',
 	'Class:SurveyTargetAnswer/Attribute:date_response' => 'Answer date',
-	'Class:SurveyTargetAnswer/Attribute:token' => 'Anonymization Token',
+	'Class:SurveyTargetAnswer/Attribute:token' => 'Anonymisation Token',
 	'Class:SurveyTargetAnswer/Attribute:survey_id' => 'Survey',
 	'Class:SurveyTargetAnswer/Attribute:last_question_id' => 'Last question answered',
 
@@ -175,7 +175,7 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:SurveyNotification/Attribute:contact_id+' => '',
 
 	'Survey-results-fitlering' => 'Filtering',
-	'Survey-results-filter-organization' => 'Organizations',
+	'Survey-results-filter-organization' => 'Organisations',
 	'Survey-results-filter-contact' => 'Contacts',
 	'Survey-results-apply-filter' => 'Apply Filter',
 	'Survey-query-results' => 'Export Raw Answers',
@@ -264,7 +264,7 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:Quizz/Attribute:language/Value:German (Deutsch)+' => '',
 	'Class:Quizz/Attribute:language/Value:Russian (Русский)' => 'Russian (Русский)',
 	'Class:Quizz/Attribute:language/Value:Russian (Русский)+' => '',
-	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)' => 'Spanish (Español, Castellaño)',
+	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)' => 'Spanish (Español, Castellano)',
 	'Class:Quizz/Attribute:language/Value:Spanish (Español, Castellaño)+' => '',
 	'Class:Quizz/Attribute:language/Value:French (Français)' => 'French (Français)',
 	'Class:Quizz/Attribute:language/Value:French (Français)+' => '',
