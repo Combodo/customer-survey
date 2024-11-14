@@ -1969,7 +1969,7 @@ EOF
           <type>Custom</type>
           <code><![CDATA[	public static function AppendLinkToContent($sContent, $sQuizUrl)
 {
-    $quizUrlPatternFound = preg_match('/\$quiz_url\$/', $sContent);
+    $quizUrlPatternFound = preg_match('/(%24|\$)quiz_url(%24|\$)/', $sContent);
     if ($quizUrlPatternFound === 1) {
       return $sContent;
     }
