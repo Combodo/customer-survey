@@ -2132,12 +2132,13 @@ EOF
 			$iSurveyId = $this->GetKey();
 			$sAjaxUrl = addslashes(utils::GetAbsoluteUrlModulesRoot().'customer-survey/ajax.survey.php');
       Combodo\iTop\Application\Helper\WebResourcesHelper::EnableCKEditorToWebPage($oPage);
+      $aCKEditorConfiguration = \Combodo\iTop\Application\Helper\CKEditorHelper::GetCkeditorConfiguration(false, '');
+			$sConfigJS = json_encode($aCKEditorConfiguration);
 			$oPage->add_ready_script(
 <<<EOF
 function SurveyRunDialogSendAgain()
 {
   $('#$sDialogId').removeClass("ibo-is-hidden");
-	$('#$sDialogId textarea').ckeditor();
 	$('#$sDialogId input[type=text]').attr('size', 50);
 	$('#$sDialogId').dialog({
 		height: 'auto',
@@ -2191,6 +2192,7 @@ function SurveyRunDialogSendAgain()
 		],
 	});
 }
+CombodoCKEditorHandler.CreateInstance('#$sDialogId textarea', $sConfigJS);
 $('#survey_send_again').prop('disabled', true);
 
 $('#$sBlockId').on('change', '.selectListdatatable_$sBlockId', function (){
