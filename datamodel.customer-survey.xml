@@ -154,33 +154,6 @@
 		return $sUrl;
 	}]]></code>
         </method>
-        <method id="ChangeDictionnaryLanguage">
-          <comment>/**
-	 * Change the current language to the language of the quizz
-	 * @return void
-	 */</comment>
-          <static>false</static>
-          <access>public</access>
-          <type>Overload-cmdbAbstractObject</type>
-          <code><![CDATA[	public function ChangeDictionnaryLanguage()
-	{
-		$this->m_sApplicationLanguage = Dict::GetUserLanguage();
-		Dict::SetUserLanguage($this->Get('language'));
-	}]]></code>
-        </method>
-        <method id="RestoreDictionnaryLanguage">
-          <comment>/**
-	 * Restore the current language the value it had when calling ChangeDictionnaryLanguage
-	 * @return void
-	 */</comment>
-          <static>false</static>
-          <access>public</access>
-          <type>Overload-cmdbAbstractObject</type>
-          <code><![CDATA[	public function RestoreDictionnaryLanguage()
-	{
-		Dict::SetUserLanguage($this->m_sApplicationLanguage);
-	}]]></code>
-        </method>
       </methods>
       <presentation>
         <details>
@@ -1842,17 +1815,18 @@ EOF
           <code><![CDATA[	protected function SendQuizzToContactLocalized($oContact, $sToken = null, $sEmailSubject = null, $sEmailBody = null)
 	{
 		$oQuizz = MetaModel::GetObject('Quizz', $this->Get('quizz_id'), true, true /*allow all data*/);
-		$oQuizz->ChangeDictionnaryLanguage();		
+		$sApplicationLanguage = Dict::GetUserLanguage();
+		Dict::SetUserLanguage($this->Get('language'));
 		try
 		{
 			$this->SendQuizzToContact($oQuizz, $oContact, $sToken, $sEmailSubject, $sEmailBody);
 		}
 		catch(Exception $e)
 		{
-			$oQuizz->RestoreDictionnaryLanguage();
+			Dict::SetUserLanguage($sApplicationLanguage);
 			throw $e;		
 		}
-		$oQuizz->RestoreDictionnaryLanguage();
+		Dict::SetUserLanguage($sApplicationLanguage);
 	}]]></code>
         </method>
         <method id="SendQuizzToContact">
