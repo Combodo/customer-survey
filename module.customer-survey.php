@@ -15,7 +15,7 @@ SetupWebPage::AddModule(
 		// Setup
 		//
 		'dependencies' => array(
-			'itop-config-mgmt/3.2.0',
+			'itop-request-mgmt/3.2.0 || itop-structure/3.2.0',
 		),
 		'mandatory' => false,
 		'visible' => true,
