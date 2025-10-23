@@ -11,6 +11,7 @@ namespace Combodo\iTop\CustomerSurvey\Test;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
 use Survey;
+use UserRights;
 
 /**
  * @runTestsInSeparateProcesses
@@ -73,6 +74,35 @@ class SurveyTest extends ItopDataTestCase
 			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
 				[$sWithPlaceholderContent, $oContact, $sUrl, true]),
 			'AppendLink true, With Placeholder'
+		);
+	}
+
+	public function testSendPreview()
+	{
+		$sUID = uniqid();
+		$sLogin = "login-survey-".$sUID;
+		$oUser = $this->CreateUser($sLogin, self::$aURP_Profiles['Administrator'], 'ABCD1234@gabuzomeu');
+		$oOnBehalfContact = $this->CreatePerson($sUID, $this->CreateOrganization($sUID)->GetKey());
+
+		$oQuizz = $this->createObject("Quizz",
+			[
+				'title' => "quizz-$sUID",
+				'name' => "quizz-$sUID",
+			]);
+		$oSurvey = $this->createObject("Survey",
+			[
+				'email_subject' => 'TEST',
+				'on_behalf_of' => $oOnBehalfContact->GetKey(),
+				'email_body' => '<p>TEST</p>',
+				'quizz_id' => $oQuizz->GetKey(),
+			]);
+
+
+		$_SESSION = array();
+		UserRights::Login($sLogin);
+
+		$this->assertTrue($this->InvokeNonPublicMethod(Survey::class, "SendPreview", $oSurvey, []),
+			'stimulus should be ok'
 		);
 	}
 }

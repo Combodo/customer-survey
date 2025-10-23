@@ -1678,9 +1678,10 @@ EOF
 						$this->SendQuizzToContactLocalized($oCurrentContact);
 						$bRes = true;
 					}
-					catch (Exception $e)
+					catch (\Exception $e)
 					{
 						// $bRes remains false
+		        \IssueLog::Error('Stimulus calling SendPreview', null, [ 'e' => $e->getMessage(), 'stack' => $e->getTraceAsString() ]);
 					}
 				}
 			}
