@@ -44,58 +44,61 @@ try
 	switch($sOperation)
 	{
 		case 'send_again':
-		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
-		$aTargets =array();
-		$sSubject = utils::ReadParam('email_subject','', false, 'raw_data');
-		$sBody = utils::ReadParam('email_body', '', false, 'raw_data');
-		$sFilter = utils::ReadParam('filter', '', false, 'raw_data');
-		$oFullSetFilter = DBObjectSearch::unserialize($sFilter);
-		$aTargets = utils::ReadMultipleSelection($oFullSetFilter);
-		if (!is_array($aTargets))
-		{
-			$aTargets = array();
-		}
-		if (count($aTargets) > 0)
-		{
-			$sOQL = 'SELECT SurveyTargetAnswer AS T WHERE T.id IN('.implode(',', $aTargets).') AND T.survey_id = '.$oSurvey->GetKey();
-			$oSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL));
-			while($oSTA = $oSet->Fetch())
+			/** @var \Survey $oSurvey */
+			$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
+			$aTargets =array();
+			$sSubject = utils::ReadParam('email_subject','', false, 'raw_data');
+			$sBody = utils::ReadParam('email_body', '', false, 'raw_data');
+			$sFilter = utils::ReadParam('filter', '', false, 'raw_data');
+			$oFullSetFilter = DBObjectSearch::unserialize($sFilter);
+			$aTargets = utils::ReadMultipleSelection($oFullSetFilter);
+			if (!is_array($aTargets))
 			{
-				$oSurvey->SendAgainQuizzToTargetContact($oSTA, $sSubject, $sBody);
+				$aTargets = array();
 			}
-		}
-		// update the list of notifications sent
-		//$oSurvey->DisplayNotifications($oPage);
-		$oPage->add_ready_script('window.location.reload();'); // brute force reload of the whole page...
-		break;
+			if (count($aTargets) > 0)
+			{
+				$sOQL = 'SELECT SurveyTargetAnswer AS T WHERE T.id IN('.implode(',', $aTargets).') AND T.survey_id = '.$oSurvey->GetKey();
+				$oSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL));
+				while($oSTA = $oSet->Fetch())
+				{
+					$oSurvey->SendAgainQuizzToTargetContact($oSTA, $sSubject, $sBody);
+				}
+			}
+			// update the list of notifications sent
+			//$oSurvey->DisplayNotifications($oPage);
+			$oPage->add_ready_script('window.location.reload();'); // brute force reload of the whole page...
+			break;
 		
 		case 'filter_stats':
-		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
-			
-		$aOrgIds = utils::ReadParam('org_id', array());
-		if (!is_array($aOrgIds))
-		{
-			$aOrgIds = array();
-		}
-		$aContactIds = utils::ReadParam('contact_id', array());
-		if (!is_array($aContactIds))
-		{
-			$aContactIds = array();
-		}
-		$oSurvey->DisplayStatisticsAndExport($oPage, false /* bPrintable */, $aOrgIds, $aContactIds);
-		break;
+			/** @var \Survey $oSurvey */
+			$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
+
+			$aOrgIds = utils::ReadParam('org_id', array());
+			if (!is_array($aOrgIds))
+			{
+				$aOrgIds = array();
+			}
+			$aContactIds = utils::ReadParam('contact_id', array());
+			if (!is_array($aContactIds))
+			{
+				$aContactIds = array();
+			}
+			$oSurvey->DisplayStatisticsAndExport($oPage, false /* bPrintable */, $aOrgIds, $aContactIds);
+			break;
 		
 		case 'refresh_contacts_filter':
-		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
-			
-		$aOrgIds = utils::ReadParam('org_id', array());
-		if (!is_array($aOrgIds))
-		{
-			$aOrgIds = array();
-		}
-		$oPage->add($oSurvey->GetContactsFilterLegacy($aOrgIds));
-		$oPage->add_ready_script("$('#filter_stats_contact_id').multiselect({header: false, noneSelectedText: '".addslashes(Dict::S('UI:SearchValue:Any'))."', selectedList: 1, selectedText:'".addslashes(Dict::S('UI:SearchValue:NbSelected'))."'});");
-		break;
+			/** @var \Survey $oSurvey */
+			$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
+
+			$aOrgIds = utils::ReadParam('org_id', array());
+			if (!is_array($aOrgIds))
+			{
+				$aOrgIds = array();
+			}
+			$oPage->add($oSurvey->GetContactsFilterLegacy($aOrgIds));
+			$oPage->add_ready_script("$('#filter_stats_contact_id').multiselect({header: false, noneSelectedText: '".addslashes(Dict::S('UI:SearchValue:Any'))."', selectedList: 1, selectedText:'".addslashes(Dict::S('UI:SearchValue:NbSelected'))."'});");
+			break;
 	}
 	
 	$oPage->output();

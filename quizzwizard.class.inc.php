@@ -99,7 +99,7 @@ EOF
 			);
 		}
 
-		$oPage->add_linked_script(utils::GetAbsoluteUrlModulesRoot().'customer-survey/js/quizzwizard.js');
+		$oPage->LinkScriptFromModule('customer-survey/js/quizzwizard.js');
 		$oPage->add_script("function CanMoveForward()\n{\n".$oStep->JSCanMoveForward()."\n}\n");
 		$oPage->add_script("function CanMoveBackward()\n{\n".$oStep->JSCanMoveBackward()."\n}\n");
 		$iQuizz = $this->GetQuizz()->GetKey();
@@ -271,7 +271,7 @@ class QuizzWizStepQuestions extends WizardStep
 	protected $bAnswerCommitted;
 	protected $bSurveyFinished;
 	
-	public function __construct($oWizard, $sCurrentState)
+	public function __construct(WizardController $oWizard, $sCurrentState)
 	{
 		parent::__construct($oWizard, $sCurrentState);
 		

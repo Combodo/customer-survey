@@ -1627,7 +1627,7 @@ EOF
 					IssueLog::Error('customer-survey - send quizz, phrase not defining a set of Contacts: '.$oQuery->GetName().' #'.$oQuery->GetKey());
 				}
 			}
-			catch (OqlException $e)
+			catch (\OqlException $e)
 			{
 				IssueLog::Error('customer-survey - send quizz, OQL error: '.$e->getMessage());
 			}
@@ -2044,6 +2044,8 @@ EOF
 		{
 			$iProgress = 100;
 		}
+
+		/** @var \WebPage $oPage */
 		$oPage->SetCurrentTab(Dict::S('Survey-tab-progress').' ('.$iProgress.' %)');
 		$oTitle = \Combodo\iTop\Application\UI\Base\Component\Title\TitleUIBlockFactory::MakeNeutral(Dict::S('Survey-awaited-answers').': '.$iAwaited, 1);
 	  $oPage->AddSubBlock($oTitle);
@@ -2683,6 +2685,8 @@ EOF
 			$sOQL .= $sOrgIdClause.$sContactIdClause;
 			$oQuestionSearch = DBObjectSearch::FromOQL_AllData($sOQL);
 			$oQuestionSet = new DBObjectSet($oQuestionSearch);
+
+		  /** @var \QuizzElement $oQuestion */
 			while ($oQuestion = $oQuestionSet->Fetch())
 			{
 				$sOQL = "SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_target_id = T.id WHERE T.status = 'finished' AND A.question_id = ".$oQuestion->GetKey().' AND T.survey_id = '.$this->GetKey();
@@ -2803,6 +2807,8 @@ EOF
 			$sOQL .= $sOrgIdClause.$sContactIdClause;
 			$oQuestionSearch = DBObjectSearch::FromOQL_AllData($sOQL);
 			$oQuestionSet = new DBObjectSet($oQuestionSearch);
+
+		  /** @var \QuizzElement $oQuestion */
 			while ($oQuestion = $oQuestionSet->Fetch())
 			{
 

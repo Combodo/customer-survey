@@ -44,19 +44,20 @@ try
 	switch($sOperation)
 	{
 		case 'print_results':
-		$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
-		$aOrgIds = utils::ReadParam('org_id', array());
-		if (!is_array($aOrgIds))
-		{
-			$aOrgIds = array();
-		}
-		$aContactIds = utils::ReadParam('contact_id', array());
-		if (!is_array($aContactIds))
-		{
-			$aContactIds = array();
-		}
-		$oSurvey->DisplayResultsTab($oPage, true, $aOrgIds, $aContactIds); // true => printable
-		break;
+			/** @var \Survey $oSurvey */
+			$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
+			$aOrgIds = utils::ReadParam('org_id', array());
+			if (!is_array($aOrgIds))
+			{
+				$aOrgIds = array();
+			}
+			$aContactIds = utils::ReadParam('contact_id', array());
+			if (!is_array($aContactIds))
+			{
+				$aContactIds = array();
+			}
+			$oSurvey->DisplayResultsTab($oPage, true, $aOrgIds, $aContactIds); // true => printable
+			break;
 	}
 	
 	$oPage->output();

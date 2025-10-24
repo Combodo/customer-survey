@@ -30,6 +30,7 @@ if (count($aContactIds) > 0)
 {
 	$sContactIdClause = " AND T.contact_id IN(".implode(',', $aContactIds).")";
 }
+/** @var \Survey $oSurvey */
 $oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
 if (!$oSurvey->IsAnonymous())
 {
@@ -40,6 +41,8 @@ $sOql = "SELECT SurveyAnswer AS A JOIN SurveyTargetAnswer AS T ON A.survey_targe
 
 $sQuery = urlencode($sOql);
 $sAbsoluteUrl = utils::GetAbsoluteUrlAppRoot();
+
+$sRunQueryUrl="";
 
 switch($sFormat)
 {
