@@ -1,9 +1,10 @@
 <?php
+
 // Copyright (C) 2013-2014 Combodo SARL
 //
 //   This file is part of iTop.
 //
-//   iTop is free software; you can redistribute it and/or modify	
+//   iTop is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU Affero General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
@@ -27,41 +28,33 @@ require_once(APPROOT.'/application/application.inc.php');
 require_once(APPROOT.'/application/webpage.class.inc.php');
 require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
 
-
-try
-{
+try {
 	require_once(APPROOT.'/application/startup.inc.php');
 	require_once(APPROOT.'/application/loginwebpage.class.inc.php');
 	LoginWebPage::DoLogin(false /* bMustBeAdmin */, false /* IsAllowedToPortalUsers */); // Check user rights and prompt if needed
-		$oPage = new ajax_page("");
-		$oPage->no_cache();
-
+	$oPage = new ajax_page("");
+	$oPage->no_cache();
 
 	$sOperation = utils::ReadParam('operation', '');
 	$iSurveyId = (int)utils::ReadParam('survey_id', 0);
-	
-	
-	switch($sOperation)
-	{
+
+	switch ($sOperation) {
 		case 'send_again':
 			/** @var \Survey $oSurvey */
 			$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
-			$aTargets =array();
-			$sSubject = utils::ReadParam('email_subject','', false, 'raw_data');
+			$aTargets = [];
+			$sSubject = utils::ReadParam('email_subject', '', false, 'raw_data');
 			$sBody = utils::ReadParam('email_body', '', false, 'raw_data');
 			$sFilter = utils::ReadParam('filter', '', false, 'raw_data');
 			$oFullSetFilter = DBObjectSearch::unserialize($sFilter);
 			$aTargets = utils::ReadMultipleSelection($oFullSetFilter);
-			if (!is_array($aTargets))
-			{
-				$aTargets = array();
+			if (!is_array($aTargets)) {
+				$aTargets = [];
 			}
-			if (count($aTargets) > 0)
-			{
+			if (count($aTargets) > 0) {
 				$sOQL = 'SELECT SurveyTargetAnswer AS T WHERE T.id IN('.implode(',', $aTargets).') AND T.survey_id = '.$oSurvey->GetKey();
 				$oSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL));
-				while($oSTA = $oSet->Fetch())
-				{
+				while ($oSTA = $oSet->Fetch()) {
 					$oSurvey->SendAgainQuizzToTargetContact($oSTA, $sSubject, $sBody);
 				}
 			}
@@ -69,43 +62,38 @@ try
 			//$oSurvey->DisplayNotifications($oPage);
 			$oPage->add_ready_script('window.location.reload();'); // brute force reload of the whole page...
 			break;
-		
+
 		case 'filter_stats':
 			/** @var \Survey $oSurvey */
 			$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
 
-			$aOrgIds = utils::ReadParam('org_id', array());
-			if (!is_array($aOrgIds))
-			{
-				$aOrgIds = array();
+			$aOrgIds = utils::ReadParam('org_id', []);
+			if (!is_array($aOrgIds)) {
+				$aOrgIds = [];
 			}
-			$aContactIds = utils::ReadParam('contact_id', array());
-			if (!is_array($aContactIds))
-			{
-				$aContactIds = array();
+			$aContactIds = utils::ReadParam('contact_id', []);
+			if (!is_array($aContactIds)) {
+				$aContactIds = [];
 			}
 			$oSurvey->DisplayStatisticsAndExport($oPage, false /* bPrintable */, $aOrgIds, $aContactIds);
 			break;
-		
+
 		case 'refresh_contacts_filter':
 			/** @var \Survey $oSurvey */
 			$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
 
-			$aOrgIds = utils::ReadParam('org_id', array());
-			if (!is_array($aOrgIds))
-			{
-				$aOrgIds = array();
+			$aOrgIds = utils::ReadParam('org_id', []);
+			if (!is_array($aOrgIds)) {
+				$aOrgIds = [];
 			}
 			$oPage->add($oSurvey->GetContactsFilterLegacy($aOrgIds));
 			$oPage->add_ready_script("$('#filter_stats_contact_id').multiselect({header: false, noneSelectedText: '".addslashes(Dict::S('UI:SearchValue:Any'))."', selectedList: 1, selectedText:'".addslashes(Dict::S('UI:SearchValue:NbSelected'))."'});");
 			break;
 	}
-	
+
 	$oPage->output();
-}
-catch(Exception $e)
-{
+} catch (Exception $e) {
 	// note: transform to cope with XSS attacks
 	echo htmlentities($e->GetMessage(), ENT_QUOTES, 'utf-8');
-	IssueLog::Error($e->getMessage());	
+	IssueLog::Error($e->getMessage());
 }

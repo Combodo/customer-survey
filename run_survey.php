@@ -1,4 +1,5 @@
 <?php
+
 // Copyright (C) 2010 Combodo SARL
 //
 //   This program is free software; you can redistribute it and/or modify
@@ -32,66 +33,57 @@ require_once APPROOT.'setup/itopdesignformat.class.inc.php';
 // Main
 //
 
-
-try
-{
+try {
 	require_once(APPROOT.'/application/startup.inc.php');
-//if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-//		require_once(APPROOT.'/application/nicewebpage.class.inc.php');
-		require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
-//	}
-		require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
+	//if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+	//		require_once(APPROOT.'/application/nicewebpage.class.inc.php');
+	require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
+	//	}
+	require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
 	$sToken = utils::ReadParam('token', '', false, 'raw_data');
 	$iQuizz = utils::ReadParam('quizz_id', '');
-	
-	switch($sOperation)
-	{
+
+	switch ($sOperation) {
 		case 'async_action':
-		ini_set('max_execution_time', max(240, ini_get('max_execution_time')));
-				
-		$sClass = utils::ReadParam('step_class', '');
-		$sState = utils::ReadParam('step_state', '');
-		$sActionCode = utils::ReadParam('code', '');
-		$aParams = utils::ReadParam('params', array(), false, 'raw_data');
-		if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
-			$oPage = new AjaxPage('');
-		} else {
-			require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
-			$oPage = new \Combodo\iTop\Application\WebPage\AjaxPage('');
-		}
-		if (is_subclass_of($sClass, 'WizardStep'))
-		{
-			$oDummyController = new QuizzController($sClass, 0, $iQuizz, $sToken);
-			$oStep = new $sClass($oDummyController, $sState);
+			ini_set('max_execution_time', max(240, ini_get('max_execution_time')));
 
-			$oStep->AsyncAction($oPage, $sActionCode, $aParams);
-		}
-		$oPage->output();
-		break;
+			$sClass = utils::ReadParam('step_class', '');
+			$sState = utils::ReadParam('step_state', '');
+			$sActionCode = utils::ReadParam('code', '');
+			$aParams = utils::ReadParam('params', [], false, 'raw_data');
+			if (version_compare(ITOP_DESIGN_LATEST_VERSION, '3.0') >= 0) {
+				$oPage = new AjaxPage('');
+			} else {
+				require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
+				$oPage = new \Combodo\iTop\Application\WebPage\AjaxPage('');
+			}
+			if (is_subclass_of($sClass, 'WizardStep')) {
+				$oDummyController = new QuizzController($sClass, 0, $iQuizz, $sToken);
+				$oStep = new $sClass($oDummyController, $sState);
 
-		default:		
-		$oWizard = new QuizzController('QuizzWizStepQuestions', 'start', $iQuizz, $sToken);
-		$oWizard->Run();
+				$oStep->AsyncAction($oPage, $sActionCode, $aParams);
+			}
+			$oPage->output();
+			break;
+
+		default:
+			$oWizard = new QuizzController('QuizzWizStepQuestions', 'start', $iQuizz, $sToken);
+			$oWizard->Run();
 	}
-}
-catch(CoreException $e)
-{
+} catch (CoreException $e) {
 	require_once(APPROOT.'/setup/setuppage.class.inc.php');
 	$oP = new SetupPage(Dict::S('UI:PageTitle:FatalError'));
-	$oP->add("<h1>".Dict::S('UI:FatalErrorMessage')."</h1>\n");	
-	$oP->error(Dict::Format('UI:Error_Details', $e->getHtmlDesc()));	
+	$oP->add("<h1>".Dict::S('UI:FatalErrorMessage')."</h1>\n");
+	$oP->error(Dict::Format('UI:Error_Details', $e->getHtmlDesc()));
 	$oP->output();
 
-	if (MetaModel::IsLogEnabledIssue())
-	{
-		if (MetaModel::IsValidClass('EventIssue'))
-		{
-			try
-			{
+	if (MetaModel::IsLogEnabledIssue()) {
+		if (MetaModel::IsValidClass('EventIssue')) {
+			try {
 				$oLog = new EventIssue();
-	
+
 				$oLog->Set('message', $e->getMessage());
 				$oLog->Set('userinfo', '');
 				$oLog->Set('issue', $e->GetIssue());
@@ -99,9 +91,7 @@ catch(CoreException $e)
 				$oLog->Set('callstack', $e->getTrace());
 				$oLog->Set('data', $e->getContextData());
 				$oLog->DBInsertNoReload();
-			}
-			catch(Exception $e)
-			{
+			} catch (Exception $e) {
 				IssueLog::Error("Failed to log issue into the DB");
 			}
 		}
@@ -111,33 +101,26 @@ catch(CoreException $e)
 
 	// For debugging only
 	//throw $e;
-}
-catch(Exception $e)
-{
+} catch (Exception $e) {
 	require_once(APPROOT.'/setup/setuppage.class.inc.php');
 	$oP = new SetupPage(Dict::S('UI:PageTitle:FatalError'));
-	$oP->add("<h1>".Dict::S('UI:FatalErrorMessage')."</h1>\n");	
-	$oP->error(Dict::Format('UI:Error_Details', $e->getMessage()));	
+	$oP->add("<h1>".Dict::S('UI:FatalErrorMessage')."</h1>\n");
+	$oP->error(Dict::Format('UI:Error_Details', $e->getMessage()));
 	$oP->output();
 
-	if (MetaModel::IsLogEnabledIssue())
-	{
-		if (MetaModel::IsValidClass('EventIssue'))
-		{
-			try
-			{
+	if (MetaModel::IsLogEnabledIssue()) {
+		if (MetaModel::IsValidClass('EventIssue')) {
+			try {
 				$oLog = new EventIssue();
-	
+
 				$oLog->Set('message', $e->getMessage());
 				$oLog->Set('userinfo', '');
 				$oLog->Set('issue', 'PHP Exception');
 				$oLog->Set('impact', 'Page could not be displayed');
 				$oLog->Set('callstack', $e->getTrace());
-				$oLog->Set('data', array());
+				$oLog->Set('data', []);
 				$oLog->DBInsertNoReload();
-			}
-			catch(Exception $e)
-			{
+			} catch (Exception $e) {
 				IssueLog::Error("Failed to log issue into the DB");
 			}
 		}

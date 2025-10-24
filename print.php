@@ -1,9 +1,10 @@
 <?php
+
 // Copyright (C) 2014 Combodo SARL
 //
 //   This file is part of iTop.
 //
-//   iTop is free software; you can redistribute it and/or modify	
+//   iTop is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU Affero General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
@@ -22,17 +23,18 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
-if (!defined('__DIR__')) define('__DIR__', dirname(__FILE__));
+if (!defined('__DIR__')) {
+	define('__DIR__', dirname(__FILE__));
+}
 require_once(__DIR__.'/../../approot.inc.php');
 require_once(APPROOT.'/application/application.inc.php');
 
-try
-{
+try {
 	require_once(APPROOT.'/application/startup.inc.php');
-	
+
 	require_once(APPROOT.'/application/loginwebpage.class.inc.php');
 	LoginWebPage::DoLogin(false /* bMustBeAdmin */, false /* IsAllowedToPortalUsers */); // Check user rights and prompt if needed
-	
+
 	$sOperation = utils::ReadParam('operation', '');
 	$iSurveyId = (int)utils::ReadParam('survey_id', 0);
 
@@ -40,31 +42,26 @@ try
 
 	$oPage = new NiceWebPage($oSurvey->Get('friendlyname'));
 	$oPage->no_cache();
-	
-	switch($sOperation)
-	{
+
+	switch ($sOperation) {
 		case 'print_results':
 			/** @var \Survey $oSurvey */
 			$oSurvey = MetaModel::GetObject('Survey', $iSurveyId);
-			$aOrgIds = utils::ReadParam('org_id', array());
-			if (!is_array($aOrgIds))
-			{
-				$aOrgIds = array();
+			$aOrgIds = utils::ReadParam('org_id', []);
+			if (!is_array($aOrgIds)) {
+				$aOrgIds = [];
 			}
-			$aContactIds = utils::ReadParam('contact_id', array());
-			if (!is_array($aContactIds))
-			{
-				$aContactIds = array();
+			$aContactIds = utils::ReadParam('contact_id', []);
+			if (!is_array($aContactIds)) {
+				$aContactIds = [];
 			}
 			$oSurvey->DisplayResultsTab($oPage, true, $aOrgIds, $aContactIds); // true => printable
 			break;
 	}
-	
+
 	$oPage->output();
-}
-catch(Exception $e)
-{
+} catch (Exception $e) {
 	// note: transform to cope with XSS attacks
 	echo htmlentities($e->GetMessage(), ENT_QUOTES, 'utf-8');
-	IssueLog::Error($e->getMessage());	
+	IssueLog::Error($e->getMessage());
 }

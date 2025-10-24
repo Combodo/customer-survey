@@ -1,4 +1,5 @@
 <?php
+
 // Copyright (C) 2010 Combodo SARL
 //
 //   This program is free software; you can redistribute it and/or modify
@@ -23,7 +24,7 @@
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
 
-if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+if (version_compare(ITOP_DESIGN_LATEST_VERSION, '3.0') < 0) {
 	require_once(APPROOT."/application/nicewebpage.class.inc.php");
 }
 
@@ -39,10 +40,10 @@ class QuizzWebPage extends NiceWebPage
 	 * Portal menu
 	 */
 	protected $m_aMenuButtons;
-	
+
 	public function __construct($sTitle)
 	{
-		$this->m_aMenuButtons = array();
+		$this->m_aMenuButtons = [];
 		parent::__construct($sTitle);
 		$this->add_header("Content-type: text/html; charset=utf-8");
 		$this->add_header("Cache-control: no-cache");
@@ -68,7 +69,7 @@ class QuizzWebPage extends NiceWebPage
 		$this->LinkScriptFromAppRoot("js/utils.js");
 		$this->LinkScriptFromAppRoot("js/forms-json-utils.js");
 		$this->add_ready_script(
-<<<EOF
+			<<<EOF
 try
 {
 	//add new widget called TruncatedList to properly display truncated lists when they are sorted
@@ -127,10 +128,10 @@ catch(err)
 	alert(err);
 }
 EOF
-);
+		);
 
-	$this->add_script(
-<<<EOF
+		$this->add_script(
+			<<<EOF
 	function CheckSelection(sMessage)
 	{
 		var bResult = ($('input:checked').length > 0);
@@ -151,32 +152,30 @@ EOF
 		form.submit(); // Go
 	}
 EOF
-);
-	$this->add_style('body{overflow:visible;}');
+		);
+		$this->add_style('body{overflow:visible;}');
 		// Customize the logo
-		if (file_exists(MODULESROOT.'branding/portal-logo.png'))
-		{
+		if (file_exists(MODULESROOT.'branding/portal-logo.png')) {
 			$sDisplayIcon = utils::GetAbsoluteUrlModulesRoot().'branding/portal-logo.png';
 			$this->add_style("div#portal #logo {background: url(\"$sDisplayIcon\") no-repeat scroll 0 0 transparent;}");
 		}
 	}
-	
+
 	/**
 	 * Add a button to the portal's main menu
 	 */
 	public function AddMenuButton($sId, $sLabel, $sHyperlink)
 	{
-		$this->m_aMenuButtons[] = array('id' => $sId, 'label' => $sLabel, 'hyperlink' => $sHyperlink);
+		$this->m_aMenuButtons[] = ['id' => $sId, 'label' => $sLabel, 'hyperlink' => $sHyperlink];
 	}
-	
+
 	public function output()
 	{
-			$sMenu = '';
-			foreach ($this->m_aMenuButtons as $aMenuItem) {
-				$sMenu .= "<a class=\"button\" id=\"{$aMenuItem['id']}\" href=\"{$aMenuItem['hyperlink']}\"><span>".Dict::S($aMenuItem['label'])."</span></a>";
-			}
-			$this->s_content = '<div id="portal"><div id="banner"><div id="logo"></div>'.$sMenu.'</div><div id="content">'.$this->s_content.'</div></div>';
+		$sMenu = '';
+		foreach ($this->m_aMenuButtons as $aMenuItem) {
+			$sMenu .= "<a class=\"button\" id=\"{$aMenuItem['id']}\" href=\"{$aMenuItem['hyperlink']}\"><span>".Dict::S($aMenuItem['label'])."</span></a>";
+		}
+		$this->s_content = '<div id="portal"><div id="banner"><div id="logo"></div>'.$sMenu.'</div><div id="content">'.$this->s_content.'</div></div>';
 		parent::output();
 	}
 }
-?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Localized data
  *
@@ -21,7 +22,7 @@
  * along with iTop. If not, see <http://www.gnu.org/licenses/>
  */
 
-Dict::Add('EN GB', 'British English', 'British English', array(
+Dict::Add('EN GB', 'British English', 'British English', [
 	// Dictionary entries go here
 	'Survey-Title' => 'iTop Customer Survey',
 	'Survey-Title-Draft' => 'iTop Customer Survey (preview mode)',
@@ -210,13 +211,13 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Survey-quizz-frame-definition' => 'Survey Definition',
 	'Survey-quizz-frame-description' => 'First Page',
 	'Survey-quizz-last-page' => 'Closing Page',
-));
+]);
 
 //
 // Class: SurveyAnswer
 //
 
-Dict::Add('EN GB', 'British English', 'British English', array(
+Dict::Add('EN GB', 'British English', 'British English', [
 	'Class:SurveyAnswer' => 'SurveyAnswer',
 	'Class:SurveyAnswer+' => '',
 	'Class:SurveyAnswer/Attribute:survey_target_id' => 'Survey target id',
@@ -243,13 +244,13 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:SurveyAnswer/Attribute:contact_id_obsolescence_flag+' => '',
 	'Class:SurveyAnswer/Attribute:org_id_obsolescence_flag' => 'Org id obsolescence flag',
 	'Class:SurveyAnswer/Attribute:org_id_obsolescence_flag+' => '',
-));
+]);
 
 //
 // Class: Quizz
 //
 
-Dict::Add('EN GB', 'British English', 'British English', array(
+Dict::Add('EN GB', 'British English', 'British English', [
 	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)' => 'Brazilian (Brazilian)',
 	'Class:Quizz/Attribute:language/Value:Brazilian (Brazilian)+' => '',
 	'Class:Quizz/Attribute:language/Value:Hungarian (Magyar)' => 'Hungarian (Magyar)',
@@ -278,33 +279,33 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:Quizz/Attribute:language/Value:Czech (Čeština)+' => '',
 	'Class:Quizz/Attribute:language/Value:Italian (Italiano)' => 'Italian (Italiano)',
 	'Class:Quizz/Attribute:language/Value:Italian (Italiano)+' => '',
-));
+]);
 
 //
 // Class: QuizzElement
 //
 
-Dict::Add('EN GB', 'British English', 'British English', array(
+Dict::Add('EN GB', 'British English', 'British English', [
 	'Class:QuizzElement/Attribute:mandatory/Value:yes' => 'Yes',
 	'Class:QuizzElement/Attribute:mandatory/Value:yes+' => '',
 	'Class:QuizzElement/Attribute:mandatory/Value:no' => 'No',
 	'Class:QuizzElement/Attribute:mandatory/Value:no+' => '',
-));
+]);
 
 //
 // Class: QuizzScaleQuestion
 //
 
-Dict::Add('EN GB', 'British English', 'British English', array(
+Dict::Add('EN GB', 'British English', 'British English', [
 	'Class:QuizzScaleQuestion/Attribute:scale_values' => 'Scale values',
 	'Class:QuizzScaleQuestion/Attribute:scale_values+' => '',
-));
+]);
 
 //
 // Class: Survey
 //
 
-Dict::Add('EN GB', 'British English', 'British English', array(
+Dict::Add('EN GB', 'British English', 'British English', [
 	'Class:Survey/Attribute:email_on_completion/Value:yes' => 'Yes',
 	'Class:Survey/Attribute:email_on_completion/Value:yes+' => '',
 	'Class:Survey/Attribute:email_on_completion/Value:no' => 'No',
@@ -315,24 +316,24 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:Survey/Attribute:on_behalf_of_finalclass_recall+' => '',
 	'Class:Survey/Attribute:on_behalf_of_obsolescence_flag' => 'On behalf of obsolescence flag',
 	'Class:Survey/Attribute:on_behalf_of_obsolescence_flag+' => '',
-));
+]);
 
 //
 // Class: SurveyTarget
 //
 
-Dict::Add('EN GB', 'British English', 'British English', array(
+Dict::Add('EN GB', 'British English', 'British English', [
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall',
 	'Class:SurveyTarget/Attribute:contact_id_finalclass_recall+' => '',
 	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag',
 	'Class:SurveyTarget/Attribute:contact_id_obsolescence_flag+' => '',
-));
+]);
 
 //
 // Class: SurveyTargetAnswer
 //
 
-Dict::Add('EN GB', 'British English', 'British English', array(
+Dict::Add('EN GB', 'British English', 'British English', [
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall' => 'Contact id finalclass recall',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_finalclass_recall+' => '',
 	'Class:SurveyTargetAnswer/Attribute:contact_id_obsolescence_flag' => 'Contact id obsolescence flag',
@@ -341,4 +342,4 @@ Dict::Add('EN GB', 'British English', 'British English', array(
 	'Class:SurveyTargetAnswer/Attribute:org_id_obsolescence_flag+' => '',
 	'Class:SurveyTargetAnswer/Attribute:last_question_id_finalclass_recall' => 'Last question id finalclass recall',
 	'Class:SurveyTargetAnswer/Attribute:last_question_id_finalclass_recall+' => '',
-));
+]);

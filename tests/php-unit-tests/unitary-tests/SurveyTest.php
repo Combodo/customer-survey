@@ -1,12 +1,11 @@
 <?php
+
 /**
  * @copyright   Copyright (C) 2010-2019 Combodo SARL
  * @license     https://www.combodo.com/documentation/combodo-software-license.html
  */
 
-
 namespace Combodo\iTop\CustomerSurvey\Test;
-
 
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
@@ -21,7 +20,8 @@ use UserRights;
  */
 class SurveyTest extends ItopDataTestCase
 {
-	public function testAppendLinkToContent() {
+	public function testAppendLinkToContent()
+	{
 		$sNoPlaceholderContent = 'No placeholder';
 		$sUrl = 'URL';
 		$sQuizLink = '<br/><a href="'.$sUrl.'">'.Dict::S('Survey-notif-linktoquizz').'</a>';
@@ -54,26 +54,42 @@ class SurveyTest extends ItopDataTestCase
 
 		$this->assertSame(
 			$sNoPlaceholderContent,
-			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
-				[$sNoPlaceholderContent, $oContact, $sUrl, false]),
+			$this->InvokeNonPublicMethod(
+				Survey::class,
+				$sApplyParamsMethodName,
+				$oSurvey,
+				[$sNoPlaceholderContent, $oContact, $sUrl, false]
+			),
 			'AppendLink false, No Placeholder'
 		);
 		$this->assertSame(
 			$sWithPlaceholderContentReplaced,
-			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
-				[$sWithPlaceholderContent, $oContact, $sUrl, false]),
+			$this->InvokeNonPublicMethod(
+				Survey::class,
+				$sApplyParamsMethodName,
+				$oSurvey,
+				[$sWithPlaceholderContent, $oContact, $sUrl, false]
+			),
 			'AppendLink false, With Placeholder'
 		);
 		$this->assertSame(
 			$sNoPlaceholderContent.$sQuizLink,
-			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
-				[$sNoPlaceholderContent, $oContact, $sUrl, true]),
+			$this->InvokeNonPublicMethod(
+				Survey::class,
+				$sApplyParamsMethodName,
+				$oSurvey,
+				[$sNoPlaceholderContent, $oContact, $sUrl, true]
+			),
 			'AppendLink true, No Placeholder'
 		);
 		$this->assertSame(
 			$sWithPlaceholderContentReplaced,
-			$this->InvokeNonPublicMethod(Survey::class, $sApplyParamsMethodName, $oSurvey,
-				[$sWithPlaceholderContent, $oContact, $sUrl, true]),
+			$this->InvokeNonPublicMethod(
+				Survey::class,
+				$sApplyParamsMethodName,
+				$oSurvey,
+				[$sWithPlaceholderContent, $oContact, $sUrl, true]
+			),
 			'AppendLink true, With Placeholder'
 		);
 	}
@@ -89,24 +105,28 @@ class SurveyTest extends ItopDataTestCase
 		$oUser = $this->CreateUser($sLogin, self::$aURP_Profiles['Administrator'], 'ABCD1234@gabuzomeu');
 		$oOnBehalfContact = $this->CreatePerson($sUID, $this->CreateOrganization($sUID)->GetKey());
 
-		$oQuizz = $this->createObject("Quizz",
+		$oQuizz = $this->createObject(
+			"Quizz",
 			[
 				'title' => "quizz-$sUID",
 				'name' => "quizz-$sUID",
-			]);
-		$oSurvey = $this->createObject("Survey",
+			]
+		);
+		$oSurvey = $this->createObject(
+			"Survey",
 			[
 				'email_subject' => 'TEST',
 				'on_behalf_of' => $oOnBehalfContact->GetKey(),
 				'email_body' => '<p>TEST</p>',
 				'quizz_id' => $oQuizz->GetKey(),
-			]);
+			]
+		);
 
-
-		$_SESSION = array();
+		$_SESSION = [];
 		UserRights::Login($sLogin);
 
-		$this->assertTrue($this->InvokeNonPublicMethod(Survey::class, "SendPreview", $oSurvey, []),
+		$this->assertTrue(
+			$this->InvokeNonPublicMethod(Survey::class, "SendPreview", $oSurvey, []),
 			'stimulus should be ok'
 		);
 	}
