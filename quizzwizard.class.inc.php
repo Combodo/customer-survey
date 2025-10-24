@@ -323,7 +323,12 @@ class QuizzWizStepQuestions extends WizardStep
 	{
 		return array('QuizzWizStepQuestions', 'QuizzWizStepDone');
 	}
-	
+
+	/**
+	 * Processes the page's parameters and (if moving forward) returns the next step/state to be displayed
+	 * @param bool $bMoveForward True if the wizard is moving forward 'Next >>' button pressed, false otherwise
+	 * @return hash array('class' => $sNextClass, 'state' => $sNextState)
+	 */
 	public function ProcessParams($bMoveForward = true)
 	{
 		if ($this->bSurveyFinished || $this->bAnswerCommitted)
@@ -353,7 +358,7 @@ class QuizzWizStepQuestions extends WizardStep
 			$this->oWizard->SetParameter('answer', json_encode($aAnswers));
 			if ($this->GetStepQuestions(1 + $index) != null)
 			{
-				return array('class' => 'QuizzWizStepQuestions', 'state' => (1+$index));
+				return ['class' => 'QuizzWizStepQuestions', 'state' => (1+$index)];
 			}
 			else
 			{
@@ -389,19 +394,19 @@ class QuizzWizStepQuestions extends WizardStep
 								$oEmail->SetBody($sBody);
 								$oEmail->SetRecipientTO($oContact->Get('email'));
 								$oEmail->SetRecipientFrom($oContact->Get('email'));
-								$aIssues = array();
+								$aIssues = [];
 								$iRes = $oEmail->Send($aIssues);
 								switch ($iRes)
 								{
 									case EMAIL_SEND_ERROR:
-									IssueLog::Error("Failed to send email on survey completion. Errors: ".implode(', ', $aErrors));					
+									IssueLog::Error("Failed to send email on survey completion. Errors: ".implode(', ', $aIssues));
 								}													
 							}
 						}
 					}
 				}
 				// Move to the next step
-				return array('class' => 'QuizzWizStepDone', 'state' => '');
+				return ['class' => 'QuizzWizStepDone', 'state' => ''];
 			}
 		}
 		else
@@ -418,6 +423,7 @@ class QuizzWizStepQuestions extends WizardStep
 			}
 			$this->oWizard->SetParameter('answer', json_encode($aAnswers));
 		}
+		return [];
 	}
 	
 	/**
@@ -791,7 +797,7 @@ class QuizzWizStepDone extends WizardStep
 	
 	public function ProcessParams($bMoveForward = true)
 	{
-		// Do nothing...
+		return [];
 	}
 
 	public function Display(WebPage $oPage)

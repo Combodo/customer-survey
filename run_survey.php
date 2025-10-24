@@ -59,7 +59,7 @@ try
 			$oPage = new AjaxPage('');
 		} else {
 			require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
-			$oPage = new ajax_page('');
+			$oPage = new \Combodo\iTop\Application\WebPage\AjaxPage('');
 		}
 		if (is_subclass_of($sClass, 'WizardStep'))
 		{

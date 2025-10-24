@@ -23,8 +23,6 @@
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
 
-use Combodo\iTop\Application\UI\Base\Component\Html\Html;
-
 if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
 	require_once(APPROOT."/application/nicewebpage.class.inc.php");
 }
@@ -52,23 +50,23 @@ class QuizzWebPage extends NiceWebPage
 		$sAppRoot = utils::GetAbsoluteUrlAppRoot();
 		$this->set_base($sAppRoot.'pages/');
 
-		$this->add_linked_stylesheet("../css/jquery.treeview.css");
-		$this->add_linked_stylesheet("../css/jquery.autocomplete.css");
+		$this->LinkStylesheetFromURI("../css/jquery.treeview.css");
+		$this->LinkStylesheetFromURI("../css/jquery.autocomplete.css");
 		$this->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/quizz_legacy.scss');
 		if (file_exists(APPROOT."/js/swfobject.js")) {
-			$this->add_linked_script("../js/swfobject.js");
+			$this->LinkScriptFromAppRoot("js/swfobject.js");
 		}
-		$this->add_linked_script('../js/jquery.layout.min.js');
-		$this->add_linked_script('../js/jquery.ba-bbq.min.js');
-		$this->add_linked_script("../js/jquery.tablehover.js");
-		$this->add_linked_script("../js/jquery.treeview.js");
-		$this->add_linked_script("../js/jquery.positionBy.js");
-		$this->add_linked_script("../js/jquery.popupmenu.js");
-		$this->add_linked_script("../js/date.js");
-		$this->add_linked_script("../js/jquery.tablesorter.min.js");
-		$this->add_linked_script("../js/jquery.blockUI.js");
-		$this->add_linked_script("../js/utils.js");
-		$this->add_linked_script("../js/forms-json-utils.js");
+		$this->LinkScriptFromAppRoot('js/jquery.layout.min.js');
+		$this->LinkScriptFromAppRoot('js/jquery.ba-bbq.min.js');
+		$this->LinkScriptFromAppRoot("js/jquery.tablehover.js");
+		$this->LinkScriptFromAppRoot("js/jquery.treeview.js");
+		$this->LinkScriptFromAppRoot("js/jquery.positionBy.js");
+		$this->LinkScriptFromAppRoot("js/jquery.popupmenu.js");
+		$this->LinkScriptFromAppRoot("js/date.js");
+		$this->LinkScriptFromAppRoot("js/jquery.tablesorter.min.js");
+		$this->LinkScriptFromAppRoot("js/jquery.blockUI.js");
+		$this->LinkScriptFromAppRoot("js/utils.js");
+		$this->LinkScriptFromAppRoot("js/forms-json-utils.js");
 		$this->add_ready_script(
 <<<EOF
 try
