@@ -5,7 +5,14 @@
  */
 
 
+namespace Combodo\iTop\CustomerSurvey\Test;
+
+
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
+use Dict;
+use MetaModel;
+use Survey;
+use UserRights;
 
 /**
  * @runTestsInSeparateProcesses
@@ -73,6 +80,10 @@ class SurveyTest extends ItopDataTestCase
 
 	public function testSendPreview()
 	{
+		// Set our email transport to file, so we can read it after
+		MetaModel::GetConfig()->Set('email_transport', 'LogFile');
+		MetaModel::GetConfig()->Set('email_asynchronous', false);
+
 		$sUID = uniqid();
 		$sLogin = "login-survey-".$sUID;
 		$oUser = $this->CreateUser($sLogin, self::$aURP_Profiles['Administrator'], 'ABCD1234@gabuzomeu');
