@@ -1980,10 +1980,7 @@ EOF
 			}
 			 
 			$oNewTargetSet = $this->Get('survey_target_list');
-			$aNewSet = $oNewTargetSet->ToArray();
-
-			foreach($aNewSet as $iId => $oTarget)
-			{
+      while ($oTarget = $oNewTargetSet->Fetch()) {
 				if (!array_key_exists($oTarget->Get('contact_id'), $aNotifs))
 				{
 					$oContact = MetaModel::GetObject('Contact', $oTarget->Get('contact_id'));

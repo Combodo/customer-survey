@@ -5,13 +5,7 @@
  */
 
 
-namespace Combodo\iTop\CustomerSurvey\Test;
-
-
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
-use Dict;
-use Survey;
-use UserRights;
 
 /**
  * @runTestsInSeparateProcesses

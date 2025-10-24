@@ -1,7 +1,0 @@
-<phpunit bootstrap="../unittestautoload.php" backupGlobals="false" verbose="true">
-  <testsuites>
-    <testsuite name="testsU">
-      <file>./SurveyTest.php</file>
-    </testsuite>
-  </testsuites>
-</phpunit>
