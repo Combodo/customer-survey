@@ -3384,7 +3384,6 @@ EOF
     <menu id="CustomerSurvey" xsi:type="TemplateMenuNode" _delta="define">
       <rank>50</rank>
       <parent>RequestManagement</parent>
-      <template_file/>
     </menu>
     <menu id="Quizzes" xsi:type="OQLMenuNode" _delta="define">
       <rank>1</rank>
