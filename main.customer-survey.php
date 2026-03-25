@@ -23,7 +23,7 @@ class SurveyNotification extends Event
 	{
 		$aParams =
 		[
-			"category" => "core/cmdb,view_in_gui",
+			"category" => "core/cmdb,grant_by_profile,silo",
 			"key_type" => "autoincrement",
 			"name_attcode" => "",
 			"state_attcode" => "",

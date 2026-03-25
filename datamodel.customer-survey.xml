@@ -2375,7 +2375,8 @@ EOF
 			'table_id' => 'survey-progress-notif',
 			'view_link' => false,
 			'zlist' => false,
-			'extra_fields' => 'contact_id,date,message'
+			'extra_fields' => 'contact_id,date,message',
+			'display_unauthorized_objects' => true,
 		);
 		$sBlockId = 'block_survey_progress_notif';
 		return $oBlock->GetDisplay($oPage, $sBlockId, $aExtraParams) ;
