@@ -1,6 +1,10 @@
 <?php
 
-require_once(APPROOT.'setup/wizardcontroller.class.inc.php');
+/**
+ * Old wizard controller version as the wizard controller significantly changed with 3.3 iTop version.
+ * This module cannot follow changes brings with the 3.3 setup refactoring to be 3.2 compatible.
+ */
+require_once('legacywizardcontroller.class.inc.php');
 
 class UnknownTokenException extends Exception
 {
