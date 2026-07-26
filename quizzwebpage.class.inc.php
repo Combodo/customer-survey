@@ -24,12 +24,11 @@
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
 
-if (version_compare(ITOP_DESIGN_LATEST_VERSION, '3.0') < 0) {
-	require_once(APPROOT."/application/nicewebpage.class.inc.php");
-}
-
 require_once(APPROOT."/application/applicationcontext.class.inc.php");
 require_once(APPROOT."/application/user.preferences.class.inc.php");
+
+use Combodo\iTop\Application\WebPage\NiceWebPage;
+
 /**
  * Web page with some associated CSS and scripts (jquery) for a fancier display
  * of the Portal web page

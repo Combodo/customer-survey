@@ -28,6 +28,8 @@ require_once('../../approot.inc.php');
 require_once(APPROOT.'/application/application.inc.php');
 require_once APPROOT.'setup/itopdesignformat.class.inc.php';
 
+use Combodo\iTop\Application\WebPage\AjaxPage;
+
 /////////////////////////////
 //
 // Main
@@ -35,10 +37,7 @@ require_once APPROOT.'setup/itopdesignformat.class.inc.php';
 
 try {
 	require_once(APPROOT.'/application/startup.inc.php');
-	//if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-	//		require_once(APPROOT.'/application/nicewebpage.class.inc.php');
 	require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
-	//	}
 	require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
@@ -53,12 +52,8 @@ try {
 			$sState = utils::ReadParam('step_state', '');
 			$sActionCode = utils::ReadParam('code', '');
 			$aParams = utils::ReadParam('params', [], false, 'raw_data');
-			if (version_compare(ITOP_DESIGN_LATEST_VERSION, '3.0') >= 0) {
+
 				$oPage = new AjaxPage('');
-			} else {
-				require_once(APPROOT.'/application/ajaxwebpage.class.inc.php');
-				$oPage = new \Combodo\iTop\Application\WebPage\AjaxPage('');
-			}
 			if (is_subclass_of($sClass, 'WizardStep')) {
 				$oDummyController = new QuizzController($sClass, 0, $iQuizz, $sToken);
 				$oStep = new $sClass($oDummyController, $sState);
