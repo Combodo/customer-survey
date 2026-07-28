@@ -2,7 +2,7 @@
 
 /**
  * Old wizard controller version as the wizard controller significantly changed with 3.3 iTop version.
- * This module cannot follow changes brings with the 3.3 setup refactoring to be 3.2 compatible.
+ * This module cannot follow the changes brought by the iTop 3.3 setup refactoring while remaining compatible with 3.2.
  */
 require_once('legacywizardcontroller.class.inc.php');
 
