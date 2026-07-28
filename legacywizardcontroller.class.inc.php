@@ -40,7 +40,7 @@ class WizardController
 	protected $aParameters;
 
 	/**
-	 * Initiailization of the wizard controller
+	 * Initialization of the wizard controller
 	 * @param string $sInitialStepClass Class of the initial step/page of the wizard
 	 * @param string $sInitialState Initial state of the initial page (if this class manages states)
 	 */
