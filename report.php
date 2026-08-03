@@ -44,11 +44,11 @@ $sRunQueryUrl = "";
 
 switch ($sFormat) {
 	case 'excel':
-		$sRunQueryUrl = utils::GetAbsoluteUrlAppRoot().'webservices/export-v2.php?format=spreadsheet&login_mode=basic&date_format='.urlencode((string)AttributeDateTime::GetFormat()).'&expression='.$sQuery.'&fields='.$sFields;
+		$sRunQueryUrl = $sAbsoluteUrl.'webservices/export-v2.php?format=spreadsheet&expression='.$sQuery.'&fields='.$sFields;
 		break;
 
 	case 'csv':
-		$sRunQueryUrl = utils::GetAbsoluteUrlAppRoot().'webservices/export-v2.php?format=csv&login_mode=basic&date_format='.urlencode((string)AttributeDateTime::GetFormat()).'&expression='.$sQuery.'&fields='.$sFields;
+		$sRunQueryUrl = $sAbsoluteUrl.'webservices/export-v2.php?format=csv&expression='.$sQuery.'&fields='.$sFields;
 		break;
 }
 
