@@ -15,7 +15,7 @@ SetupWebPage::AddModule(
 		// Setup
 		//
 		'dependencies' => [
-			'itop-request-mgmt/3.2.0 || itop-structure/3.2.0',
+			'itop-request-mgmt/3.2.0||itop-request-mgmt-itil/3.2.0',
 		],
 		'mandatory' => false,
 		'visible' => true,
