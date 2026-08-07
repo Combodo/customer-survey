@@ -70,13 +70,10 @@ class QuizzController extends WizardController
 	 */
 	protected function DisplayStep(WizardStep $oStep)
 	{
-		if (version_compare(ITOP_DESIGN_LATEST_VERSION, '3.0') < 0) {
-			$oPage = new QuizzWebPage($oStep->GetTitle());
-		} else {
-			$oPage = new UnauthenticatedWebPage($oStep->GetTitle());
-			$oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/style.scss');
-			$oPage->add_script(
-				<<<EOF
+		$oPage = new UnauthenticatedWebPage($oStep->GetTitle());
+		$oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/customer-survey/css/style.scss');
+		$oPage->add_script(
+			<<<EOF
 	function CheckSelection(sMessage)
 	{
 		var bResult = ($('input:checked').length > 0);
@@ -97,8 +94,7 @@ class QuizzController extends WizardController
 		form.submit(); // Go
 	}
 EOF
-			);
-		}
+		);
 
 		$oPage->LinkScriptFromModule('customer-survey/js/quizzwizard.js');
 		$oPage->add_script("function CanMoveForward()\n{\n".$oStep->JSCanMoveForward()."\n}\n");
