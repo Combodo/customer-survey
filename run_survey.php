@@ -37,7 +37,6 @@ use Combodo\iTop\Application\WebPage\AjaxPage;
 
 try {
 	require_once(APPROOT.'/application/startup.inc.php');
-	require_once(MODULESROOT.'/customer-survey/quizzwebpage.class.inc.php');
 	require_once(MODULESROOT.'/customer-survey/quizzwizard.class.inc.php');
 	$oAppContext = new ApplicationContext();
 	$sOperation = utils::ReadParam('operation', '');
@@ -53,7 +52,7 @@ try {
 			$sActionCode = utils::ReadParam('code', '');
 			$aParams = utils::ReadParam('params', [], false, 'raw_data');
 
-				$oPage = new AjaxPage('');
+			$oPage = new AjaxPage('');
 			if (is_subclass_of($sClass, 'WizardStep')) {
 				$oDummyController = new QuizzController($sClass, 0, $iQuizz, $sToken);
 				$oStep = new $sClass($oDummyController, $sState);
