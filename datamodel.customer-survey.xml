@@ -1858,7 +1858,11 @@ EOF
 			$sBody = $this->Get('email_body');
 		}
 
-		$sBody = $this->ApplyParamsToContent($sBody, $oContact, $sQuizzUrl, true);
+		$sApplySanitizeMode = defined('MetaModel::APPLY_PARAMS_SANITIZE_HTML') ? MetaModel::APPLY_PARAMS_SANITIZE_HTML : null;
+		$sBody = $this->ApplyParamsToContent($sBody, $oContact, $sQuizzUrl, true, $sApplySanitizeMode);
+		if ($sApplySanitizeMode === null) {
+			$sBody = DOMSanitizer::Sanitize($sBody);
+		}
 		
 		if ($sEmailSubject != null)
 		{
@@ -1909,13 +1913,14 @@ EOF
             * @param Contact $oContact
             * @param string $sQuizUrl
             * @param boolean $bAutoAppendLink if true will call {@see AppendLinkToContent}
+            * @param string|null $sApplySanitizeMode One of MetaModel::APPLY_PARAMS_SANITIZE_*; null keeps the plain-text default.
             *
             * @return string Content with placeholders replaced.
             */</comment>
           <static>false</static>
           <access>protected</access>
           <type>Custom</type>
-          <code><![CDATA[	protected function ApplyParamsToContent($sContent, $oContact, $sQuizUrl, $bAutoAppendLink)
+          <code><![CDATA[	protected function ApplyParamsToContent($sContent, $oContact, $sQuizUrl, $bAutoAppendLink, $sApplySanitizeMode = null)
 {
   $aParams = [];
   $aParams['recipient->object()'] = $oContact;
@@ -1926,7 +1931,10 @@ EOF
     $sContent = $this->AppendLinkToContent($sContent, $sQuizUrl);
   }
 
-  $sContent = MetaModel::ApplyParams($sContent, $aParams);
+  if ($sApplySanitizeMode === null && defined('MetaModel::APPLY_PARAMS_SANITIZE_NONE')) {
+    $sApplySanitizeMode = MetaModel::APPLY_PARAMS_SANITIZE_NONE;
+  }
+  $sContent = MetaModel::ApplyParams($sContent, $aParams, $sApplySanitizeMode);
 
   return $sContent;
 }

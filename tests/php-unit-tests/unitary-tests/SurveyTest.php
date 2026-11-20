@@ -130,4 +130,47 @@ class SurveyTest extends ItopDataTestCase
 			'stimulus should be ok'
 		);
 	}
+
+	/**
+	 * @dataProvider ApplyParamsSanitizationProvider
+	 */
+	public function testApplyParamsSanitization($sContent, $sUrl, $bAppendLink, $bSanitizeHtml, $sExpected)
+	{
+		if ($bSanitizeHtml && !defined('MetaModel::APPLY_PARAMS_SANITIZE_HTML')) {
+			$this->markTestSkipped('This iTop version has no HTML sanitization mode in ApplyParams.');
+		}
+		$sMode = $bSanitizeHtml
+			? MetaModel::APPLY_PARAMS_SANITIZE_HTML
+			: (defined('MetaModel::APPLY_PARAMS_SANITIZE_NONE') ? MetaModel::APPLY_PARAMS_SANITIZE_NONE : null);
+		$oSurvey = new Survey();
+		$oContact = $this->CreatePerson(0, 1);
+
+		$this->assertSame(
+			$sExpected,
+			$this->InvokeNonPublicMethod(
+				Survey::class,
+				'ApplyParamsToContent',
+				$oSurvey,
+				[$sContent, $oContact, $sUrl, $bAppendLink, $sMode]
+			)
+		);
+	}
+
+	public function ApplyParamsSanitizationProvider()
+	{
+		return [
+			'plain subject keeps markup and ampersands' => [
+				'Survey <created> & $quiz_url$', 'https://example.com/?a=1&b=2', false, false,
+				'Survey <created> & https://example.com/?a=1&b=2',
+			],
+			'HTML is sanitized after substitution' => [
+				'<a href="$quiz_url$">Survey</a>', 'javascript:alert(1)/*https://example.com*/', true, true,
+				'<a>Survey</a>',
+			],
+			'HTML keeps valid placeholder links' => [
+				'<a href="%24quiz_url%24">Survey</a>', 'https://example.com/survey', true, true,
+				'<a href="https://example.com/survey">Survey</a>',
+			],
+		];
+	}
 }
